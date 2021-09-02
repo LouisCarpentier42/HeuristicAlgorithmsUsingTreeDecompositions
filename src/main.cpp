@@ -1,7 +1,11 @@
-#include <iostream>
+
+#include "FlowCutter/FlowCutterAdapter.h"
+
+
+
 
 int main()
 {
-    std::cout << "Hello, World!" << std::endl;
+    FlowCutter::computeTreeDecomposition("my_first_graph", 5);
     return 0;
 }
