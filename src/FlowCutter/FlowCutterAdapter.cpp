@@ -13,22 +13,25 @@
 #include <array>
 
 
-void FlowCutter::computeTreeDecomposition(const char* graphFile, int time) {
+// TODO find a way to decide how many seconds to give to each graph
+void FlowCutter::computeTreeDecomposition(std::string& graphFile, int time) {
 
+    // Initialize the command to run
     char command[128];
     sprintf(command,
-            "cd ../src/FlowCutter/flow-cutter-pace17 && timeout %ds ./flow_cutter_pace17 < ../../GraphFiles/%s.gr",
-            time, graphFile);
+            "cd ../src/FlowCutter/flow-cutter-pace17 && timeout %ds ./flow_cutter_pace17 < ../../GraphFiles/%s",
+            time, graphFile.c_str());
 
+    // Create an output file with the same name
     char outFileName[128];
-    sprintf(outFileName, "../src/TreeDecompositionFiles/%s.tw", graphFile);
+    sprintf(outFileName, "../src/TreeDecompositionFiles/%s.tw", graphFile.substr(0, graphFile.size()-3).c_str());
     std::ofstream outFile{outFileName};
     if (!outFile) {
         throw std::runtime_error("Output file couldn't be created!");
     }
 
     std::array<char, 128> buffer{};
-    std::unique_ptr<FILE, decltype(&pclose) > pipe(popen(reinterpret_cast<const char *>(command), "r"), pclose);
+    std::unique_ptr<FILE, decltype(&pclose) > pipe(popen(command, "r"), pclose);
     if (!pipe) {
         throw std::runtime_error("popen() failed!");
     }
