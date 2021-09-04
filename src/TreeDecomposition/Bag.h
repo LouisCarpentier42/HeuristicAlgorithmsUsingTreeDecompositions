@@ -14,17 +14,21 @@ namespace TreeDecomposition {
     {
     private:
         const int id;
-        size_t size;
+        size_t bagSize;
         std::vector<int> vertices;
         std::vector<Bag*> children;
 
     public:
+        Bag(int id, size_t size, std::vector<int> vertices);
         Bag(int id, std::vector<int> vertices);
 
+        int getId() const;
         void addChild(Bag* child);
 
-        friend std::ostream& operator<<(std::ostream& out, const Bag& bag);
+        std::ostream& prettyPrint(std::ostream& out, std::string& prefix) const;
     };
+
+    std::ostream& operator<<(std::ostream& out, const Bag& bag);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BAG_H

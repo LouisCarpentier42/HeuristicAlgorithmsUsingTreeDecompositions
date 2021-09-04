@@ -3,10 +3,20 @@
 //
 
 #include "Bag.h"
+
 namespace TreeDecomposition {
-    Bag::Bag(int id, std::vector<int> vertices)
-    : id{id}, size{vertices.size()}, vertices{std::move(vertices)}
+
+    Bag::Bag(int id, size_t size, std::vector<int> vertices)
+        : id{id}, bagSize{size}, vertices{std::move(vertices)}
     {}
+
+    Bag::Bag(int id, std::vector<int> vertices)
+        : Bag(id, vertices.size(), std::move(vertices))
+    {}
+
+    int Bag::getId() const {
+        return id;
+    }
 
     void Bag::addChild(Bag* child)
     {
@@ -15,16 +25,31 @@ namespace TreeDecomposition {
 
     std::ostream& operator<<(std::ostream& out, const Bag& bag)
     {
-        out << "b " << bag.id;
-        for(int vertex : bag.vertices)
+        std::string prefix{};
+        return bag.prettyPrint(out, prefix);
+    }
+
+    std::ostream& Bag::prettyPrint(std::ostream& out, std::string& prefix) const
+    {
+        out << "b(" << id << "): {";
+        if (bagSize > 0)
         {
-            out << ' ' << vertex;
+            for (int i = 0; i < bagSize - 1; i++)
+                out << vertices[i] << ", ";
+            out << vertices[bagSize-1];
         }
-        out << '\n';
-        for (Bag *child : bag.children)
+        out << "}\n";
+
+        if (!children.empty())
         {
-            out << bag.id << ' ' << child->id << '\n';
-            out << *child;
+            std::string standardPrefix{prefix + "│   "};
+            std::string prefixLast{prefix + "    "};
+            for (int i = 0; i < children.size()-1; i++) {
+                out << prefix << "├── ";
+                children[i]->prettyPrint(out, standardPrefix);
+            }
+            out << prefix << "└── ";
+            children[children.size()-1]->prettyPrint(out, prefixLast);
         }
         return out;
     }

@@ -58,28 +58,28 @@ namespace TreeDecomposition {
         tokens = tokenize(line);
         while (file && (line[0] == 'b' || line[0] == 'c'))
         {
-            if (tokens[0] == "c")
-                continue;
-
-            int bagId{convertToInt(tokens[1])};
-            std::vector<int> vertices(tokens.size()-2);
-            for (int i = 0; i < vertices.size(); i++)
-            {
-                vertices[i] = convertToInt(tokens[i+2]);
+            if (tokens[0] != "c") {
+                int bagId{convertToInt(tokens[1])};
+                size_t bagSize{tokens.size()-2};
+                std::vector<int> vertices(bagSize);
+                for (int i = 0; i < vertices.size(); i++)
+                {
+                    vertices[i] = convertToInt(tokens[i+2]);
+                }
+                bags[bagId-1] = new Bag{bagId, bagSize, vertices};
             }
-            bags[bagId-1] = new Bag{bagId, vertices};
-
             std::getline(file, line);
             tokens = tokenize(line);
         }
 
-        while (file) {
-            if (tokens[0] == "c")
-                continue;
 
-            Bag* firstBag = bags[convertToInt(tokens[0])-1];
-            Bag* secondBag = bags[convertToInt(tokens[1])-1];
-            firstBag->addChild(secondBag);
+        while (file) {
+            if (!(tokens.empty() || tokens[0] == "c")){
+                Bag* firstBag = bags[convertToInt(tokens[0])-1];
+                Bag* secondBag = bags[convertToInt(tokens[1])-1];
+
+                firstBag->addChild(secondBag);
+            }
 
             std::getline(file, line);
             tokens = tokenize(line);
