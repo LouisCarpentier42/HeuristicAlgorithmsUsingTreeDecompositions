@@ -33,13 +33,12 @@ namespace TreeDecomposition {
         return num;
     }
 
-
     Bag* read(std::string& fileName)
     {
-        std::ifstream file{"../src/TreeDecompositionFiles/" + fileName};
+        std::ifstream file{"../TreeDecompositionFiles/" + fileName};
         if (!file)
         {
-            throw std::runtime_error("The given file could not be created!");
+            throw std::runtime_error("Can't read tree decomposition in '" + fileName + "' because the file can't be opened!");
         }
 
         std::string line{"c"};

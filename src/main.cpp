@@ -5,15 +5,14 @@
 
 #include <iostream>
 
-
 int main()
 {
-//    FlowCutter::computeTreeDecomposition("my_first_graph.gr", 5);
+    std::string graphFile{"my_first_graph.gr"};
+    FlowCutter::computeTreeDecomposition(graphFile, 2);
 
-    std::string fileName{"test.tw"};
+    std::string fileName{"my_first_graph.tw"};
     TreeDecomposition::Bag* bag = TreeDecomposition::read(fileName);
     std::cout << *bag << '\n';
 
     return 0;
 }
-
