@@ -20,7 +20,7 @@ namespace FlowCutter {
     /// \param time
     ///        The amount of seconds that the flow-cut algorithm has in order to
     ///        compute a tree decomposition.
-    void computeTreeDecomposition(std::string& graphFile, int time);
+    void computeHeuristicTreeDecomposition(std::string& graphFile, int time);
 
 }
 

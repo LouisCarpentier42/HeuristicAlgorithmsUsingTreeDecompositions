@@ -1,26 +1,25 @@
 
 #include "FlowCutter/FlowCutterAdapter.h"
 #include "Jdrasil/JdrasilAdapter.h"
-#include "TreeDecomposition/Bag.h"
-#include "TreeDecomposition/Reader.h"
+
+
+#include "DataStructrures//Bag.h"
+#include "DataStructrures/Reader.h"
+#include "DataStructrures/TreeDecomposition.h"
 
 #include <iostream>
 
 int main()
 {
-    std::string graphFile{"my_first_graph.gr"};
-    Jdrasil::computeExactTreeDecomposition(graphFile);
-    Jdrasil::computeHeuristicTreeDecomposition(graphFile);
-    Jdrasil::computeApproximateTreeDecomposition(graphFile);
+    std::string graphName{"ex001"};
+    std::string graphFile{graphName + ".gr"};
+    std::string treeFile{graphName + ".tw"};
 
-    Jdrasil::computeNiceTreeDecompositions();
+    FlowCutter::computeHeuristicTreeDecomposition(graphFile, 2);
 
-//    std::string graphFile{"my_first_graph.gr"};
-//    FlowCutter::computeTreeDecomposition(graphFile, 2); // TODO miss rename naar computeHeuristicTreeDecomposition (voor consistentie)
-
-//    std::string fileName{"my_first_graph.tw"};
-//    TreeDecomposition::Bag* bag = TreeDecomposition::read(fileName);
-//    std::cout << *bag << '\n';
+    DataStructures::Reader reader{"../GraphFiles/", "../TreeDecompositionFiles/"};
+    DataStructures::TreeDecomposition* treeDecomposition = reader.readTreeDecomposition(treeFile);
+    std::cout << *treeDecomposition << '\n';
 
     return 0;
 }

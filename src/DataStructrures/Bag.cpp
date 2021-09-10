@@ -4,23 +4,26 @@
 
 #include "Bag.h"
 
-namespace TreeDecomposition {
-
+namespace DataStructures
+{
     Bag::Bag(int id, size_t size, std::vector<int> vertices)
         : id{id}, bagSize{size}, vertices{std::move(vertices)}
     {}
 
-    Bag::Bag(int id, std::vector<int> vertices)
-        : Bag(id, vertices.size(), std::move(vertices))
-    {}
-
-    int Bag::getId() const {
-        return id;
+    Bag* Bag::getParent() const
+    {
+        return parent;
     }
 
     void Bag::addChild(Bag* child)
     {
         children.push_back(child);
+        child->parent = this;
+    }
+
+    bool Bag::isEmpty() const
+    {
+        return vertices.empty();
     }
 
     std::ostream& operator<<(std::ostream& out, const Bag& bag)
@@ -51,6 +54,6 @@ namespace TreeDecomposition {
             out << prefix << "└── ";
             children[children.size()-1]->prettyPrint(out, prefixLast);
         }
-        return out;
+       return out;
     }
 }

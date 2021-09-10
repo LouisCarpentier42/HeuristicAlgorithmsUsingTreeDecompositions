@@ -8,27 +8,29 @@
 #include <iostream>
 #include <vector>
 
-namespace TreeDecomposition {
-
+namespace DataStructures
+{
     class Bag
     {
     private:
         const int id;
         size_t bagSize;
         std::vector<int> vertices;
-        std::vector<Bag*> children;
+        Bag* parent{nullptr};
+        std::vector<Bag*> children{};
 
     public:
         Bag(int id, size_t size, std::vector<int> vertices);
-        Bag(int id, std::vector<int> vertices);
 
-        int getId() const;
+        Bag* getParent() const;
+
         void addChild(Bag* child);
+        bool isEmpty() const;
 
+    private:
         std::ostream& prettyPrint(std::ostream& out, std::string& prefix) const;
+        friend std::ostream& operator<<(std::ostream& out, const Bag& bag);
     };
-
-    std::ostream& operator<<(std::ostream& out, const Bag& bag);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BAG_H
