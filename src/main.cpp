@@ -10,15 +10,16 @@
 
 int main()
 {
-    std::string graphName{"my_first_graph"};
+    std::string graphName{"he170"};
     std::string graphFile{graphName + ".gr"};
     std::string treeFile{graphName + ".tw"};
     std::string niceTreeFile{graphName + "_nice.tw"};
     std::string veryNiceTreeFile{graphName + "_very_nice.tw"};
 
-    FlowCutter::computeHeuristicTreeDecomposition(graphFile, 2);
+    FlowCutter::autoTimer(graphFile);
+//    FlowCutter::computeHeuristicTreeDecomposition(graphFile, 120);
 
-    Jdrasil::computeNiceTreeDecomposition(graphFile, treeFile);
+//    Jdrasil::computeNiceTreeDecomposition(graphFile, treeFile);
 //    Jdrasil::computeApproximateTreeDecomposition(graphFile);
 //    Jdrasil::computeExactTreeDecomposition(graphFile);
 //    Jdrasil::computeHeuristicTreeDecomposition(graphFile);
@@ -27,12 +28,12 @@ int main()
 
     DataStructures::TreeDecomposition* treeDecomposition = reader.readTreeDecomposition(treeFile);
     std::cout << *treeDecomposition;
-    std::cout << "----------------------------------\n";
-    DataStructures::TreeDecomposition* niceTreeDecomposition = reader.readTreeDecomposition(niceTreeFile);
-    std::cout << *niceTreeDecomposition;
-    std::cout << "----------------------------------\n";
-    DataStructures::TreeDecomposition* veryNiceTreeDecomposition = reader.readTreeDecomposition(veryNiceTreeFile);
-    std::cout << *veryNiceTreeDecomposition;
+//    std::cout << "----------------------------------\n";
+//    DataStructures::TreeDecomposition* niceTreeDecomposition = reader.readTreeDecomposition(niceTreeFile);
+//    std::cout << *niceTreeDecomposition;
+//    std::cout << "----------------------------------\n";
+//    DataStructures::TreeDecomposition* veryNiceTreeDecomposition = reader.readTreeDecomposition(veryNiceTreeFile);
+//    std::cout << *veryNiceTreeDecomposition;
 
     return 0;
 }
