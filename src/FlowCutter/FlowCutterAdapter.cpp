@@ -14,7 +14,7 @@
 
 
 // TODO find a way to decide how many seconds to give to each graph
-void FlowCutter::computeHeuristicTreeDecomposition(std::string& graphFile, int time)
+void FlowCutter::computeHeuristicTreeDecomposition(const std::string& graphFile, int time)
 {
     // Initialize the command to run
     char command[128];

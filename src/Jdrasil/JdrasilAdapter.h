@@ -9,12 +9,11 @@
 
 namespace Jdrasil {
 
-    void computeNiceTreeDecompositions();
+    void computeNiceTreeDecomposition(const std::string& graphFile, const std::string& treeFile);
 
-    void computeExactTreeDecomposition(std::string& graphFile);
-    void computeHeuristicTreeDecomposition(std::string& graphFile);
-    void computeApproximateTreeDecomposition(std::string& graphFile);
-
+    void computeExactTreeDecomposition(const std::string& graphFile);
+    void computeHeuristicTreeDecomposition(const std::string& graphFile);
+    void computeApproximateTreeDecomposition(const std::string& graphFile);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_JDRASILADAPTER_H

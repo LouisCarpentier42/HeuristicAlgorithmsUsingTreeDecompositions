@@ -4,22 +4,38 @@
 
 #include "JdrasilAdapter.h"
 
-void Jdrasil::computeNiceTreeDecompositions()
+void Jdrasil::computeNiceTreeDecomposition(const std::string& graphFile, const std::string& treeFile)
 {
-    system(R"(cd ../src/Jdrasil && java -jar JdrasilAdapter.jar "nice_decomposition" "../../GraphFiles/" "../../TreeDecompositionFiles")");
+    char command[256];
+    sprintf(command,
+            R"(cd ../src/Jdrasil && java -jar JdrasilAdapter.jar "nice_decomposition" "../../GraphFiles/%s" "../../TreeDecompositionFiles/%s")",
+            graphFile.c_str(), treeFile.c_str());
+    system(command);
 }
 
-void Jdrasil::computeExactTreeDecomposition(std::string& fileName)
+void Jdrasil::computeExactTreeDecomposition(const std::string& graphFile)
 {
-    system(R"(cd ../src/Jdrasil && java -jar JdrasilAdapter.jar "exact")");
+    char command[128];
+    sprintf(command,
+            R"(cd ../src/Jdrasil && java -jar JdrasilAdapter.jar "exact" "../../GraphFiles/%s")",
+            graphFile.c_str());
+    system(command);
 }
 
-void Jdrasil::computeHeuristicTreeDecomposition(std::string &graphFile)
+void Jdrasil::computeHeuristicTreeDecomposition(const std::string& graphFile)
 {
-    system(R"(cd ../src/Jdrasil && java -jar JdrasilAdapter.jar "heuristic")");
+    char command[128];
+    sprintf(command,
+            R"(cd ../src/Jdrasil && java -jar JdrasilAdapter.jar "heuristic" "../../GraphFiles/%s")",
+            graphFile.c_str());
+    system(command);
 }
 
-void Jdrasil::computeApproximateTreeDecomposition(std::string &graphFile)
+void Jdrasil::computeApproximateTreeDecomposition(const std::string& graphFile)
 {
-    system(R"(cd ../src/Jdrasil && java -jar JdrasilAdapter.jar "approximate")");
+    char command[128];
+    sprintf(command,
+            R"(cd ../src/Jdrasil && java -jar JdrasilAdapter.jar "approximate" "../../GraphFiles/%s")",
+            graphFile.c_str());
+    system(command);
 }
