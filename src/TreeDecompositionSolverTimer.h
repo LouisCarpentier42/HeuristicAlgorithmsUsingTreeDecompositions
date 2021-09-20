@@ -2,28 +2,29 @@
 // Created by louis on 11/09/2021.
 //
 
-#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_SOLVERTIMER_H
-#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_SOLVERTIMER_H
+#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITIONSOLVERTIMER_H
+#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITIONSOLVERTIMER_H
 
 #include <string>
 
 // TODO improvements
 //      - Choose which solver you want to use
 //      - Initially multiply time and after some time increment (eg add a minute)?
-class SolverTimer
+class TreeDecompositionSolverTimer
 {
 private:
     const double initialTime;
     const double timeMultiplier;
     const double maxTime;
-
     const double improvementRatio;
 
 public:
-    SolverTimer(double initialTime, double timeMultiplier, double maxTime, double improvementRatio);
+    TreeDecompositionSolverTimer(double initialTime, double timeMultiplier, double maxTime, double improvementRatio);
+    void executeSolver(const std::string& graphFile) const;
 
-    void executeSolver(std::string& graphFile);
+private:
+    bool improvementTooSmall(int currentTreeWidth, int bestTreeWidth) const;
 };
 
 
-#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_SOLVERTIMER_H
+#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITIONSOLVERTIMER_H

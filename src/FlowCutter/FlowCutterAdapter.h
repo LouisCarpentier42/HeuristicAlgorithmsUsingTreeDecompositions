@@ -21,8 +21,6 @@ namespace FlowCutter {
     ///        The amount of seconds that the flow-cut algorithm has in order to
     ///        compute a tree decomposition.
     void computeHeuristicTreeDecomposition(const std::string& graphFile, int time);
-
-    void autoTimer(const std::string& graphFile);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_FLOWCUTTERADAPTER_H
