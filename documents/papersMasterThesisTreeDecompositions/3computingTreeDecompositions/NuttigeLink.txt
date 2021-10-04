@@ -1,5 +1,0 @@
-In 2016 en 2017 werd de PACE challenge gehouden (Parameterized Algorithms and Computational Experiments).
-Het onderwerp hiervan was Treewidth en het belangrijkste resultaat van deze challenge is dat er
-software is uitgekomen die gebruikt kan worden om goede tree decompositions te berekenen.
-
-https://pacechallenge.org/past/
