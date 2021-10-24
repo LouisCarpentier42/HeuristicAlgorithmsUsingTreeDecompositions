@@ -5,12 +5,13 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITIONREADER_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITIONREADER_H
 
-#include "Bag.h"
-#include "TreeDecomposition.h"
+#include "../DataStructrures/Bag.h"
+#include "../DataStructrures/TreeDecomposition.h"
+#include "../DataStructrures/Graph.h"
 
 #include <string>
 
-namespace DataStructures
+namespace IO
 {
     class Reader
     {
@@ -21,7 +22,8 @@ namespace DataStructures
     public:
         Reader(std::string graphFilesDir, std::string treeDecompositionFilesDir);
 
-        TreeDecomposition* readTreeDecomposition(std::string& fileName) const;
+        DataStructures::TreeDecomposition* readTreeDecomposition(std::string& filename) const;
+        DataStructures::Graph* readGraph(std::string& filename) const;
 
     private:
         static std::vector<std::string> tokenize(std::string& line);
