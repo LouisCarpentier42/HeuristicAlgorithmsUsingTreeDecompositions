@@ -3,11 +3,16 @@
 #include "FlowCutter/FlowCutterAdapter.h"
 #include "Jdrasil/JdrasilAdapter.h"
 
-#include "DataStructrures/Bag.h"
+
 #include "IO/Reader.h"
+#include "DataStructrures/Bag.h"
+#include "DataStructrures/Graph.h"
 #include "DataStructrures/TreeDecomposition.h"
+#include "MaximumHappyVertices/Colouring.h"
 
 #include <iostream>
+
+#include <algorithm> // TODO remove
 
 int main()
 {
@@ -30,7 +35,13 @@ int main()
     IO::Reader reader{"../GraphFiles/", "../TreeDecompositionFiles/"};
 
     DataStructures::Graph* graph = reader.readGraph(graphFile);
-    graph->test();
+    std::vector<colourType> v{0,1,2,3,4,5};
+    Colouring c{graph, v};
+
+
+
+
+
 
 //    DataStructures::TreeDecomposition* treeDecomposition = reader.readTreeDecomposition(treeFile);
 //    std::cout << *treeDecomposition;

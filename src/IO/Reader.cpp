@@ -118,7 +118,7 @@ namespace IO
         int nbVertices{convertToInt(tokens[2])};
         int nbEdges{convertToInt(tokens[3])};
 
-        std::vector<std::vector<int>> adjacencyList(nbVertices);
+        std::vector<std::vector<vertexType>> adjacencyList(nbVertices);
 
         std::getline(file, line);
         tokens = tokenize(line);
@@ -135,7 +135,7 @@ namespace IO
             tokens = tokenize(line);
         }
 
-        return new DataStructures::Graph(nbVertices, nbEdges, adjacencyList);
+        return new DataStructures::Graph(nbVertices, adjacencyList);
     }
 
     std::vector<std::string> Reader::tokenize(std::string& line)

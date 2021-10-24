@@ -15,7 +15,7 @@ namespace DataStructures
     private:
         const int id;
         size_t bagSize;
-        std::vector<int> vertices;
+        std::vector<int> vertices; // TODO use vertex_Type
         Bag* parent{nullptr};
         std::vector<Bag*> children{};
 

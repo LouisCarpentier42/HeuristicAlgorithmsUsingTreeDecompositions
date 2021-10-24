@@ -5,6 +5,8 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_GRAPH_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_GRAPH_H
 
+#include "../CustomTypes.h"
+
 #include <vector>
 
 namespace DataStructures {
@@ -12,15 +14,16 @@ namespace DataStructures {
     class Graph
     {
     private:
-        const int nbVertices;
-        const int nbEdges;
-        const std::vector<std::vector<int>> adjacencyList;
+        const size_t nbVertices;
+        const std::vector<std::vector<vertexType>> adjacencyList;
 
     public:
-        Graph(int nbVertices, int nbEdges, std::vector<std::vector<int>> adjacencyList);
+        Graph(size_t nbVertices, std::vector<std::vector<vertexType>> adjacencyList);
 
-        bool areNeighbours(int vertex1, int vertex2) const;
-        unsigned int getDegree(int vertex) const;
+        [[nodiscard]] size_t getNbVertices() const;
+        [[nodiscard]] bool areNeighbours(vertexType vertex1, vertexType vertex2) const;
+        [[nodiscard]] size_t getDegree(vertexType vertex) const;
+        [[nodiscard]] const std::vector<vertexType>* getNeighbours(vertexType vertex) const;
     };
 }
 
