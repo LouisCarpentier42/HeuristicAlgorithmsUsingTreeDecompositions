@@ -4,23 +4,25 @@
 
 #include "Colouring.h"
 
-#include <iostream> // TODO REMOVE
-
 #include <algorithm>
 
-Colouring::Colouring(DataStructures::Graph* graph, std::vector<colourType> initialColouring) :
-    graph{graph},
+MaximumHappyVertices::Colouring::Colouring(std::vector<colourType> initialColouring) :
     initialColouring{std::move(initialColouring)},
     nbColours{*std::max_element(this->initialColouring.begin(), this->initialColouring.end())},
     colouring{std::vector<colourType>(this->initialColouring)}
 {}
 
-colourType Colouring::getColour(vertexType vertex) const
+colourType MaximumHappyVertices::Colouring::getNbColours() const
+{
+    return nbColours;
+}
+
+colourType MaximumHappyVertices::Colouring::getColour(vertexType vertex) const
 {
     return colouring[vertex];
 }
 
-void Colouring::setColour(vertexType vertex, colourType colour)
+void MaximumHappyVertices::Colouring::setColour(vertexType vertex, colourType colour)
 {
     if (!isPrecoloured(vertex) && colour <= nbColours)
     {
@@ -28,35 +30,12 @@ void Colouring::setColour(vertexType vertex, colourType colour)
     }
 }
 
-bool Colouring::isPrecoloured(vertexType vertex) const
+bool MaximumHappyVertices::Colouring::isPrecoloured(vertexType vertex) const
 {
     return initialColouring[vertex] != 0;
 }
 
-bool Colouring::isColoured(vertexType vertex) const
+bool MaximumHappyVertices::Colouring::isColoured(vertexType vertex) const
 {
     return colouring[vertex] != 0;
-}
-
-unsigned int Colouring::getNbHappyVertices() const
-{
-    unsigned int nbHappyVertices{0};
-
-    for (vertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-    {
-        bool vertexIsHappy{true};
-        for (vertexType neighbour : *graph->getNeighbours(vertex))
-        {
-            if (colouring[neighbour] != colouring[vertex])
-            {
-                vertexIsHappy = false;
-                break;
-            }
-        }
-        if (vertexIsHappy)
-        {
-            nbHappyVertices++;
-        }
-    }
-    return nbHappyVertices;
 }

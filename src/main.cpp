@@ -7,7 +7,10 @@
 #include "DataStructrures/Bag.h"
 #include "DataStructrures/Graph.h"
 #include "DataStructrures/TreeDecomposition.h"
+
 #include "MaximumHappyVertices/Colouring.h"
+#include "MaximumHappyVertices/MaximumHappyVerticesSolver.h"
+#include "MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
 
 #include <iostream>
 
@@ -41,6 +44,9 @@ int main()
 //    std::cout << "----------------------------------\n";
 //    DataStructures::TreeDecomposition* veryNiceTreeDecomposition = reader.readTreeDecomposition(veryNiceTreeFile);
 //    std::cout << *veryNiceTreeDecomposition;
+
+    auto solver = MaximumHappyVertices::GreedyMHV();
+
 
     return 0;
 }
