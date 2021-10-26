@@ -23,7 +23,7 @@ namespace IO
         Reader(std::string graphFilesDir, std::string treeDecompositionFilesDir);
 
         DataStructures::TreeDecomposition* readTreeDecomposition(std::string& filename) const;
-        DataStructures::Graph* readGraph(std::string& filename) const;
+        DataStructures::Graph readGraph(std::string& filename) const;
 
     private:
         static std::vector<std::string> tokenize(std::string& line);

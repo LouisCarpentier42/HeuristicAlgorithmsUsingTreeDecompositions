@@ -8,7 +8,8 @@
 #include "DataStructrures/Graph.h"
 #include "DataStructrures/TreeDecomposition.h"
 
-#include "MaximumHappyVertices/Colouring.h"
+#include "MaximumHappyVertices/Colouring/Colouring.h"
+#include "MaximumHappyVertices/Colouring/PartialColouring.h"
 #include "MaximumHappyVertices/MaximumHappyVerticesSolver.h"
 #include "MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
 
@@ -45,8 +46,21 @@ int main()
 //    DataStructures::TreeDecomposition* veryNiceTreeDecomposition = reader.readTreeDecomposition(veryNiceTreeFile);
 //    std::cout << *veryNiceTreeDecomposition;
 
-    auto solver = MaximumHappyVertices::GreedyMHV();
 
+    int nbColours{3};
+
+    DataStructures::Graph graph = reader.readGraph(graphFile);
+    auto colourVector = std::vector<colourType>(graph.getNbVertices());
+    for (colourType colour{1}; colour <= nbColours; colour++) {
+        colourVector[colour-1] = colour;
+    }
+    auto partialColouring = MaximumHappyVertices::PartialColouring{colourVector};
+    auto solver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
+    MaximumHappyVertices::Colouring* colouring = solver.solve();
+
+    std::cout << *colouring;
+
+    delete colouring;
 
     return 0;
 }

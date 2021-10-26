@@ -100,7 +100,7 @@ namespace IO
         return new DataStructures::TreeDecomposition{largestBagSize-1, root, bags};
     }
 
-    DataStructures::Graph *Reader::readGraph(std::string &filename) const
+    DataStructures::Graph Reader::readGraph(std::string &filename) const
     {
         std::ifstream file{graphFilesDir + filename};
         if (!file)
@@ -135,7 +135,7 @@ namespace IO
             tokens = tokenize(line);
         }
 
-        return new DataStructures::Graph(nbVertices, adjacencyList);
+        return DataStructures::Graph{static_cast<size_t>(nbVertices), adjacencyList};
     }
 
     std::vector<std::string> Reader::tokenize(std::string& line)

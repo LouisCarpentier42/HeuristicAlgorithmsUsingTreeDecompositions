@@ -4,30 +4,37 @@
 
 #include "GreedyMHV.h"
 
+MaximumHappyVertices::GreedyMHV::GreedyMHV(
+        const DataStructures::Graph& graph,
+        const MaximumHappyVertices::PartialColouring& partialColouring) :
+            MaximumHappyVerticesSolver{graph, partialColouring}
+{}
+
 MaximumHappyVertices::Colouring* MaximumHappyVertices::GreedyMHV::solve()
 {
-    Colouring* bestColouring{nullptr};
-    unsigned int maxNbHappyVertices{0};
-    for (colourType colour{1}; colour<colouring->getNbColours(); colour++)
+    auto* colouring = new Colouring{partialColouring};
+    colourType bestColour{1};
+    unsigned int bestNbHappyVertices{0};
+
+    for (colourType colour{1}; colour <= partialColouring.getNbColours(); colour++)
     {
-        MaximumHappyVertices::Colouring* newColouring{nullptr}; // TODO make a copy of the colouring
-        colourAllVertices(newColouring, colour);
-        if (getNbHappyVertices(graph, newColouring) > maxNbHappyVertices)
+        colourAllVertices(colouring, colour);
+        unsigned int nbHappyVertices{getNbHappyVertices(colouring)};
+        if (nbHappyVertices > bestNbHappyVertices)
         {
-            bestColouring = newColouring;
-            maxNbHappyVertices = getNbHappyVertices(graph, newColouring);
+            bestColour = colour;
+            bestNbHappyVertices = nbHappyVertices;
         }
     }
-    return bestColouring;
+    colourAllVertices(colouring, bestColour);
+    return colouring;
 }
 
-void MaximumHappyVertices::GreedyMHV::colourAllVertices(
-        MaximumHappyVertices::Colouring *colouring,
-        colourType colour)
+void MaximumHappyVertices::GreedyMHV::colourAllVertices(MaximumHappyVertices::Colouring* colouring, colourType colour)
 {
-    for (vertexType vertex{0}; vertex<graph->getNbVertices(); vertex++)
+    for (vertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
     {
-        if (!colouring->isPrecoloured(vertex))
+        if (!partialColouring.isColoured(vertex))
         {
             colouring->setColour(vertex, colour);
         }

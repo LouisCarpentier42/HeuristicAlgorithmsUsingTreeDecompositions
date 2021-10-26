@@ -5,7 +5,9 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_MAXIMUMHAPPYVERTICESSOLVER_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_MAXIMUMHAPPYVERTICESSOLVER_H
 
-#include "Colouring.h"
+#include "Colouring/Colouring.h"
+#include "Colouring/PartialColouring.h"
+
 #include "../DataStructrures/Graph.h"
 
 namespace MaximumHappyVertices
@@ -13,39 +15,16 @@ namespace MaximumHappyVertices
     class MaximumHappyVerticesSolver
     {
     protected:
-        const DataStructures::Graph* graph;
-        const Colouring* colouring;
+        const DataStructures::Graph& graph;
+        const PartialColouring& partialColouring;
 
     public:
-        MaximumHappyVerticesSolver(const DataStructures::Graph* graph, const Colouring* colouring);
-
+        MaximumHappyVerticesSolver(const DataStructures::Graph& graph, const PartialColouring& partialColouring);
         virtual Colouring* solve() = 0;
+
+    protected:
+        unsigned int getNbHappyVertices(Colouring* colouring);
     };
-
-    // TODO find better place for this function
-    unsigned int getNbHappyVertices(const DataStructures::Graph* graph, const Colouring* colouring)
-    {
-        unsigned int nbHappyVertices{0};
-
-        for (vertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-        {
-            bool vertexIsHappy{true};
-            for (vertexType neighbour : *graph->getNeighbours(vertex))
-            {
-                // TODO throw error if some vertex is uncoloured
-                if (colouring->getColour(neighbour) != colouring->getColour(vertex))
-                {
-                    vertexIsHappy = false;
-                    break;
-                }
-            }
-            if (vertexIsHappy)
-            {
-                nbHappyVertices++;
-            }
-        }
-        return nbHappyVertices;
-    }
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_MAXIMUMHAPPYVERTICESSOLVER_H
