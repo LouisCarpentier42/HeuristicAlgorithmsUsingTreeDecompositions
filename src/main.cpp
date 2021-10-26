@@ -21,7 +21,7 @@ int main()
         "../GraphFiles/",
         "../TreeDecompositionFiles/"};
 
-    std::string graphName{"my_first_graph"};
+    std::string graphName{"he150"};
     std::string graphFile{graphName + ".gr"};
     std::string treeFile{graphName + ".tw"};
     std::string niceTreeFile{graphName + "_nice.tw"};
@@ -47,20 +47,17 @@ int main()
 //    std::cout << *veryNiceTreeDecomposition;
 
 
-    int nbColours{3};
-
+    int nbColours{5};
     DataStructures::Graph graph = reader.readGraph(graphFile);
-    auto colourVector = std::vector<colourType>(graph.getNbVertices());
-    for (colourType colour{1}; colour <= nbColours; colour++) {
-        colourVector[colour-1] = colour;
+    std::cout << "#vertices: " << graph.getNbVertices() << '\n';
+    for (int i{0}; i < 10; i++) {
+        auto partialColouring = MaximumHappyVertices::generatePartialColouring(graph, nbColours, 0.2);
+        auto solver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
+        MaximumHappyVertices::Colouring* colouring = solver.solve();
+        std::cout << "-------------------------------------\n";
     }
-    auto partialColouring = MaximumHappyVertices::PartialColouring{colourVector};
-    auto solver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
-    MaximumHappyVertices::Colouring* colouring = solver.solve();
 
-    std::cout << *colouring;
 
-    delete colouring;
 
     return 0;
 }

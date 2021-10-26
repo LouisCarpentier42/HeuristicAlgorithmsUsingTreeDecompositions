@@ -20,6 +20,7 @@ MaximumHappyVertices::Colouring* MaximumHappyVertices::GreedyMHV::solve()
     {
         colourAllVertices(colouring, colour);
         unsigned int nbHappyVertices{getNbHappyVertices(colouring)};
+
         if (nbHappyVertices > bestNbHappyVertices)
         {
             bestColour = colour;

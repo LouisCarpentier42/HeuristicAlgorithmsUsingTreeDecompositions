@@ -6,6 +6,7 @@
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_PARTIALCOLOURING_H
 
 #include "../../CustomTypes.h"
+#include "../../DataStructrures/Graph.h"
 
 #include <iostream>
 #include <vector>
@@ -28,6 +29,7 @@ namespace MaximumHappyVertices
     };
 
     std::ostream& operator<<(std::ostream& out, const PartialColouring& colouring);
+    PartialColouring generatePartialColouring(DataStructures::Graph& graph, int nbColours, double percentColouredVertices);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_PARTIALCOLOURING_H
