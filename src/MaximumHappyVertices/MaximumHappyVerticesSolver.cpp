@@ -11,7 +11,7 @@ MaximumHappyVertices::MaximumHappyVerticesSolver::MaximumHappyVerticesSolver(
             partialColouring{partialColouring}
 {}
 
-unsigned int MaximumHappyVertices::MaximumHappyVerticesSolver::getNbHappyVertices(MaximumHappyVertices::Colouring* colouring)
+unsigned int MaximumHappyVertices::MaximumHappyVerticesSolver::getNbHappyVertices(MaximumHappyVertices::Colouring* colouring) const
 {
     unsigned int nbHappyVertices{0};
     for (vertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)

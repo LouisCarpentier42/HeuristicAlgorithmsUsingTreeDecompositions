@@ -13,10 +13,10 @@ namespace MaximumHappyVertices
     {
     public:
         GreedyMHV(const DataStructures::Graph& graph, const PartialColouring& partialColouring);
-        Colouring* solve() override;
+        [[nodiscard]] Colouring* solve() const override;
 
     private:
-        void colourAllVertices(Colouring* colouring, colourType colour);
+        void colourAllVertices(Colouring* colouring, colourType colour) const;
     };
 }
 

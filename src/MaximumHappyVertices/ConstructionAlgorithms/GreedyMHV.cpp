@@ -6,11 +6,11 @@
 
 MaximumHappyVertices::GreedyMHV::GreedyMHV(
         const DataStructures::Graph& graph,
-        const MaximumHappyVertices::PartialColouring& partialColouring) :
-            MaximumHappyVerticesSolver{graph, partialColouring}
+        const MaximumHappyVertices::PartialColouring& partialColouring)
+        : MaximumHappyVerticesSolver{graph, partialColouring}
 {}
 
-MaximumHappyVertices::Colouring* MaximumHappyVertices::GreedyMHV::solve()
+MaximumHappyVertices::Colouring* MaximumHappyVertices::GreedyMHV::solve() const
 {
     auto* colouring = new Colouring{partialColouring};
     colourType bestColour{1};
@@ -31,7 +31,7 @@ MaximumHappyVertices::Colouring* MaximumHappyVertices::GreedyMHV::solve()
     return colouring;
 }
 
-void MaximumHappyVertices::GreedyMHV::colourAllVertices(MaximumHappyVertices::Colouring* colouring, colourType colour)
+void MaximumHappyVertices::GreedyMHV::colourAllVertices(MaximumHappyVertices::Colouring* colouring, colourType colour) const
 {
     for (vertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
     {

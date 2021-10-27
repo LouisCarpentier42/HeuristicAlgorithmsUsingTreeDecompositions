@@ -20,10 +20,10 @@ namespace MaximumHappyVertices
 
     public:
         MaximumHappyVerticesSolver(const DataStructures::Graph& graph, const PartialColouring& partialColouring);
-        virtual Colouring* solve() = 0;
+        [[nodiscard]] virtual Colouring* solve() const = 0;
 
     protected:
-        unsigned int getNbHappyVertices(Colouring* colouring);
+        unsigned int getNbHappyVertices(Colouring* colouring) const;
     };
 }
 

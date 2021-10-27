@@ -54,10 +54,9 @@ int main()
         auto partialColouring = MaximumHappyVertices::generatePartialColouring(graph, nbColours, 0.2);
         auto solver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
         MaximumHappyVertices::Colouring* colouring = solver.solve();
+        std::cout << *colouring << '\n';
         std::cout << "-------------------------------------\n";
     }
-
-
 
     return 0;
 }
