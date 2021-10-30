@@ -12,6 +12,7 @@
 #include "MaximumHappyVertices/Colouring/PartialColouring.h"
 #include "MaximumHappyVertices/MaximumHappyVerticesSolver.h"
 #include "MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
+#include "MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
 
 #include <iostream>
 
@@ -21,7 +22,8 @@ int main()
         "../GraphFiles/",
         "../TreeDecompositionFiles/"};
 
-    std::string graphName{"he150"};
+//    std::string graphName{"test_growth_mhv"};
+    std::string graphName{"he100"};
     std::string graphFile{graphName + ".gr"};
     std::string treeFile{graphName + ".tw"};
     std::string niceTreeFile{graphName + "_nice.tw"};
@@ -50,11 +52,32 @@ int main()
     int nbColours{5};
     DataStructures::Graph graph = reader.readGraph(graphFile);
     std::cout << "#vertices: " << graph.getNbVertices() << '\n';
-    for (int i{0}; i < 10; i++) {
-        auto partialColouring = MaximumHappyVertices::generatePartialColouring(graph, nbColours, 0.2);
-        auto solver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
-        MaximumHappyVertices::Colouring* colouring = solver.solve();
-        std::cout << *colouring << '\n';
+
+//    std::vector<colourType> colourVector(graph.getNbVertices());
+//    colourVector[0] = 1;
+//    colourVector[1] = 1;
+//    colourVector[2] = 2;
+//    colourVector[3] = 3;
+//    colourVector[4] = 1;
+//    colourVector[5] = 2;
+//    colourVector[6] = 3;
+//    colourVector[7] = 2;
+//    colourVector[8] = 3;
+//
+//    MaximumHappyVertices::PartialColouring partialColouring{colourVector};
+//    auto solver = MaximumHappyVertices::GrowthMHV{graph, partialColouring};
+//    MaximumHappyVertices::Colouring* colouring = solver.solve();
+//    std::cout << *colouring << '\n';
+
+
+    for (int i{0}; i < 1; i++) {
+        auto partialColouring = MaximumHappyVertices::generatePartialColouring(graph, nbColours, 0.1);
+//        std::cout << partialColouring << "\n";
+        auto greedySolver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
+        auto growthSolver = MaximumHappyVertices::GrowthMHV{graph, partialColouring};
+        MaximumHappyVertices::Colouring* colouringGreedy = greedySolver.solve();
+        MaximumHappyVertices::Colouring* colouringGrowth = growthSolver.solve();
+//        std::cout << *colouring << '\n';
         std::cout << "-------------------------------------\n";
     }
 

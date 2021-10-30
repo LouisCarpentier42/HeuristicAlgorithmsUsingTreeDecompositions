@@ -13,7 +13,5 @@ MaximumHappyVertices::Colouring::Colouring(MaximumHappyVertices::PartialColourin
 void MaximumHappyVertices::Colouring::setColour(vertexType vertex, colourType colour)
 {
     if (colour <= nbColours)
-    {
         colouring[vertex] = colour;
-    }
 }

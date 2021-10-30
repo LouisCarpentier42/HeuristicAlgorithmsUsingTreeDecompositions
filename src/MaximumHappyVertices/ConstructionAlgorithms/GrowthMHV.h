@@ -9,11 +9,23 @@
 
 namespace MaximumHappyVertices
 {
+    enum class VertexTypeMHV {
+        H_vertex,
+        U_vertex,
+        P_vertex,
+        LH_vertex,
+        LU_vertex,
+        LP_vertex,
+        LF_vertex
+    };
     class GrowthMHV : public MaximumHappyVerticesSolver
     {
     public:
         GrowthMHV(const DataStructures::Graph& graph, const PartialColouring& partialColouring);
         [[nodiscard]] Colouring* solve() const override;
+
+    private:
+        void updateVertexTypes(Colouring* colouring, std::vector<VertexTypeMHV>& types) const;
     };
 }
 

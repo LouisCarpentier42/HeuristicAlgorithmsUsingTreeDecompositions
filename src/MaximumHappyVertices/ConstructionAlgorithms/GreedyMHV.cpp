@@ -28,6 +28,7 @@ MaximumHappyVertices::Colouring* MaximumHappyVertices::GreedyMHV::solve() const
         }
     }
     colourAllVertices(colouring, bestColour);
+    std::cout << getNbHappyVertices(colouring) << '\n'; // TODO remove
     return colouring;
 }
 

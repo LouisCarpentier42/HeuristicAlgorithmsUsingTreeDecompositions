@@ -49,14 +49,14 @@ MaximumHappyVertices::PartialColouring MaximumHappyVertices::generatePartialColo
     // Create a random shuffling of the vertices and colour them in this order
     std::vector<vertexType> allVertices(graph.getNbVertices());
     for (vertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
-        allVertices.push_back(vertex);
+        allVertices[vertex] = vertex;
     std::shuffle(allVertices.begin(), allVertices.end(), rng);
 
     // Colour the first nbColours vertices in each colour before randomly colour the remaining vertices
     std::vector<colourType> colourVector(graph.getNbVertices());
     for (int i{0}; i < nbColours; i++)
         colourVector[allVertices[i]] = i+1;
-    for (int i{0}; i < percentColouredVertices * graph.getNbVertices(); i++)
+    for (int i{nbColours}; i < percentColouredVertices * graph.getNbVertices(); i++)
         colourVector[allVertices[i]] = colourDistribution(rng);
 
     return PartialColouring{colourVector};
