@@ -23,7 +23,7 @@ int main()
         "../TreeDecompositionFiles/"};
 
 //    std::string graphName{"test_growth_mhv"};
-    std::string graphName{"he100"};
+    std::string graphName{"he130"};
     std::string graphFile{graphName + ".gr"};
     std::string treeFile{graphName + ".tw"};
     std::string niceTreeFile{graphName + "_nice.tw"};
@@ -73,9 +73,9 @@ int main()
     for (int i{0}; i < 1; i++) {
         auto partialColouring = MaximumHappyVertices::generatePartialColouring(graph, nbColours, 0.1);
 //        std::cout << partialColouring << "\n";
-        auto greedySolver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
+//        auto greedySolver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
+//        MaximumHappyVertices::Colouring* colouringGreedy = greedySolver.solve();
         auto growthSolver = MaximumHappyVertices::GrowthMHV{graph, partialColouring};
-        MaximumHappyVertices::Colouring* colouringGreedy = greedySolver.solve();
         MaximumHappyVertices::Colouring* colouringGrowth = growthSolver.solve();
 //        std::cout << *colouring << '\n';
         std::cout << "-------------------------------------\n";
