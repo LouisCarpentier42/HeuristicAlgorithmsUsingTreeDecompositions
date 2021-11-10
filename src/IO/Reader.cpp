@@ -118,7 +118,7 @@ namespace IO
         int nbVertices{convertToInt(tokens[2])};
         int nbEdges{convertToInt(tokens[3])};
 
-        std::vector<std::vector<vertexType>> adjacencyList(nbVertices);
+        std::vector<std::vector<DataStructures::VertexType>> adjacencyList(nbVertices);
 
         std::getline(file, line);
         tokens = tokenize(line);

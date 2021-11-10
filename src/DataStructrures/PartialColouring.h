@@ -5,27 +5,28 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_PARTIALCOLOURING_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_PARTIALCOLOURING_H
 
-#include "../../CustomTypes.h"
-#include "../../DataStructrures/Graph.h"
+#include "Graph.h"
 
 #include <iostream>
 #include <vector>
 
-namespace MaximumHappyVertices
+namespace DataStructures
 {
+    using ColourType = unsigned int;
+
     class PartialColouring
     {
     protected:
-        std::vector<colourType> colouring;
-        const colourType nbColours;
+        std::vector<DataStructures::ColourType> colouring;
+        const size_t nbColours;
 
     public:
-        explicit PartialColouring(std::vector<colourType> colouring);
+        explicit PartialColouring(std::vector<DataStructures::ColourType> colouring);
 
         [[nodiscard]] size_t getNbVertices() const;
-        [[nodiscard]] colourType getNbColours() const;
-        [[nodiscard]] bool isColoured(vertexType vertex) const;
-        [[nodiscard]] colourType getColour(vertexType vertex) const;
+        [[nodiscard]] size_t getNbColours() const;
+        [[nodiscard]] bool isColoured(DataStructures::VertexType vertex) const;
+        [[nodiscard]] DataStructures::ColourType getColour(DataStructures::VertexType vertex) const;
     };
 
     std::ostream& operator<<(std::ostream& out, const PartialColouring& colouring);

@@ -6,11 +6,11 @@
 
 #include <algorithm>
 
-MaximumHappyVertices::Colouring::Colouring(MaximumHappyVertices::PartialColouring partialColouring) :
+DataStructures::Colouring::Colouring(DataStructures::PartialColouring partialColouring) :
     PartialColouring{std::move(partialColouring)}
 {}
 
-void MaximumHappyVertices::Colouring::setColour(vertexType vertex, colourType colour)
+void DataStructures::Colouring::setColour(DataStructures::VertexType vertex, DataStructures::ColourType colour)
 {
     if (colour <= nbColours)
         colouring[vertex] = colour;

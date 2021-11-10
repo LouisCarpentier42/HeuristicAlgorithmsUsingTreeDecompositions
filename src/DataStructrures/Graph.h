@@ -5,25 +5,25 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_GRAPH_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_GRAPH_H
 
-#include "../CustomTypes.h"
-
 #include <vector>
 
 namespace DataStructures {
+
+    using VertexType = unsigned int;
 
     class Graph
     {
     private:
         const size_t nbVertices;
-        const std::vector<std::vector<vertexType>> adjacencyList;
+        const std::vector<std::vector<DataStructures::VertexType>> adjacencyList;
 
     public:
-        Graph(size_t nbVertices, std::vector<std::vector<vertexType>> adjacencyList);
+        Graph(size_t nbVertices, std::vector<std::vector<VertexType>> adjacencyList);
 
         [[nodiscard]] size_t getNbVertices() const;
-        [[nodiscard]] bool areNeighbours(vertexType vertex1, vertexType vertex2) const;
-        [[nodiscard]] size_t getDegree(vertexType vertex) const;
-        [[nodiscard]] const std::vector<vertexType>* getNeighbours(vertexType vertex) const;
+        [[nodiscard]] bool areNeighbours(DataStructures::VertexType vertex1, DataStructures::VertexType vertex2) const;
+        [[nodiscard]] size_t getDegree(DataStructures::VertexType vertex) const;
+        [[nodiscard]] const std::vector<DataStructures::VertexType>* getNeighbours(DataStructures::VertexType vertex) const;
     };
 }
 

@@ -8,8 +8,8 @@
 #include "DataStructrures/Graph.h"
 #include "DataStructrures/TreeDecomposition.h"
 
-#include "MaximumHappyVertices/Colouring/Colouring.h"
-#include "MaximumHappyVertices/Colouring/PartialColouring.h"
+#include "DataStructrures/Colouring.h"
+#include "DataStructrures/PartialColouring.h"
 #include "MaximumHappyVertices/MaximumHappyVerticesSolver.h"
 #include "MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
 #include "MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
@@ -71,12 +71,12 @@ int main()
 
 
     for (int i{0}; i < 1; i++) {
-        auto partialColouring = MaximumHappyVertices::generatePartialColouring(graph, nbColours, 0.1);
+        auto partialColouring = DataStructures::generatePartialColouring(graph, nbColours, 0.1);
 //        std::cout << partialColouring << "\n";
 //        auto greedySolver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
 //        MaximumHappyVertices::Colouring* colouringGreedy = greedySolver.solve();
         auto growthSolver = MaximumHappyVertices::GrowthMHV{graph, partialColouring};
-        MaximumHappyVertices::Colouring* colouringGrowth = growthSolver.solve();
+        DataStructures::Colouring* colouringGrowth = growthSolver.solve();
 //        std::cout << *colouring << '\n';
         std::cout << "-------------------------------------\n";
     }

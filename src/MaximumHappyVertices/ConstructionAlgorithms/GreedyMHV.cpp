@@ -6,17 +6,17 @@
 
 MaximumHappyVertices::GreedyMHV::GreedyMHV(
         const DataStructures::Graph& graph,
-        const MaximumHappyVertices::PartialColouring& partialColouring)
+        const DataStructures::PartialColouring& partialColouring)
         : MaximumHappyVerticesSolver{graph, partialColouring}
 {}
 
-MaximumHappyVertices::Colouring* MaximumHappyVertices::GreedyMHV::solve() const
+DataStructures::Colouring* MaximumHappyVertices::GreedyMHV::solve() const
 {
-    auto* colouring = new Colouring{partialColouring};
-    colourType bestColour{1};
+    auto* colouring = new DataStructures::Colouring{partialColouring};
+    DataStructures::ColourType bestColour{1};
     unsigned int bestNbHappyVertices{0};
 
-    for (colourType colour{1}; colour <= partialColouring.getNbColours(); colour++)
+    for (DataStructures::ColourType colour{1}; colour <= partialColouring.getNbColours(); colour++)
     {
         colourAllVertices(colouring, colour);
         unsigned int nbHappyVertices{getNbHappyVertices(colouring)};
@@ -28,13 +28,12 @@ MaximumHappyVertices::Colouring* MaximumHappyVertices::GreedyMHV::solve() const
         }
     }
     colourAllVertices(colouring, bestColour);
-    std::cout << getNbHappyVertices(colouring) << '\n'; // TODO remove
     return colouring;
 }
 
-void MaximumHappyVertices::GreedyMHV::colourAllVertices(MaximumHappyVertices::Colouring* colouring, colourType colour) const
+void MaximumHappyVertices::GreedyMHV::colourAllVertices(DataStructures::Colouring* colouring, DataStructures::ColourType colour) const
 {
-    for (vertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
+    for (DataStructures::VertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
     {
         if (!partialColouring.isColoured(vertex))
         {

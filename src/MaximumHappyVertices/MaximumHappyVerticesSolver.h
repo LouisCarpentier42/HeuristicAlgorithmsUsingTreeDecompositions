@@ -5,8 +5,8 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_MAXIMUMHAPPYVERTICESSOLVER_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_MAXIMUMHAPPYVERTICESSOLVER_H
 
-#include "Colouring/Colouring.h"
-#include "Colouring/PartialColouring.h"
+#include "../DataStructrures/Colouring.h"
+#include "../DataStructrures/PartialColouring.h"
 
 #include "../DataStructrures/Graph.h"
 
@@ -16,14 +16,14 @@ namespace MaximumHappyVertices
     {
     protected:
         const DataStructures::Graph& graph;
-        const PartialColouring& partialColouring;
+        const DataStructures::PartialColouring& partialColouring;
 
     public:
-        MaximumHappyVerticesSolver(const DataStructures::Graph& graph, const PartialColouring& partialColouring);
-        [[nodiscard]] virtual Colouring* solve() const = 0;
+        MaximumHappyVerticesSolver(const DataStructures::Graph& graph, const DataStructures::PartialColouring& partialColouring);
+        [[nodiscard]] virtual DataStructures::Colouring* solve() const = 0;
 
     protected:
-        unsigned int getNbHappyVertices(Colouring* colouring) const;
+        unsigned int getNbHappyVertices(DataStructures::Colouring* colouring) const;
     };
 }
 

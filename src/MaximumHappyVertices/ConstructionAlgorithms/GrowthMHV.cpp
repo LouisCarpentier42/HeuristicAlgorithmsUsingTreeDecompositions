@@ -6,16 +6,18 @@
 
 #include <algorithm>
 
+// TODO optimize the algorithm!
+
 MaximumHappyVertices::GrowthMHV::GrowthMHV(
         const DataStructures::Graph& graph,
-        const MaximumHappyVertices::PartialColouring& partialColouring)
+        const DataStructures::PartialColouring& partialColouring)
         : MaximumHappyVerticesSolver(graph, partialColouring)
 {}
 
-MaximumHappyVertices::Colouring* MaximumHappyVertices::GrowthMHV::solve() const
+DataStructures::Colouring* MaximumHappyVertices::GrowthMHV::solve() const
 {
     std::vector<VertexTypeMHV> types(graph.getNbVertices());
-    auto* colouring = new Colouring{partialColouring};
+    auto* colouring = new DataStructures::Colouring{partialColouring};
 
     updateVertexTypes(colouring, types);
 
@@ -33,8 +35,8 @@ MaximumHappyVertices::Colouring* MaximumHappyVertices::GrowthMHV::solve() const
         auto pVertexIterator = std::find(types.begin(), types.end(), VertexTypeMHV::P_vertex);
         if (pVertexIterator != types.end())
         {
-            vertexType pVertex = std::distance(types.begin(), pVertexIterator);
-            for (vertexType neighbour : *graph.getNeighbours(pVertex))
+            DataStructures::VertexType pVertex = std::distance(types.begin(), pVertexIterator);
+            for (DataStructures::VertexType neighbour : *graph.getNeighbours(pVertex))
             {
                 if (types[neighbour] == VertexTypeMHV::LP_vertex)
                 {
@@ -47,9 +49,9 @@ MaximumHappyVertices::Colouring* MaximumHappyVertices::GrowthMHV::solve() const
             auto lhVertexIterator = std::find(types.begin(), types.end(), VertexTypeMHV::LH_vertex);
             if (lhVertexIterator != types.end())
             {
-                vertexType lhVertex = std::distance(types.begin(), lhVertexIterator);
-                colourType uNeighbourColour{0};
-                for (vertexType neighbour : *graph.getNeighbours(lhVertex))
+                DataStructures::VertexType lhVertex = std::distance(types.begin(), lhVertexIterator);
+                DataStructures::ColourType uNeighbourColour{0};
+                for (DataStructures::VertexType neighbour : *graph.getNeighbours(lhVertex))
                 {
                     if (types[neighbour] == VertexTypeMHV::U_vertex)
                     {
@@ -58,7 +60,7 @@ MaximumHappyVertices::Colouring* MaximumHappyVertices::GrowthMHV::solve() const
                     }
                 }
                 colouring->setColour(lhVertex, uNeighbourColour);
-                for (vertexType neighbour : *graph.getNeighbours(lhVertex))
+                for (DataStructures::VertexType neighbour : *graph.getNeighbours(lhVertex))
                 {
                     if (types[neighbour] == VertexTypeMHV::LH_vertex ||
                         types[neighbour] == VertexTypeMHV::LU_vertex ||
@@ -72,8 +74,8 @@ MaximumHappyVertices::Colouring* MaximumHappyVertices::GrowthMHV::solve() const
             else // There must be an LU vertex
             {
                 auto luVertexIterator = std::find(types.begin(), types.end(), VertexTypeMHV::LU_vertex);
-                vertexType luVertex = std::distance(types.begin(), luVertexIterator);
-                for (vertexType neighbour : *graph.getNeighbours(luVertex))
+                DataStructures::VertexType luVertex = std::distance(types.begin(), luVertexIterator);
+                for (DataStructures::VertexType neighbour : *graph.getNeighbours(luVertex))
                 {
                     if (types[neighbour] == VertexTypeMHV::U_vertex)
                     {
@@ -85,13 +87,12 @@ MaximumHappyVertices::Colouring* MaximumHappyVertices::GrowthMHV::solve() const
         }
         updateVertexTypes(colouring, types);
     }
-    std::cout << getNbHappyVertices(colouring) << '\n'; // TODO remove
     return colouring;
 }
 
-void MaximumHappyVertices::GrowthMHV::updateVertexTypes(Colouring* colouring, std::vector<VertexTypeMHV>& types) const
+void MaximumHappyVertices::GrowthMHV::updateVertexTypes(DataStructures::Colouring* colouring, std::vector<VertexTypeMHV>& types) const
 {
-    for (vertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
+    for (DataStructures::VertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
     {
         if (colouring->isColoured(vertex))
         {
@@ -99,13 +100,13 @@ void MaximumHappyVertices::GrowthMHV::updateVertexTypes(Colouring* colouring, st
             if (std::all_of(
                     graph.getNeighbours(vertex)->begin(),
                     graph.getNeighbours(vertex)->end(),
-                    [colouring, vertexColour{colouring->getColour(vertex)}](vertexType neighbour){return colouring->getColour(neighbour) == vertexColour;} ))
+                    [colouring, vertexColour{colouring->getColour(vertex)}](DataStructures::VertexType neighbour){return colouring->getColour(neighbour) == vertexColour;} ))
                 types[vertex] = VertexTypeMHV::H_vertex;
             // If any of vertex's neighbours has a different colour
             else if (std::any_of(
                     graph.getNeighbours(vertex)->begin(),
                     graph.getNeighbours(vertex)->end(),
-                    [colouring, vertexColour{colouring->getColour(vertex)}](vertexType neighbour){return colouring->isColoured(neighbour) && colouring->getColour(neighbour) != vertexColour;} ))
+                    [colouring, vertexColour{colouring->getColour(vertex)}](DataStructures::VertexType neighbour){return colouring->isColoured(neighbour) && colouring->getColour(neighbour) != vertexColour;} ))
                 types[vertex] = VertexTypeMHV::U_vertex;
             // None of vertex's neighbours have a different colour, but not all of them have been coloured in the same colour
             else
@@ -113,19 +114,19 @@ void MaximumHappyVertices::GrowthMHV::updateVertexTypes(Colouring* colouring, st
         }
     }
 
-    for (vertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
+    for (DataStructures::VertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
     {
         if (!colouring->isColoured(vertex))
         {
             if (std::any_of(
                     graph.getNeighbours(vertex)->begin(),
                     graph.getNeighbours(vertex)->end(),
-                    [types](vertexType neighbour){return types[neighbour] == VertexTypeMHV::P_vertex;} ))
+                    [types](DataStructures::VertexType neighbour){return types[neighbour] == VertexTypeMHV::P_vertex;} ))
                 types[vertex] = VertexTypeMHV::LP_vertex;
             else if (std::all_of(
                     graph.getNeighbours(vertex)->begin(),
                     graph.getNeighbours(vertex)->end(),
-                    [colouring](vertexType neighbour){return !colouring->isColoured(neighbour);} ))
+                    [colouring](DataStructures::VertexType neighbour){return !colouring->isColoured(neighbour);} ))
                 types[vertex] = VertexTypeMHV::LF_vertex;
             else
             {
@@ -134,11 +135,11 @@ void MaximumHappyVertices::GrowthMHV::updateVertexTypes(Colouring* colouring, st
                     if (colouring->isColoured((*graph.getNeighbours(vertex))[i]))
                     {
                         // Check if all following neighbours either are not coloured or have the same colour
-                        colourType colour{colouring->getColour((*graph.getNeighbours(vertex))[i])};
+                        DataStructures::ColourType colour{colouring->getColour((*graph.getNeighbours(vertex))[i])};
                         if (std::all_of(
                                 graph.getNeighbours(vertex)->begin()+i,
                                 graph.getNeighbours(vertex)->end(),
-                                [colouring, colour](vertexType neighbour){return !colouring->isColoured(neighbour) || colouring->getColour(neighbour) == colour;} ))
+                                [colouring, colour](DataStructures::VertexType neighbour){return !colouring->isColoured(neighbour) || colouring->getColour(neighbour) == colour;} ))
                             types[vertex] = VertexTypeMHV::LH_vertex;
                         else
                             types[vertex] = VertexTypeMHV::LU_vertex;

@@ -5,16 +5,15 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_COLOURING_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_COLOURING_H
 
-#include "../../CustomTypes.h"
 #include "PartialColouring.h"
 
-namespace MaximumHappyVertices
+namespace DataStructures
 {
     class Colouring : public PartialColouring
     {
     public:
         explicit Colouring(PartialColouring partialColouring);
-        virtual void setColour(vertexType vertex, colourType colour);
+        virtual void setColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
     };
 }
 
