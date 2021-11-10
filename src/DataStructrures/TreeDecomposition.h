@@ -5,7 +5,8 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITION_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITION_H
 
-#include "Bag.h"
+#include "Bags/Bag.h"
+#include "Bags/NiceBag.h"
 
 #include <utility>
 #include <vector>
@@ -13,20 +14,27 @@
 
 namespace DataStructures
 {
-    class TreeDecomposition
+    template <typename T>
+    class TreeDecompositionTemplate
     {
     private:
-        int treeWidth;
-        Bag* root;
-        std::vector<Bag*> bags; // TODO is this needed?
+        const int treeWidth;
+        const T* root;
 
     public:
-        TreeDecomposition(int treeWidth, Bag* root, std::vector<Bag*> bags);
-
-        friend std::ostream& operator<<(std::ostream& out, const TreeDecomposition& treeDecomposition);
+        TreeDecompositionTemplate(int treeWidth, T* root) : treeWidth{treeWidth}, root{root} {}
+        [[nodiscard]] int getTreeWidth() const { return treeWidth; }
+        [[nodiscard]] const T* getRoot() const { return root; }
     };
 
+    template <typename T>
+    std::ostream& operator<<(std::ostream& out, const TreeDecompositionTemplate<T>& treeDecomposition)
+    {
+        return out << *treeDecomposition.getRoot();
+    }
 
+    using NiceTreeDecomposition = TreeDecompositionTemplate<NiceBag>;
+    using TreeDecomposition = TreeDecompositionTemplate<Bag>;
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITION_H

@@ -2,6 +2,7 @@
 // Created by louis on 03/09/2021.
 //
 #include "Reader.h"
+#include "../DataStructrures/Bags/StandardBag.h"
 
 #include <fstream>
 #include <string>
@@ -36,8 +37,8 @@ namespace IO
         int largestBagSize{convertToInt(tokens[3])};
         int nbVertices{convertToInt(tokens[4])};
 
-        std::vector<DataStructures::Bag*> bags(nbBags);
-        std::vector<std::pair<DataStructures::Bag*, DataStructures::Bag*>> edges(nbBags-1);
+        std::vector<DataStructures::StandardBag*> bags(nbBags);
+        std::vector<std::pair<DataStructures::StandardBag*, DataStructures::StandardBag*>> edges(nbBags-1);
 
         std::getline(file, line);
         tokens = tokenize(line);
@@ -46,12 +47,12 @@ namespace IO
             if (tokens[0] != "c") {
                 int bagId{convertToInt(tokens[1])};
                 size_t bagSize{tokens.size()-2};
-                std::vector<int> vertices(bagSize);
+                std::vector<DataStructures::VertexType> vertices(bagSize);
                 for (int i = 0; i < vertices.size(); i++)
                 {
                     vertices[i] = convertToInt(tokens[i+2]);
                 }
-                bags[bagId-1] = new DataStructures::Bag{bagId, bagSize, vertices};
+                bags[bagId-1] = new DataStructures::StandardBag{bagId, bagSize, vertices};
             }
             std::getline(file, line);
             tokens = tokenize(line);
@@ -69,18 +70,18 @@ namespace IO
         }
 
         // Use the first empty bag as root and otherwise use the first bag
-        DataStructures::Bag* root{bags[0]};
-        for (DataStructures::Bag* bag : bags) {
+        DataStructures::StandardBag* root{bags[0]};
+        for (DataStructures::StandardBag* bag : bags) {
             if (bag->isEmpty()) {
                 root = bag;
                 break;
             }
         }
 
-        std::vector<DataStructures::Bag*> bagsToProcess{root};
+        std::vector<DataStructures::StandardBag*> bagsToProcess{root};
         while (!bagsToProcess.empty()) {
-            DataStructures::Bag* bagBeingProcessed{bagsToProcess[0]};
-            for (std::pair<DataStructures::Bag*, DataStructures::Bag*> edge : edges) {
+            DataStructures::StandardBag* bagBeingProcessed{bagsToProcess[0]};
+            for (std::pair<DataStructures::StandardBag*, DataStructures::StandardBag*> edge : edges) {
                 if (bagBeingProcessed == edge.first) {
                     if (bagBeingProcessed->getParent() != edge.second) {
                         bagBeingProcessed->addChild(edge.second);
@@ -97,7 +98,11 @@ namespace IO
             bagsToProcess.erase(bagsToProcess.begin());
         }
 
-        return new DataStructures::TreeDecomposition{largestBagSize-1, root, bags};
+//        auto test = DataStructures::TreeDecomposition{largestBagSize-1, root};
+////        std::cout << test << '\n';
+//
+////        return nullptr;
+        return new DataStructures::TreeDecomposition{largestBagSize-1, root};
     }
 
     DataStructures::Graph Reader::readGraph(std::string &filename) const

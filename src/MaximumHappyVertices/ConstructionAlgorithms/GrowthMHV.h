@@ -18,6 +18,7 @@ namespace MaximumHappyVertices
         LP_vertex,
         LF_vertex
     };
+
     class GrowthMHV : public MaximumHappyVerticesSolver
     {
     public:

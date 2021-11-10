@@ -5,7 +5,7 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITIONREADER_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITIONREADER_H
 
-#include "../DataStructrures/Bag.h"
+#include "../DataStructrures/Bags/Bag.h"
 #include "../DataStructrures/TreeDecomposition.h"
 #include "../DataStructrures/Graph.h"
 

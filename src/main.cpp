@@ -4,7 +4,7 @@
 #include "ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.h"
 
 #include "IO/Reader.h"
-#include "DataStructrures/Bag.h"
+#include "DataStructrures/Bags/Bag.h"
 #include "DataStructrures/Graph.h"
 #include "DataStructrures/TreeDecomposition.h"
 
@@ -22,8 +22,8 @@ int main()
         "../GraphFiles/",
         "../TreeDecompositionFiles/"};
 
-//    std::string graphName{"test_growth_mhv"};
-    std::string graphName{"he130"};
+    std::string graphName{"my_first_graph"};
+//    std::string graphName{"ex001"};
     std::string graphFile{graphName + ".gr"};
     std::string treeFile{graphName + ".tw"};
     std::string niceTreeFile{graphName + "_nice.tw"};
@@ -39,9 +39,9 @@ int main()
 //    Jdrasil::computeExactTreeDecomposition(graphFile);
 //    Jdrasil::computeHeuristicTreeDecomposition(graphFile);
 //
-//    DataStructures::TreeDecomposition* treeDecomposition = reader.readTreeDecomposition(treeFile);
-//    std::cout << *treeDecomposition;
-//    std::cout << "----------------------------------\n";
+    DataStructures::TreeDecomposition* treeDecomposition = reader.readTreeDecomposition(treeFile);
+    std::cout << *treeDecomposition;
+    std::cout << "----------------------------------\n";
 //    DataStructures::TreeDecomposition* niceTreeDecomposition = reader.readTreeDecomposition(niceTreeFile);
 //    std::cout << *niceTreeDecomposition;
 //    std::cout << "----------------------------------\n";
