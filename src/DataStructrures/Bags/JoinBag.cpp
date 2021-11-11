@@ -5,8 +5,8 @@
 #include "JoinBag.h"
 
 DataStructures::JoinBag::JoinBag(
-    int id, size_t size, BagContent vertices, NiceBag* leftChild, DataStructures::NiceBag* rightChild)
-    : NiceBag(id, size, std::move(vertices), ChildVector{leftChild, rightChild}, BagType::JoinBag),
+        int id, size_t size, BagContent bagContent, NiceBag* leftChild, DataStructures::NiceBag* rightChild)
+    : NiceBag(id, size, std::move(bagContent), ChildVector{leftChild, rightChild}, BagType::JoinBag),
       leftChild{leftChild}, rightChild{rightChild}
 {
     if (!leftChild || !rightChild) throw std::invalid_argument("A join vertex must have two existing children!");
@@ -20,4 +20,9 @@ const DataStructures::NiceBag *DataStructures::JoinBag::getLeftChild()
 const DataStructures::NiceBag *DataStructures::JoinBag::getRightChild()
 {
     return rightChild;
+}
+
+std::string DataStructures::JoinBag::getTypeString() const
+{
+    return "[Join Node]";
 }

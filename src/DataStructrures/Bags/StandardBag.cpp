@@ -4,8 +4,8 @@
 
 #include "StandardBag.h"
 
-DataStructures::StandardBag::StandardBag(int id, size_t size, DataStructures::BagContent vertices)
-    : Bag(id, size, std::move(vertices), ChildVector())
+DataStructures::StandardBag::StandardBag(int id, size_t size, DataStructures::BagContent bagContent)
+    : Bag(id, size, std::move(bagContent), ChildVector())
 {}
 
 void DataStructures::StandardBag::addChild(StandardBag* child)

@@ -12,7 +12,7 @@ namespace DataStructures
     class StandardBag : public Bag
     {
     public:
-        StandardBag(int id, size_t size, BagContent vertices);
+        StandardBag(int id, size_t size, BagContent bagContent);
 
         void addChild(StandardBag* child);
     };

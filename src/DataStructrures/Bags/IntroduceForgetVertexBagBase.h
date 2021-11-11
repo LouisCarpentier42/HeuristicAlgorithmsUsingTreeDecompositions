@@ -17,7 +17,7 @@ namespace DataStructures
         const NiceBag* child{nullptr};
 
     protected:
-        IntroduceForgetVertexBagBase(int id, size_t size, BagContent vertices, NiceBag* child, BagType , VertexType specialVertex);
+        IntroduceForgetVertexBagBase(int id, size_t size, BagContent bagContent, NiceBag* child, BagType , VertexType specialVertex);
 
     public:
         [[nodiscard]] const NiceBag* getChild() const;

@@ -13,6 +13,8 @@ namespace DataStructures
     {
     public:
         explicit LeafBag(int id);
+
+        [[nodiscard]] std::string getTypeString() const override;
     };
 }
 

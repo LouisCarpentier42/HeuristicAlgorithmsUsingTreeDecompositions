@@ -4,16 +4,31 @@
 
 #include "Bag.h"
 
-DataStructures::Bag::Bag(int id, size_t size, BagContent vertices, ChildVector childVector)
-    : id{id}, bagSize{size}, vertices{std::move(vertices)}, childVector{std::move(childVector)}
+DataStructures::Bag::Bag(int id, size_t size, BagContent bagContent, ChildVector childVector)
+    : id{id}, bagSize{size}, bagContent{std::move(bagContent)}, childVector{std::move(childVector)}
 {
     for (Bag* child : this->childVector)
         child->setParent(this);
 }
 
+int DataStructures::Bag::getId() const
+{
+    return id;
+}
+
+size_t DataStructures::Bag::getBagSize() const
+{
+    return bagSize;
+}
+
 bool DataStructures::Bag::isEmpty() const
 {
-    return vertices.empty();
+    return bagContent.empty();
+}
+
+DataStructures::BagContent DataStructures::Bag::getBagContent() const
+{
+    return bagContent;
 }
 
 const DataStructures::Bag* DataStructures::Bag::getParent() const
@@ -29,6 +44,11 @@ void DataStructures::Bag::setParent(DataStructures::Bag* newParent)
 bool DataStructures::Bag::isLeaf() const
 {
     return childVector.empty();
+}
+
+int DataStructures::Bag::getNbChildren() const
+{
+    return childVector.size();
 }
 
 std::vector<DataStructures::Bag*>::const_iterator DataStructures::Bag::beginChildrenIterator() const
@@ -52,14 +72,14 @@ std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures
 
 std::ostream& DataStructures::Bag::prettyPrint(std::ostream& out, std::string& prefix) const
 {
-    out << "b(" << id << "): {";
+    out << "b(" << id << "): " << "{";
     if (bagSize > 0)
     {
         for (int i = 0; i < bagSize - 1; i++)
-            out << vertices[i] << ", ";
-        out << vertices[bagSize-1];
+            out << bagContent[i] << ", ";
+        out << bagContent[bagSize - 1];
     }
-    out << "}\n";
+    out << "} " << getTypeString() << "\n";
 
     if (beginChildrenIterator() != endChildrenIterator())
     {
@@ -74,4 +94,9 @@ std::ostream& DataStructures::Bag::prettyPrint(std::ostream& out, std::string& p
         (*it)->prettyPrint(out, prefixLast);
     }
    return out;
+}
+
+std::string DataStructures::Bag::getTypeString() const
+{
+    return "";
 }

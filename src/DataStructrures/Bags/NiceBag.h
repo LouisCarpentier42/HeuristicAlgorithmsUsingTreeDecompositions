@@ -22,7 +22,7 @@ namespace DataStructures // TODO add special leaf bag
         const BagType bagType;
 
     protected:
-        NiceBag(int id, size_t size, BagContent vertices, ChildVector childVector, BagType bagType);
+        NiceBag(int id, size_t size, BagContent bagContent, ChildVector childVector, BagType bagType);
 
     public:
         [[nodiscard]] BagType getBagType();

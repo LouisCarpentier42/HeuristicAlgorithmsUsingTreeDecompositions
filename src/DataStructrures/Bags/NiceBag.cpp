@@ -4,8 +4,8 @@
 
 #include "NiceBag.h"
 
-DataStructures::NiceBag::NiceBag(int id, size_t size, BagContent vertices, ChildVector childVector, BagType type)
-    : Bag(id, size, std::move(vertices), std::move(childVector)), bagType{type}
+DataStructures::NiceBag::NiceBag(int id, size_t size, BagContent bagContent, ChildVector childVector, BagType type)
+    : Bag(id, size, std::move(bagContent), std::move(childVector)), bagType{type}
 {}
 
 DataStructures::BagType DataStructures::NiceBag::getBagType()

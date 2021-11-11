@@ -13,9 +13,11 @@ namespace DataStructures
     class IntroduceVertexBag : public IntroduceForgetVertexBagBase
     {
     public:
-        IntroduceVertexBag(int id, size_t size, BagContent vertices, NiceBag* child, VertexType introducedVertex);
+        IntroduceVertexBag(int id, size_t size, BagContent bagContent, NiceBag* child, VertexType introducedVertex);
 
         [[nodiscard]] DataStructures::VertexType getIntroducedVertex() const;
+
+        [[nodiscard]] std::string getTypeString() const override;
     };
 }
 
