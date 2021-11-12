@@ -33,27 +33,24 @@ int main()
 //    timer.executeSolver(graphFile);
 
 //    FlowCutter::computeHeuristicTreeDecomposition(graphFile, 2);
-//
-//    Jdrasil::computeNiceTreeDecomposition(graphFile, treeFile);
+
+    Jdrasil::computeNiceTreeDecomposition(graphFile, treeFile);
+    Jdrasil::computeVeryNiceTreeDecomposition(graphFile, treeFile);
 //    Jdrasil::computeApproximateTreeDecomposition(graphFile);
 //    Jdrasil::computeExactTreeDecomposition(graphFile);
 //    Jdrasil::computeHeuristicTreeDecomposition(graphFile);
-//
+
     DataStructures::TreeDecomposition treeDecomposition = reader.readTreeDecomposition(treeFile);
     std::cout << treeDecomposition;
-    std::cout << "----------------------------------\n";
-    DataStructures::TreeDecomposition t2 = reader.readTreeDecomposition(niceTreeFile);
-    std::cout << t2;
     std::cout << "----------------------------------\n";
     DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(niceTreeFile);
     std::cout << niceTreeDecomposition;
     std::cout << "----------------------------------\n";
 
 
-
-    int nbColours{5};
-    DataStructures::Graph graph = reader.readGraph(graphFile);
-    std::cout << "#vertices: " << graph.getNbVertices() << '\n';
+//    int nbColours{5};
+//    DataStructures::Graph graph = reader.readGraph(graphFile);
+//    std::cout << "#vertices: " << graph.getNbVertices() << '\n';
 
 //    std::vector<colourType> colourVector(graph.getNbVertices());
 //    colourVector[0] = 1;
@@ -72,16 +69,16 @@ int main()
 //    std::cout << *colouring << '\n';
 
 
-    for (int i{0}; i < 1; i++) {
-        auto partialColouring = DataStructures::generatePartialColouring(graph, nbColours, 0.1);
+//    for (int i{0}; i < 1; i++) {
+//        auto partialColouring = DataStructures::generatePartialColouring(graph, nbColours, 0.1);
 //        std::cout << partialColouring << "\n";
 //        auto greedySolver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
 //        MaximumHappyVertices::Colouring* colouringGreedy = greedySolver.solve();
-        auto growthSolver = MaximumHappyVertices::GrowthMHV{graph, partialColouring};
-        DataStructures::Colouring* colouringGrowth = growthSolver.solve();
+//        auto growthSolver = MaximumHappyVertices::GrowthMHV{graph, partialColouring};
+//        DataStructures::Colouring* colouringGrowth = growthSolver.solve();
 //        std::cout << *colouring << '\n';
-        std::cout << "-------------------------------------\n";
-    }
+//        std::cout << "-------------------------------------\n";
+//    }
 
     return 0;
 }

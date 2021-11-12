@@ -10,6 +10,7 @@
 namespace Jdrasil {
 
     void computeNiceTreeDecomposition(const std::string& graphFile, const std::string& treeFile);
+    void computeVeryNiceTreeDecomposition(const std::string& graphFile, const std::string& treeFile);
 
     void computeExactTreeDecomposition(const std::string& graphFile);
     void computeHeuristicTreeDecomposition(const std::string& graphFile);

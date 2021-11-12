@@ -13,6 +13,15 @@ void Jdrasil::computeNiceTreeDecomposition(const std::string& graphFile, const s
     system(command);
 }
 
+void Jdrasil::computeVeryNiceTreeDecomposition(const std::string& graphFile, const std::string& treeFile)
+{
+    char command[256];
+    sprintf(command,
+            R"(cd ../src/ConstructingTreeDecompositions/Jdrasil && java -jar JdrasilAdapter.jar "very_nice_decomposition" "../../../GraphFiles/%s" "../../../TreeDecompositionFiles/%s")",
+            graphFile.c_str(), treeFile.c_str());
+    system(command);
+}
+
 void Jdrasil::computeExactTreeDecomposition(const std::string& graphFile)
 {
     char command[128];

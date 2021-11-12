@@ -4,6 +4,8 @@
 
 #include "Reader.h"
 
+#include <queue>
+
 DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(std::string& filename) const
 {
     std::ifstream file{treeDecompositionFilesDir + filename};
@@ -12,10 +14,17 @@ DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(std::string&
         throw std::runtime_error("Can't read tree decomposition in '" + filename + "' because the file can't be opened!");
     }
 
+    int rootId{-1};
+
     std::string line{"c"};
     while (file && line[0] != 's')
     {
         std::getline(file, line);
+        std::vector<std::string> tokens = tokenize(line);
+        if (rootId == -1 && tokens[0] == "c" && tokens[1] == "ROOT_NICE_TREE")
+        {
+            rootId = convertToInt(tokens[2]);
+        }
     }
 
     std::vector<std::string> tokens = tokenize(line);
@@ -40,6 +49,10 @@ DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(std::string&
             }
             bags[bagId-1] = new DataStructures::StandardBag{bagId, bagSize, vertices};
         }
+        else if (rootId == -1 && tokens[1] == "ROOT_NICE_TREE") // From previous if we know (tokens[0] == "c")
+        {
+            rootId = convertToInt(tokens[2]);
+        }
         std::getline(file, line);
         tokens = tokenize(line);
     }
@@ -51,37 +64,58 @@ DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(std::string&
                     bags[convertToInt(tokens[1])-1]
                     );
         }
+        else if (rootId == -1 && tokens[0] == "c" && tokens[1] == "ROOT_NICE_TREE")
+        {
+            rootId = convertToInt(tokens[2]);
+        }
+
         std::getline(file, line);
         tokens = tokenize(line);
     }
 
-    // Use the first empty bag as root and otherwise use the first bag
-    DataStructures::StandardBag* root{bags[0]};
-    for (DataStructures::StandardBag* bag : bags) {
-        if (bag->isEmpty()) {
-            root = bag;
-            break;
+    DataStructures::StandardBag* root{nullptr};
+    if (rootId != -1)
+    {
+        for (DataStructures::StandardBag* bag : bags)
+        {
+            if (bag->getId() == rootId)
+            {
+                root = bag;
+                break;
+            }
+        }
+    }
+    if (root == nullptr) // If the no root id was found or no bag with the found root id was exists
+    {
+         // Use the first empty bag as root and otherwise use the first bag
+        root = bags[0];
+        for (DataStructures::StandardBag* bag : bags) {
+            if (bag->isEmpty()) {
+                root = bag;
+                break;
+            }
         }
     }
 
-    std::vector<DataStructures::StandardBag*> bagsToProcess{root};
+    std::queue<DataStructures::StandardBag*> bagsToProcess{};
+    bagsToProcess.push(root);
     while (!bagsToProcess.empty()) {
-        DataStructures::StandardBag* bagBeingProcessed{bagsToProcess[0]};
+        DataStructures::StandardBag* bagBeingProcessed{bagsToProcess.front()};
         for (std::pair<DataStructures::StandardBag*, DataStructures::StandardBag*> edge : edges) {
             if (bagBeingProcessed == edge.first) {
                 if (bagBeingProcessed->getParent() != edge.second) {
                     bagBeingProcessed->addChild(edge.second);
-                    bagsToProcess.push_back(edge.second);
+                    bagsToProcess.push(edge.second);
                 }
             }
             else if (bagBeingProcessed == edge.second) {
                 if (bagBeingProcessed->getParent() != edge.first) {
                     bagBeingProcessed->addChild(edge.first);
-                    bagsToProcess.push_back(edge.first);
+                    bagsToProcess.push(edge.first);
                 }
             }
         }
-        bagsToProcess.erase(bagsToProcess.begin());
+        bagsToProcess.pop();
     }
     return DataStructures::TreeDecomposition{largestBagSize-1, root};
 }

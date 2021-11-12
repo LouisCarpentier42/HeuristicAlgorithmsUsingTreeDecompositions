@@ -76,13 +76,9 @@ DataStructures::NiceBag* transformToNiceBag(const DataStructures::Bag* bag)
                 introducedVertex[0]
             };
         }
-        else if (containSameElements(parentContent, childContent))
-        {
-            return transformToNiceBag(child);
-        }
         else
         {
-            throw std::invalid_argument("An introduce bag or forget bag may only differ 1 is size compared to its child!");
+            throw std::invalid_argument("An introduce bag or forget bag must differ 1 in size compared to its child!");
         }
     }
 
@@ -98,6 +94,7 @@ DataStructures::NiceBag* transformToNiceBag(const DataStructures::Bag* bag)
         if (!containSameElements(parentContent, leftChildContent) ||
             !containSameElements(parentContent, rightChildContent))
         {
+            std::cout << "ID: " << bag->getId() << '\n';
             throw std::invalid_argument("Children of a join bag must have the same content as the parent bag!");
         }
 
