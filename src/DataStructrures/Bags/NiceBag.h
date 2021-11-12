@@ -7,7 +7,7 @@
 
 #include "Bag.h"
 
-namespace DataStructures // TODO add special leaf bag
+namespace DataStructures
 {
     enum class BagType {
         LeafBag,
@@ -25,7 +25,7 @@ namespace DataStructures // TODO add special leaf bag
         NiceBag(int id, size_t size, BagContent bagContent, ChildVector childVector, BagType bagType);
 
     public:
-        [[nodiscard]] BagType getBagType();
+        [[nodiscard]] BagType getBagType() const;
     };
 }
 

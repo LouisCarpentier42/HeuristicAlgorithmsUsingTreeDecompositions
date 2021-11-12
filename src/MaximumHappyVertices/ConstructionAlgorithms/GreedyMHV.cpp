@@ -28,6 +28,7 @@ DataStructures::Colouring* MaximumHappyVertices::GreedyMHV::solve() const
         }
     }
     colourAllVertices(colouring, bestColour);
+    std::cout << "[GREEDY-MHV] Nb happy vertices: " << bestNbHappyVertices << "\n"; // TODO remove
     return colouring;
 }
 

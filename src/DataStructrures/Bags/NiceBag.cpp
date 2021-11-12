@@ -8,7 +8,7 @@ DataStructures::NiceBag::NiceBag(int id, size_t size, BagContent bagContent, Chi
     : Bag(id, size, std::move(bagContent), std::move(childVector)), bagType{type}
 {}
 
-DataStructures::BagType DataStructures::NiceBag::getBagType()
+DataStructures::BagType DataStructures::NiceBag::getBagType() const
 {
     return bagType;
 }

@@ -13,6 +13,7 @@
 #include "MaximumHappyVertices/MaximumHappyVerticesSolver.h"
 #include "MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
 #include "MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
+#include "MaximumHappyVertices/HeuristicTreeDecompositionAlgorithms/HeuristicTreeDecompositionSolver.h"
 
 #include <iostream>
 
@@ -22,8 +23,7 @@ int main()
         "../GraphFiles/",
         "../TreeDecompositionFiles/"};
 
-//    std::string graphName{"my_first_graph"};
-    std::string graphName{"ex001"};
+    std::string graphName{"ex002"};
     std::string graphFile{graphName + ".gr"};
     std::string treeFile{graphName + ".tw"};
     std::string niceTreeFile{graphName + "_nice.tw"};
@@ -31,54 +31,31 @@ int main()
 
 //    TreeDecompositionSolverTimer timer{1.0, 4.0, 10000.0, 0.20};
 //    timer.executeSolver(graphFile);
-
 //    FlowCutter::computeHeuristicTreeDecomposition(graphFile, 2);
 
-    Jdrasil::computeNiceTreeDecomposition(graphFile, treeFile);
-    Jdrasil::computeVeryNiceTreeDecomposition(graphFile, treeFile);
+//    Jdrasil::computeNiceTreeDecomposition(graphFile, treeFile);
+//    Jdrasil::computeVeryNiceTreeDecomposition(graphFile, treeFile);
 //    Jdrasil::computeApproximateTreeDecomposition(graphFile);
 //    Jdrasil::computeExactTreeDecomposition(graphFile);
 //    Jdrasil::computeHeuristicTreeDecomposition(graphFile);
 
-    DataStructures::TreeDecomposition treeDecomposition = reader.readTreeDecomposition(treeFile);
-    std::cout << treeDecomposition;
-    std::cout << "----------------------------------\n";
+    DataStructures::Graph graph = reader.readGraph(graphFile);
+//    DataStructures::TreeDecomposition treeDecomposition = reader.readTreeDecomposition(niceTreeFile);
+//    std::cout << treeDecomposition;
     DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(niceTreeFile);
     std::cout << niceTreeDecomposition;
-    std::cout << "----------------------------------\n";
 
 
-//    int nbColours{5};
-//    DataStructures::Graph graph = reader.readGraph(graphFile);
-//    std::cout << "#vertices: " << graph.getNbVertices() << '\n';
-
-//    std::vector<colourType> colourVector(graph.getNbVertices());
-//    colourVector[0] = 1;
-//    colourVector[1] = 1;
-//    colourVector[2] = 2;
-//    colourVector[3] = 3;
-//    colourVector[4] = 1;
-//    colourVector[5] = 2;
-//    colourVector[6] = 3;
-//    colourVector[7] = 2;
-//    colourVector[8] = 3;
-//
-//    MaximumHappyVertices::PartialColouring partialColouring{colourVector};
-//    auto solver = MaximumHappyVertices::GrowthMHV{graph, partialColouring};
-//    MaximumHappyVertices::Colouring* colouring = solver.solve();
-//    std::cout << *colouring << '\n';
+    auto partialColouring = DataStructures::generatePartialColouring(graph, 3, 0.1);
+    auto solver = MaximumHappyVertices::HeuristicTreeDecompositionSolver{graph, partialColouring, niceTreeDecomposition};
+    auto greedySolver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
+    DataStructures::Colouring* colouring = solver.solve();
+    DataStructures::Colouring* colouringGreedy = greedySolver.solve();
 
 
-//    for (int i{0}; i < 1; i++) {
-//        auto partialColouring = DataStructures::generatePartialColouring(graph, nbColours, 0.1);
-//        std::cout << partialColouring << "\n";
-//        auto greedySolver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
-//        MaximumHappyVertices::Colouring* colouringGreedy = greedySolver.solve();
-//        auto growthSolver = MaximumHappyVertices::GrowthMHV{graph, partialColouring};
-//        DataStructures::Colouring* colouringGrowth = growthSolver.solve();
-//        std::cout << *colouring << '\n';
-//        std::cout << "-------------------------------------\n";
-//    }
+    std::cout << "Original colouring: " << partialColouring << '\n';
+    std::cout << "My colouring:       " << *colouring << '\n';
+    std::cout << "Greedy colouring:   " << *colouringGreedy << '\n';
 
     return 0;
 }

@@ -15,6 +15,7 @@ unsigned int MaximumHappyVertices::MaximumHappyVerticesSolver::getNbHappyVertice
     unsigned int nbHappyVertices{0};
     for (DataStructures::VertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
     {
+        if (!colouring->isColoured(vertex)) continue;
         bool vertexIsHappy{true};
         for (DataStructures::VertexType neighbour : *graph.getNeighbours(vertex))
         {

@@ -12,12 +12,12 @@ DataStructures::JoinBag::JoinBag(
     if (!leftChild || !rightChild) throw std::invalid_argument("A join vertex must have two existing children!");
 }
 
-const DataStructures::NiceBag *DataStructures::JoinBag::getLeftChild()
+const DataStructures::NiceBag *DataStructures::JoinBag::getLeftChild() const
 {
     return leftChild;
 }
 
-const DataStructures::NiceBag *DataStructures::JoinBag::getRightChild()
+const DataStructures::NiceBag *DataStructures::JoinBag::getRightChild() const
 {
     return rightChild;
 }

@@ -45,7 +45,7 @@ DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(std::string&
             std::vector<DataStructures::VertexType> vertices(bagSize);
             for (int i = 0; i < vertices.size(); i++)
             {
-                vertices[i] = convertToInt(tokens[i+2]);
+                vertices[i] = convertToInt(tokens[i+2])-1;
             }
             bags[bagId-1] = new DataStructures::StandardBag{bagId, bagSize, vertices};
         }
