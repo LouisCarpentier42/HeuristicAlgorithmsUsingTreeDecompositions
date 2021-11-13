@@ -5,11 +5,8 @@
 #include "HeuristicTreeDecompositionSolver.h"
 
 #include <algorithm>
-#include <unordered_set>
 
-const int NB_SOLUTIONS_TO_KEEP{15}; // TODO make more generic
-
-const int VERTEX{12};
+const int NB_SOLUTIONS_TO_KEEP{16}; // TODO make more generic
 
 MaximumHappyVertices::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositionSolver(
         const DataStructures::Graph& graph,
@@ -20,23 +17,17 @@ MaximumHappyVertices::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositi
 
 DataStructures::Colouring* MaximumHappyVertices::HeuristicTreeDecompositionSolver::solve() const
 {
-    std::vector<DataStructures::Colouring*> solutions = solveAtBag(treeDecomposition.getRoot());
-    DataStructures::Colouring* bestColouring{nullptr};
-    unsigned int maxNbHappyVertices{0};
-    for (DataStructures::Colouring* solution : solutions)
+    ColouringQueue rootColourings = solveAtBag(treeDecomposition.getRoot());
+    while (rootColourings.size() > 1)
     {
-        unsigned int nbHappyVertices{getNbHappyVertices(solution)};
-        if (nbHappyVertices > maxNbHappyVertices)
-        {
-            bestColouring = solution;
-            maxNbHappyVertices = nbHappyVertices;
-        }
+        delete rootColourings.top();
+        rootColourings.pop();
     }
-    std::cout << "[MY ALGO] Nb happy vertices: " << maxNbHappyVertices << "\n"; // TODO remove
-    return bestColouring;
+    std::cout << "[MY ALGO] Nb happy vertices: " << graph.getNbHappyVertices(rootColourings.top()) << "\n"; // TODO remove
+    return rootColourings.top();
 }
 
-std::vector<DataStructures::Colouring*> MaximumHappyVertices::HeuristicTreeDecompositionSolver::solveAtBag(const DataStructures::NiceBag* bag) const
+MaximumHappyVertices::ColouringQueue MaximumHappyVertices::HeuristicTreeDecompositionSolver::solveAtBag(const DataStructures::NiceBag* bag) const
 {
     switch(bag->getBagType())
     {
@@ -51,25 +42,25 @@ std::vector<DataStructures::Colouring*> MaximumHappyVertices::HeuristicTreeDecom
     }
 }
 
-std::vector<DataStructures::Colouring*> MaximumHappyVertices::HeuristicTreeDecompositionSolver::handleLeafBag(const DataStructures::LeafBag* bag) const
+MaximumHappyVertices::ColouringQueue MaximumHappyVertices::HeuristicTreeDecompositionSolver::handleLeafBag(const DataStructures::LeafBag* bag) const
 {
-    return std::vector<DataStructures::Colouring*>{new DataStructures::Colouring{partialColouring}};
+    ColouringQueue initialColouringQueue = createEmptyColouringQueue();
+    initialColouringQueue.push(new DataStructures::Colouring{partialColouring});
+    return initialColouringQueue;
 }
 
-std::vector<DataStructures::Colouring*> MaximumHappyVertices::HeuristicTreeDecompositionSolver::handleIntroduceVertexBag(const DataStructures::IntroduceVertexBag* bag) const
+MaximumHappyVertices::ColouringQueue MaximumHappyVertices::HeuristicTreeDecompositionSolver::handleIntroduceVertexBag(const DataStructures::IntroduceVertexBag* bag) const
 {
-    std::vector<DataStructures::Colouring*> childSolutions = solveAtBag(bag->getChild());
+    ColouringQueue childColourings = solveAtBag(bag->getChild());
     DataStructures::VertexType introducedVertex{bag->getIntroducedVertex()};
 
-    if (partialColouring.isColoured(introducedVertex))
-    {
-        return childSolutions;
-    }
+    // Precoloured vertices may not receive a new colour
+    if (partialColouring.isColoured(introducedVertex)) return childColourings;
 
-    // TODO optimize: keep track of evaluation of NB_SOLUTIONS_TO_KEEPth worst solutions and only add if it is nb happy vertices is larger
-    std::vector<DataStructures::Colouring*> allSolutions{};
-    for (DataStructures::Colouring* childColouring : childSolutions)
+    ColouringQueue newColourings = createEmptyColouringQueue();
+    while (!childColourings.empty())
     {
+        DataStructures::Colouring* childColouring = childColourings.top();
         bool hasBeenColoured{false};
         for (DataStructures::VertexType neighbour : *graph.getNeighbours(introducedVertex))
         {
@@ -78,7 +69,7 @@ std::vector<DataStructures::Colouring*> MaximumHappyVertices::HeuristicTreeDecom
                 hasBeenColoured = true;
                 auto* newColouring = new DataStructures::Colouring{*childColouring};
                 newColouring->setColour(introducedVertex, childColouring->getColour(neighbour));
-                allSolutions.push_back(newColouring);
+                newColourings.push(newColouring);
             }
         }
         // If none of the neighbours is coloured, add all possible colours
@@ -88,51 +79,92 @@ std::vector<DataStructures::Colouring*> MaximumHappyVertices::HeuristicTreeDecom
             {
                 auto* newColouring = new DataStructures::Colouring{*childColouring};
                 newColouring->setColour(introducedVertex, colour);
-                allSolutions.push_back(newColouring);
+                newColourings.push(newColouring);
             }
         }
+        while (newColourings.size() > NB_SOLUTIONS_TO_KEEP)
+        {
+            delete newColourings.top();
+            newColourings.pop();
+        }
+        childColourings.pop();
     }
 
-    if (allSolutions.size() <= NB_SOLUTIONS_TO_KEEP)
-        return allSolutions;
+    return newColourings;
 
-    // TODO probably a memory leak with the pruned colourings
-    std::vector<DataStructures::Colouring*> prunedSolutions(NB_SOLUTIONS_TO_KEEP);
-    std::partial_sort_copy(allSolutions.begin(), allSolutions.end(),
-                           prunedSolutions.begin(), prunedSolutions.end(),
-                           [this] (DataStructures::Colouring* const c1, DataStructures::Colouring* const c2)
-                           { return getNbHappyVertices(c1) > getNbHappyVertices(c2);
-                       });
-
-    return prunedSolutions;
+//    std::vector<DataStructures::Colouring*> allSolutions{};
+//    for (DataStructures::Colouring* childColouring : childSolutions)
+//    {
+//        bool hasBeenColoured{false};
+//        for (DataStructures::VertexType neighbour : *graph.getNeighbours(introducedVertex))
+//        {
+//            if (childColouring->isColoured(neighbour))
+//            {
+//                hasBeenColoured = true;
+//                auto* newColouring = new DataStructures::Colouring{*childColouring};
+//                newColouring->setColour(introducedVertex, childColouring->getColour(neighbour));
+//                allSolutions.push_back(newColouring);
+//            }
+//        }
+//        // If none of the neighbours is coloured, add all possible colours
+//        if (!hasBeenColoured)
+//        {
+//            for (DataStructures::ColourType colour{1}; colour <= partialColouring.getNbColours(); colour++)
+//            {
+//                auto* newColouring = new DataStructures::Colouring{*childColouring};
+//                newColouring->setColour(introducedVertex, colour);
+//                allSolutions.push_back(newColouring);
+//            }
+//        }
+//    }
+//
+//    if (allSolutions.size() <= NB_SOLUTIONS_TO_KEEP)
+//        return allSolutions;
+//
+//    // TODO probably a memory leak with the pruned colourings
+//    std::vector<DataStructures::Colouring*> prunedSolutions(NB_SOLUTIONS_TO_KEEP);
+//    std::partial_sort_copy(allSolutions.begin(), allSolutions.end(),
+//                           prunedSolutions.begin(), prunedSolutions.end(),
+//                           [this] (DataStructures::Colouring* const c1, DataStructures::Colouring* const c2)
+//                           { return graph.getNbHappyVertices(c1) > graph.getNbHappyVertices(c2); });
+//
+//    return prunedSolutions;
 }
 
-std::vector<DataStructures::Colouring*> MaximumHappyVertices::HeuristicTreeDecompositionSolver::handleForgetVertexBag(const DataStructures::ForgetVertexBag* bag) const
+MaximumHappyVertices::ColouringQueue MaximumHappyVertices::HeuristicTreeDecompositionSolver::handleForgetVertexBag(const DataStructures::ForgetVertexBag* bag) const
 {
     return solveAtBag(bag->getChild());
 }
 
-std::vector<DataStructures::Colouring*> MaximumHappyVertices::HeuristicTreeDecompositionSolver::handleJoinBag(const DataStructures::JoinBag* bag) const
+MaximumHappyVertices::ColouringQueue MaximumHappyVertices::HeuristicTreeDecompositionSolver::handleJoinBag(const DataStructures::JoinBag* bag) const
 {
-    std::vector<DataStructures::Colouring*> leftChildSolutions = solveAtBag(bag->getLeftChild());
-    std::vector<DataStructures::Colouring*> rightChildSolutions = solveAtBag(bag->getRightChild());
+    ColouringQueue leftChildSolutions = solveAtBag(bag->getLeftChild());
+    ColouringQueue rightChildSolutions = solveAtBag(bag->getRightChild());
 
-    std::vector<DataStructures::Colouring*> allSolutions{};
-    for (DataStructures::Colouring* leftColouring : leftChildSolutions)
+    std::vector<DataStructures::Colouring*> rightChildVector{};
+    while(!rightChildSolutions.empty())
     {
-        for (DataStructures::Colouring* rightColouring : rightChildSolutions)
+        rightChildVector.emplace_back(rightChildSolutions.top());
+        rightChildSolutions.pop();
+    }
+
+    ColouringQueue newSolutions = createEmptyColouringQueue();
+    while (!leftChildSolutions.empty())
+    {
+        DataStructures::Colouring* leftColouring = leftChildSolutions.top();
+        for (DataStructures::Colouring* rightColouring : rightChildVector)
         {
             auto* newColouring = new DataStructures::Colouring{partialColouring};
-            allSolutions.push_back(newColouring);
+            newSolutions.push(newColouring);
             for (DataStructures::VertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
             {
                 if (partialColouring.isColoured(vertex)) continue;
                 if (leftColouring->isColoured(vertex) && rightColouring->isColoured(vertex))
                 {
                     newColouring->setColour(vertex, leftColouring->getColour(vertex));
-                    unsigned int leftNbHappyVertices{getNbHappyVertices(newColouring)};
+                    unsigned int leftNbHappyVertices{graph.getNbHappyVertices(newColouring)};
                     newColouring->setColour(vertex, rightColouring->getColour(vertex));
-                    unsigned int rightNbHappyVertices{getNbHappyVertices(newColouring)};
+                    unsigned int rightNbHappyVertices{graph.getNbHappyVertices(newColouring)};
 
                     if (leftNbHappyVertices > rightNbHappyVertices)
                     {
@@ -150,19 +182,69 @@ std::vector<DataStructures::Colouring*> MaximumHappyVertices::HeuristicTreeDecom
                     newColouring->setColour(vertex, rightColouring->getColour(vertex));
                 }
             }
+            if (newSolutions.size() > NB_SOLUTIONS_TO_KEEP)
+                newSolutions.pop();
         }
+        delete leftColouring;
+        leftChildSolutions.pop();
     }
 
-    if (allSolutions.size() <= NB_SOLUTIONS_TO_KEEP)
-        return allSolutions;
+    for (DataStructures::Colouring* colouring : rightChildVector)
+        delete colouring;
 
-    // TODO probably a memory leak with the pruned colourings
-    std::vector<DataStructures::Colouring*> prunedSolutions(NB_SOLUTIONS_TO_KEEP);
-    std::partial_sort_copy(allSolutions.begin(), allSolutions.end(),
-                           prunedSolutions.begin(), prunedSolutions.end(),
-                           [this] (DataStructures::Colouring* const c1, DataStructures::Colouring* const c2)
-                           { return getNbHappyVertices(c1) > getNbHappyVertices(c2);
-                           });
+    return newSolutions;
 
-    return prunedSolutions;
+//    std::vector<DataStructures::Colouring*> allSolutions{};
+//    for (DataStructures::Colouring* leftColouring : leftChildSolutions)
+//    {
+//        for (DataStructures::Colouring* rightColouring : rightChildSolutions)
+//        {
+//            auto* newColouring = new DataStructures::Colouring{partialColouring};
+//            allSolutions.push_back(newColouring);
+//            for (DataStructures::VertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
+//            {
+//                if (partialColouring.isColoured(vertex)) continue;
+//                if (leftColouring->isColoured(vertex) && rightColouring->isColoured(vertex))
+//                {
+//                    newColouring->setColour(vertex, leftColouring->getColour(vertex));
+//                    unsigned int leftNbHappyVertices{graph.getNbHappyVertices(newColouring)};
+//                    newColouring->setColour(vertex, rightColouring->getColour(vertex));
+//                    unsigned int rightNbHappyVertices{graph.getNbHappyVertices(newColouring)};
+//
+//                    if (leftNbHappyVertices > rightNbHappyVertices)
+//                    {
+//                        newColouring->setColour(vertex, leftColouring->getColour(vertex));
+//                    }
+//                    // If right has better result, then this is already ok because newColouring has vertex set to rightColour
+//                    // TODO If both are equally good, select random or add both
+//                }
+//                else if (leftColouring->isColoured(vertex))
+//                {
+//                    newColouring->setColour(vertex, leftColouring->getColour(vertex));
+//                }
+//                else if (rightColouring->isColoured(vertex))
+//                {
+//                    newColouring->setColour(vertex, rightColouring->getColour(vertex));
+//                }
+//            }
+//        }
+//    }
+//
+//    if (allSolutions.size() <= NB_SOLUTIONS_TO_KEEP)
+//        return allSolutions;
+//
+//    // TODO probably a memory leak with the pruned colourings
+//    std::vector<DataStructures::Colouring*> prunedSolutions(NB_SOLUTIONS_TO_KEEP);
+//    std::partial_sort_copy(allSolutions.begin(), allSolutions.end(),
+//                           prunedSolutions.begin(), prunedSolutions.end(),
+//                           [this] (DataStructures::Colouring* const c1, DataStructures::Colouring* const c2)
+//                           { return graph.getNbHappyVertices(c1) > graph.getNbHappyVertices(c2);
+//                           });
+//
+//    return prunedSolutions;
+}
+
+MaximumHappyVertices::ColouringQueue MaximumHappyVertices::HeuristicTreeDecompositionSolver::createEmptyColouringQueue() const
+{
+    return MaximumHappyVertices::ColouringQueue(Comparator(graph));
 }

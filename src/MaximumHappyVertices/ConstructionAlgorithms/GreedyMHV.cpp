@@ -19,7 +19,7 @@ DataStructures::Colouring* MaximumHappyVertices::GreedyMHV::solve() const
     for (DataStructures::ColourType colour{1}; colour <= partialColouring.getNbColours(); colour++)
     {
         colourAllVertices(colouring, colour);
-        unsigned int nbHappyVertices{getNbHappyVertices(colouring)};
+        unsigned int nbHappyVertices{graph.getNbHappyVertices(colouring)};
 
         if (nbHappyVertices > bestNbHappyVertices)
         {

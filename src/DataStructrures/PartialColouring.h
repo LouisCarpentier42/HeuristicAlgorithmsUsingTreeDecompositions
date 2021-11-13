@@ -5,15 +5,13 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_PARTIALCOLOURING_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_PARTIALCOLOURING_H
 
-#include "Graph.h"
+#include "DataStructuresAliases.h"
 
 #include <iostream>
 #include <vector>
 
 namespace DataStructures
 {
-    using ColourType = unsigned int;
-
     class PartialColouring
     {
     protected:
@@ -30,7 +28,6 @@ namespace DataStructures
     };
 
     std::ostream& operator<<(std::ostream& out, const PartialColouring& colouring);
-    PartialColouring generatePartialColouring(DataStructures::Graph& graph, int nbColours, double percentColouredVertices);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_PARTIALCOLOURING_H

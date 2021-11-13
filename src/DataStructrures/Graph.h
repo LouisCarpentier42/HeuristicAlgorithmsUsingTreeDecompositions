@@ -5,12 +5,13 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_GRAPH_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_GRAPH_H
 
+#include "DataStructuresAliases.h"
+#include "PartialColouring.h"
+
 #include <vector>
 
-namespace DataStructures {
-
-    using VertexType = unsigned int;
-
+namespace DataStructures
+{
     class Graph
     {
     private:
@@ -24,6 +25,8 @@ namespace DataStructures {
         [[nodiscard]] bool areNeighbours(DataStructures::VertexType vertex1, DataStructures::VertexType vertex2) const;
         [[nodiscard]] size_t getDegree(DataStructures::VertexType vertex) const;
         [[nodiscard]] const std::vector<DataStructures::VertexType>* getNeighbours(DataStructures::VertexType vertex) const;
+
+        [[nodiscard]] unsigned int getNbHappyVertices(const DataStructures::PartialColouring* colouring) const;
     };
 }
 

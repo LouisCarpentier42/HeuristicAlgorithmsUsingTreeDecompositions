@@ -13,8 +13,26 @@
 #include "../../DataStructrures/Bags/LeafBag.h"
 #include "../../DataStructrures/Bags/NiceBag.h"
 
+#include <queue>
+
 namespace MaximumHappyVertices
 {
+    class Comparator // TODO find location for comparator class
+    {
+    private:
+        const DataStructures::Graph& graph;
+
+    public:
+        explicit Comparator(const DataStructures::Graph& graph) : graph{graph} {}
+
+        bool operator()(const DataStructures::Colouring* c1, const DataStructures::Colouring* c2) const
+        {
+            return graph.getNbHappyVertices(c1) > graph.getNbHappyVertices(c2);
+        }
+    };
+
+    using ColouringQueue = std::priority_queue<DataStructures::Colouring*, std::vector<DataStructures::Colouring*>, Comparator>;
+
     class HeuristicTreeDecompositionSolver : public MaximumHappyVerticesSolver
     {
     private:
@@ -27,11 +45,13 @@ namespace MaximumHappyVertices
 
         [[nodiscard]] DataStructures::Colouring* solve() const override;
 
-        [[nodiscard]] std::vector<DataStructures::Colouring*> solveAtBag(const DataStructures::NiceBag* bag) const;
-        [[nodiscard]] std::vector<DataStructures::Colouring*> handleLeafBag(const DataStructures::LeafBag* bag) const;
-        [[nodiscard]] std::vector<DataStructures::Colouring*> handleIntroduceVertexBag(const DataStructures::IntroduceVertexBag* bag) const;
-        [[nodiscard]] std::vector<DataStructures::Colouring*> handleForgetVertexBag(const DataStructures::ForgetVertexBag* bag) const;
-        [[nodiscard]] std::vector<DataStructures::Colouring*> handleJoinBag(const DataStructures::JoinBag* bag) const;
+        [[nodiscard]] ColouringQueue solveAtBag(const DataStructures::NiceBag* bag) const;
+        [[nodiscard]] ColouringQueue handleLeafBag(const DataStructures::LeafBag* bag) const;
+        [[nodiscard]] ColouringQueue handleIntroduceVertexBag(const DataStructures::IntroduceVertexBag* bag) const;
+        [[nodiscard]] ColouringQueue handleForgetVertexBag(const DataStructures::ForgetVertexBag* bag) const;
+        [[nodiscard]] ColouringQueue handleJoinBag(const DataStructures::JoinBag* bag) const;
+
+        [[nodiscard]] ColouringQueue createEmptyColouringQueue() const;
     };
 }
 
