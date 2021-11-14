@@ -29,26 +29,3 @@ const std::vector<DataStructures::VertexType>* DataStructures::Graph::getNeighbo
 {
     return &adjacencyList[vertex];
 }
-
-unsigned int DataStructures::Graph::getNbHappyVertices(const DataStructures::PartialColouring* colouring) const
-{
-    unsigned int nbHappyVertices{0};
-    for (DataStructures::VertexType vertex{0}; vertex < getNbVertices(); vertex++)
-    {
-        if (!colouring->isColoured(vertex)) continue;
-        bool vertexIsHappy{true};
-        for (DataStructures::VertexType neighbour : *getNeighbours(vertex))
-        {
-            if (colouring->getColour(neighbour) != colouring->getColour(vertex))
-            {
-                vertexIsHappy = false;
-                break;
-            }
-        }
-        if (vertexIsHappy)
-        {
-            nbHappyVertices++;
-        }
-    }
-    return nbHappyVertices;
-}

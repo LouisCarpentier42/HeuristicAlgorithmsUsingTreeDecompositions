@@ -5,7 +5,7 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_INTRODUCEVERTEXBAG_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_INTRODUCEVERTEXBAG_H
 
-#include "../Graph.h"
+#include "../Graph/Graph.h"
 #include "IntroduceForgetVertexBagBase.h"
 
 namespace DataStructures

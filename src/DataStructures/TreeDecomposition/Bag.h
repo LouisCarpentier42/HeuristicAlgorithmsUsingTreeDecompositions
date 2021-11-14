@@ -5,7 +5,7 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BAG_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BAG_H
 
-#include "../Graph.h"
+#include "../Graph/Graph.h"
 
 #include <iostream>
 #include <vector>

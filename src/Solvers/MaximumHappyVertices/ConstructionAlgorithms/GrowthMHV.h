@@ -22,11 +22,11 @@ namespace MaximumHappyVertices
     class GrowthMHV : public MaximumHappyVerticesSolver
     {
     public:
-        GrowthMHV(const DataStructures::Graph& graph, const DataStructures::PartialColouring& partialColouring);
-        [[nodiscard]] DataStructures::Colouring* solve() const override;
+        GrowthMHV(const DataStructures::Graph& graph, const DataStructures::Colouring& colouring);
+        [[nodiscard]] DataStructures::MutableColouring* solve() const override;
 
     private:
-        void updateVertexTypes(DataStructures::Colouring* colouring, std::vector<VertexTypeMHV>& types) const;
+        void updateVertexTypes(DataStructures::MutableColouring* solution, std::vector<VertexTypeMHV>& types) const;
     };
 }
 

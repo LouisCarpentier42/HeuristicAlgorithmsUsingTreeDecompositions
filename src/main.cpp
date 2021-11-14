@@ -4,22 +4,22 @@
 #include "ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.h"
 
 #include "IO/Reader.h"
-#include "DataStructrures/Bags/Bag.h"
-#include "DataStructrures/Graph.h"
-#include "DataStructrures/TreeDecomposition.h"
+#include "DataStructures/TreeDecomposition/Bag.h"
+#include "DataStructures/Graph/Graph.h"
+#include "DataStructures/TreeDecomposition/TreeDecomposition.h"
 
-#include "DataStructrures/Colouring.h"
-#include "DataStructrures/PartialColouring.h"
-#include "MaximumHappyVertices/MaximumHappyVerticesSolver.h"
-#include "MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
-#include "MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
-#include "MaximumHappyVertices/HeuristicTreeDecompositionAlgorithms/HeuristicTreeDecompositionSolver.h"
+#include "DataStructures/Colouring/MutableColouring.h"
+#include "DataStructures/Colouring/Colouring.h"
+#include "Solvers/SolverBase.h"
+#include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
+#include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
+#include "Solvers/MaximumHappyVertices/HeuristicTreeDecompositionAlgorithms/HeuristicTreeDecompositionSolver.h"
 
 #include <iostream>
 #include <random>
 
 
-DataStructures::PartialColouring generatePartialColouring(DataStructures::Graph& graph, int nbColours, double percentColouredVertices)
+DataStructures::Colouring generatePartialColouring(DataStructures::Graph& graph, int nbColours, double percentColouredVertices)
 { // TODO move somewhere else
     static std::mt19937 rng;
     std::uniform_int_distribution<DataStructures::ColourType> colourDistribution(1, nbColours);
@@ -37,7 +37,7 @@ DataStructures::PartialColouring generatePartialColouring(DataStructures::Graph&
     for (int i{nbColours}; i < percentColouredVertices * graph.getNbVertices(); i++)
         colourVector[allVertices[i]] = colourDistribution(rng);
 
-    return DataStructures::PartialColouring{colourVector};
+    return DataStructures::Colouring{colourVector};
 }
 
 int main()
@@ -46,7 +46,7 @@ int main()
         "../GraphFiles/",
         "../TreeDecompositionFiles/"};
 
-    std::string graphName{"ex002"};
+    std::string graphName{"he005"};
     std::string graphFile{graphName + ".gr"};
     std::string treeFile{graphName + ".tw"};
     std::string niceTreeFile{graphName + "_nice.tw"};
@@ -66,19 +66,29 @@ int main()
 //    DataStructures::TreeDecomposition treeDecomposition = reader.readTreeDecomposition(niceTreeFile);
 //    std::cout << treeDecomposition;
     DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(niceTreeFile);
+    std::cout << "Treewidth: " << niceTreeDecomposition.getTreeWidth() << "\n";
     std::cout << niceTreeDecomposition;
 
 
-    auto partialColouring = generatePartialColouring(graph, 10, 0.1);
-    auto solver = MaximumHappyVertices::HeuristicTreeDecompositionSolver{graph, partialColouring, niceTreeDecomposition};
-    auto greedySolver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
-    DataStructures::Colouring* colouring = solver.solve();
-    DataStructures::Colouring* colouringGreedy = greedySolver.solve();
-
-
+    auto partialColouring = generatePartialColouring(graph, 5, 0.01);
     std::cout << "Original colouring: " << partialColouring << '\n';
-    std::cout << "My colouring:       " << *colouring << '\n';
-    std::cout << "Greedy colouring:   " << *colouringGreedy << '\n';
+//    auto solver = MaximumHappyVertices::HeuristicTreeDecompositionSolver{graph, partialColouring, niceTreeDecomposition};
+    auto greedySolver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
+//    auto growthSolver = MaximumHappyVertices::GrowthMHV{graph, partialColouring};
+//    DataStructures::MutableColouring* colouring = solver.solve();
+    DataStructures::MutableColouring* colouringGreedy = greedySolver.solve();
+//    DataStructures::MutableColouring* colouringGrowth = growthSolver.solve();
 
-    return 0;
+//    std::cout << "My colouring:       " << *colouring << '\n';
+    std::cout << "Greedy colouring:   " << *colouringGreedy << '\n';
+//    std::cout << "Growth colouring:   " << *colouringGrowth << '\n';
+
+
+    std::cout << "--- TEST --\n";
+    std::vector<int> x{1,2,3,4,5};
+    std::vector<int> y{1,2,3,4,5};
+    std::cout << "x==y " << (x==y) << "\n";
+    std::cout << "x==x " << (x==x) << "\n";
+    std::cout << "y==y " << (y==y) << "\n";
+
 }

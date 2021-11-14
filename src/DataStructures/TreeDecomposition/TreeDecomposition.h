@@ -5,8 +5,8 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITION_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITION_H
 
-#include "Bags/Bag.h"
-#include "Bags/NiceBag.h"
+#include "Bag.h"
+#include "NiceBag.h"
 
 #include <utility>
 #include <vector>

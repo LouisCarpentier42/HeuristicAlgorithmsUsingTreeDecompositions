@@ -36,3 +36,5 @@ cmake-build-debug
 .idea
 GraphFiles
 TreeDecompositionFiles
+build_debug
+build_release
