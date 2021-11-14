@@ -5,6 +5,6 @@
 #include "MaximumHappyVerticesSolver.h"
 
 MaximumHappyVertices::MaximumHappyVerticesSolver::MaximumHappyVerticesSolver(
-            const DataStructures::Graph &graph,
-            const DataStructures::Colouring &colouring)
-    : Solvers::SolverBase(graph, colouring, DataStructures::MHVEvaluator(graph)) {}
+            const DataStructures::Graph* graph,
+            const DataStructures::Colouring* colouring)
+    : Solvers::SolverBase(graph, colouring, new DataStructures::MHVEvaluator(graph)) {}

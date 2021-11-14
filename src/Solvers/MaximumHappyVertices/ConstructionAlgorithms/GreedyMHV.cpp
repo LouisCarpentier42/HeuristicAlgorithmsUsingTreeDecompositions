@@ -5,8 +5,8 @@
 #include "GreedyMHV.h"
 
 MaximumHappyVertices::GreedyMHV::GreedyMHV(
-        const DataStructures::Graph& graph,
-        const DataStructures::Colouring& colouring)
+        const DataStructures::Graph* graph,
+        const DataStructures::Colouring* colouring)
     : MaximumHappyVerticesSolver(graph, colouring)
 {}
 
@@ -18,10 +18,10 @@ DataStructures::MutableColouring* MaximumHappyVertices::GreedyMHV::solve() const
     auto* solution = new DataStructures::MutableColouring{colouring};
     int bestNbHappyVertices{0};
 
-    for (DataStructures::ColourType colour{1}; colour <= colouring.getNbColours(); colour++)
+    for (DataStructures::ColourType colour{1}; colour <= colouring->getNbColours(); colour++)
     {
         colourAllVertices(solution, colour);
-        int nbHappyVertices{evaluator.evaluate(solution)};
+        int nbHappyVertices{evaluator->evaluate(solution)};
         if (nbHappyVertices > bestNbHappyVertices)
         {
             bestColour = colour;
@@ -35,9 +35,9 @@ DataStructures::MutableColouring* MaximumHappyVertices::GreedyMHV::solve() const
 
 void MaximumHappyVertices::GreedyMHV::colourAllVertices(DataStructures::MutableColouring* colouringToColour, DataStructures::ColourType colour) const
 {
-    for (DataStructures::VertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
+    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
-        if (!colouring.isColoured(vertex))
+        if (!colouring->isColoured(vertex))
         {
             colouringToColour->setColour(vertex, colour);
         }

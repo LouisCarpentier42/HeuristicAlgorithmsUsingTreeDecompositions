@@ -6,19 +6,19 @@
 
 #include <algorithm>
 
-const int NB_SOLUTIONS_TO_KEEP{16}; // TODO make more generic
+const int NB_SOLUTIONS_TO_KEEP{8}; // TODO make more generic
 
 MaximumHappyVertices::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositionSolver(
-        const DataStructures::Graph& graph,
-        const DataStructures::Colouring& partialColouring,
-        const DataStructures::NiceTreeDecomposition& treeDecomposition)
+        const DataStructures::Graph* graph,
+        const DataStructures::Colouring* partialColouring,
+        const DataStructures::NiceTreeDecomposition* treeDecomposition)
     : MaximumHappyVerticesSolver(graph, partialColouring), treeDecomposition{treeDecomposition}
 {}
 
 DataStructures::MutableColouring* MaximumHappyVertices::HeuristicTreeDecompositionSolver::solve() const
 {
-    DataStructures::ColouringQueue rootColourings = solveAtBag(treeDecomposition.getRoot());
-    std::cout << "[MY ALGO] Nb happy vertices: " << evaluator.evaluate(rootColourings.retrieveBestColouring()) << "\n"; // TODO remove
+    DataStructures::ColouringQueue rootColourings = solveAtBag(treeDecomposition->getRoot());
+    std::cout << "[MY ALGO] Nb happy vertices: " << evaluator->evaluate(rootColourings.retrieveBestColouring()) << "\n"; // TODO remove
     return rootColourings.retrieveBestColouring();
 }
 
@@ -41,7 +41,9 @@ DataStructures::ColouringQueue MaximumHappyVertices::HeuristicTreeDecompositionS
 {
     std::cout << "--- b(" << bag->getId() << "): leaf \n";
     DataStructures::ColouringQueue initialColouringQueue = createEmptyColouringQueue();
+    std::cout << initialColouringQueue;
     initialColouringQueue.push(new DataStructures::MutableColouring{colouring});
+    std::cout << initialColouringQueue;
     return initialColouringQueue;
 }
 
@@ -50,14 +52,15 @@ DataStructures::ColouringQueue MaximumHappyVertices::HeuristicTreeDecompositionS
     DataStructures::ColouringQueue childColourings = solveAtBag(bag->getChild());
     DataStructures::VertexType introducedVertex{bag->getIntroducedVertex()};
     std::cout << "--- b(" << bag->getId() << "): introduce " << introducedVertex << "\n";
+    std::cout << childColourings;
 
     // Precoloured vertices may not receive a new colour
-    if (colouring.isColoured(introducedVertex)) return childColourings;
+    if (colouring->isColoured(introducedVertex)) return childColourings;
 
     DataStructures::ColouringQueue newColourings = createEmptyColouringQueue();
     for (DataStructures::MutableColouring* childColouring : childColourings)
     {
-        for (DataStructures::ColourType colour{1}; colour <= colouring.getNbColours(); colour++)
+        for (DataStructures::ColourType colour{1}; colour <= colouring->getNbColours(); colour++)
         {
             auto* newColouring = new DataStructures::MutableColouring{*childColouring};
             newColouring->setColour(introducedVertex, colour);
@@ -65,6 +68,7 @@ DataStructures::ColouringQueue MaximumHappyVertices::HeuristicTreeDecompositionS
             newColourings.push(newColouring);
         }
     }
+    std::cout << newColourings; // TODO remove
     return newColourings;
 }
 
@@ -86,15 +90,15 @@ DataStructures::ColouringQueue MaximumHappyVertices::HeuristicTreeDecompositionS
         {
             auto* newColouring = new DataStructures::MutableColouring{colouring};
             // TODO, if the left colouring and right colouring differ too much, skip them
-            for (DataStructures::VertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
+            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
             {
-                if (colouring.isColoured(vertex)) continue; // Skip precoloured vertices
+                if (colouring->isColoured(vertex)) continue; // Skip precoloured vertices
                 if (leftColouring->isColoured(vertex) && rightColouring->isColoured(vertex))
                 {
                     newColouring->setColour(vertex, leftColouring->getColour(vertex));
-                    int leftNbHappyVertices{evaluator.evaluate(newColouring)};
+                    int leftNbHappyVertices{evaluator->evaluate(newColouring)};
                     newColouring->setColour(vertex, rightColouring->getColour(vertex));
-                    int rightNbHappyVertices{evaluator.evaluate(newColouring)};
+                    int rightNbHappyVertices{evaluator->evaluate(newColouring)};
 
                     if (leftNbHappyVertices > rightNbHappyVertices) // TODO probably can be done with evaluator(left, right)
                     {
@@ -114,6 +118,7 @@ DataStructures::ColouringQueue MaximumHappyVertices::HeuristicTreeDecompositionS
             newSolutions.push(newColouring);
         }
     }
+//    std::cout << newSolutions; // TODO remove
     return newSolutions;
 }
 

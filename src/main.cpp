@@ -72,23 +72,14 @@ int main()
 
     auto partialColouring = generatePartialColouring(graph, 5, 0.01);
     std::cout << "Original colouring: " << partialColouring << '\n';
-//    auto solver = MaximumHappyVertices::HeuristicTreeDecompositionSolver{graph, partialColouring, niceTreeDecomposition};
-    auto greedySolver = MaximumHappyVertices::GreedyMHV{graph, partialColouring};
-//    auto growthSolver = MaximumHappyVertices::GrowthMHV{graph, partialColouring};
-//    DataStructures::MutableColouring* colouring = solver.solve();
+    auto solver = MaximumHappyVertices::HeuristicTreeDecompositionSolver{&graph, &partialColouring, &niceTreeDecomposition};
+    auto greedySolver = MaximumHappyVertices::GreedyMHV{&graph, &partialColouring};
+    auto growthSolver = MaximumHappyVertices::GrowthMHV{&graph, &partialColouring};
+    DataStructures::MutableColouring* colouring = solver.solve();
     DataStructures::MutableColouring* colouringGreedy = greedySolver.solve();
-//    DataStructures::MutableColouring* colouringGrowth = growthSolver.solve();
+    DataStructures::MutableColouring* colouringGrowth = growthSolver.solve();
 
-//    std::cout << "My colouring:       " << *colouring << '\n';
+    std::cout << "My colouring:       " << *colouring << '\n';
     std::cout << "Greedy colouring:   " << *colouringGreedy << '\n';
-//    std::cout << "Growth colouring:   " << *colouringGrowth << '\n';
-
-
-    std::cout << "--- TEST --\n";
-    std::vector<int> x{1,2,3,4,5};
-    std::vector<int> y{1,2,3,4,5};
-    std::cout << "x==y " << (x==y) << "\n";
-    std::cout << "x==x " << (x==x) << "\n";
-    std::cout << "y==y " << (y==y) << "\n";
-
+    std::cout << "Growth colouring:   " << *colouringGrowth << '\n';
 }

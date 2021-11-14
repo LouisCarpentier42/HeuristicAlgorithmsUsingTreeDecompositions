@@ -4,7 +4,7 @@
 
 #include "MHVEvaluator.h"
 
-DataStructures::MHVEvaluator::MHVEvaluator(const DataStructures::Graph& graph)
+DataStructures::MHVEvaluator::MHVEvaluator(const DataStructures::Graph* graph)
     : ColouringEvaluator(graph)
 {}
 
@@ -15,7 +15,7 @@ int DataStructures::MHVEvaluator::evaluate(const DataStructures::Colouring *colo
     {
         if (!colouring->isColoured(vertex)) continue;
         bool vertexIsHappy{true};
-        for (DataStructures::VertexType neighbour : *graph.getNeighbours(vertex))
+        for (DataStructures::VertexType neighbour : *graph->getNeighbours(vertex))
         {
             if (colouring->getColour(neighbour) != colouring->getColour(vertex))
             {

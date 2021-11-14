@@ -26,12 +26,12 @@ namespace MaximumHappyVertices
     class HeuristicTreeDecompositionSolver : public MaximumHappyVerticesSolver
     {
     private:
-        const DataStructures::NiceTreeDecomposition& treeDecomposition;
+        const DataStructures::NiceTreeDecomposition* treeDecomposition;
 
     public:
-        HeuristicTreeDecompositionSolver(const DataStructures::Graph& graph,
-                                         const DataStructures::Colouring& partialColouring,
-                                         const DataStructures::NiceTreeDecomposition& treeDecomposition);
+        HeuristicTreeDecompositionSolver(const DataStructures::Graph* graph,
+                                         const DataStructures::Colouring* partialColouring,
+                                         const DataStructures::NiceTreeDecomposition* treeDecomposition);
 
         [[nodiscard]] DataStructures::MutableColouring* solve() const override;
 

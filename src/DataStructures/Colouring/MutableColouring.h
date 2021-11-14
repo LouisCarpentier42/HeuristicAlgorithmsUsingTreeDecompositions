@@ -12,7 +12,7 @@ namespace DataStructures
     class MutableColouring : public Colouring
     {
     public:
-        explicit MutableColouring(Colouring colouring);
+        explicit MutableColouring(const DataStructures::Colouring* colouring);
         virtual void setColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
     };
 }

@@ -12,7 +12,7 @@ namespace DataStructures
     class MHVEvaluator : public ColouringEvaluator
     {
     public:
-        explicit MHVEvaluator(const DataStructures::Graph& graph);
+        explicit MHVEvaluator(const DataStructures::Graph* graph);
 
         [[nodiscard]] int evaluate(const DataStructures::Colouring* colouring) const override;
     };

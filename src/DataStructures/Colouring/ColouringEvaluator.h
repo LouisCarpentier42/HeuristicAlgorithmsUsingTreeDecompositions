@@ -13,12 +13,12 @@ namespace DataStructures
 {
     class ColouringEvaluator
     {
-    protected: // TODO set on private again
+    protected:
         /** The graph that is used for the comparison of colourings. **/
-        const DataStructures::Graph& graph;
+        const DataStructures::Graph* graph;
 
     public:
-        explicit ColouringEvaluator(const DataStructures::Graph& graph);
+        explicit ColouringEvaluator(const DataStructures::Graph* graph);
 
         /**
          * Evaluate the given colouring.

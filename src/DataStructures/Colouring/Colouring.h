@@ -22,6 +22,10 @@ namespace DataStructures
     public:
         explicit Colouring(std::vector<DataStructures::ColourType> colouring);
 
+    protected:
+        explicit Colouring(const DataStructures::Colouring* colouring);
+
+    public:
         [[nodiscard]] size_t getNbVertices() const;
         [[nodiscard]] size_t getNbColours() const;
         [[nodiscard]] bool isColoured(DataStructures::VertexType vertex) const;

@@ -15,14 +15,14 @@ namespace Solvers
     class SolverBase
     {
     protected:
-        const DataStructures::Graph& graph;
-        const DataStructures::Colouring& colouring;
-        const DataStructures::ColouringEvaluator& evaluator;
+        const DataStructures::Graph* graph;
+        const DataStructures::Colouring* colouring;
+        const DataStructures::ColouringEvaluator* evaluator;
 
     public:
-        SolverBase(const DataStructures::Graph& graph,
-                   const DataStructures::Colouring& colouring,
-                   const DataStructures::ColouringEvaluator& evaluator)
+        SolverBase(const DataStructures::Graph* graph,
+                   const DataStructures::Colouring* colouring,
+                   const DataStructures::ColouringEvaluator* evaluator)
             : graph{graph}, colouring{colouring}, evaluator{evaluator} {}
 
         [[nodiscard]] virtual DataStructures::MutableColouring* solve() const = 0;

@@ -4,7 +4,7 @@
 
 #include "ColouringEvaluator.h"
 
-DataStructures::ColouringEvaluator::ColouringEvaluator(const DataStructures::Graph& graph)
+DataStructures::ColouringEvaluator::ColouringEvaluator(const DataStructures::Graph* graph)
     : graph{graph}
 {}
 

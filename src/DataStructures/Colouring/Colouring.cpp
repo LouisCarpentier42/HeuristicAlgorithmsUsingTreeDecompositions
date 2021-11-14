@@ -11,6 +11,10 @@ DataStructures::Colouring::Colouring(std::vector<DataStructures::ColourType> col
     nbColours{*std::max_element(this->colouring.begin(), this->colouring.end())}
 {}
 
+DataStructures::Colouring::Colouring(const DataStructures::Colouring* colouring) // TODO colouring vector is put correctly?
+    : colouring{colouring->colouring}, nbColours{colouring->nbColours}
+{}
+
 size_t DataStructures::Colouring::getNbVertices() const
 {
     return colouring.size();
