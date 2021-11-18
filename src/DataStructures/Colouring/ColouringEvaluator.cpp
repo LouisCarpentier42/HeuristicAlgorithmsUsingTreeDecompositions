@@ -10,5 +10,5 @@ DataStructures::ColouringEvaluator::ColouringEvaluator(const DataStructures::Gra
 
 bool DataStructures::ColouringEvaluator::operator()(const DataStructures::Colouring* c1, const DataStructures::Colouring* c2) const
 {
-    return evaluate(c1) > evaluate(c2);
+    return evaluate(c1) < evaluate(c2);
 }

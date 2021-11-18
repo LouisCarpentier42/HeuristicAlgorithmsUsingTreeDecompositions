@@ -36,7 +36,7 @@ namespace DataStructures
          * @param c1 The first colouring to use in the comparison.
          * @param c2 The second colouring to use in the comparison.
          *
-         * @return True if and only if c1 has a better evaluation than c2.
+         * @return True if and only if c2 has a better evaluation than c1.
          */
         bool operator()(const DataStructures::Colouring* c1, const DataStructures::Colouring* c2) const;
     };

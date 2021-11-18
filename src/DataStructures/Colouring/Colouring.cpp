@@ -35,7 +35,7 @@ DataStructures::ColourType DataStructures::Colouring::getColour(DataStructures::
     return colouring[vertex];
 }
 
-bool DataStructures::Colouring::operator==(const DataStructures::Colouring &other) const
+bool DataStructures::Colouring::operator==(const DataStructures::Colouring& other) const
 {
     return colouring == other.colouring;
 }

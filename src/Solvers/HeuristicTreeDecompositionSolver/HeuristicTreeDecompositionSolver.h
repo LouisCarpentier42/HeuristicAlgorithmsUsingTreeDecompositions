@@ -6,31 +6,33 @@
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_HEURISTICTREEDECOMPOSITIONSOLVER_H
 
 
-#include "../../../DataStructures/TreeDecomposition/TreeDecomposition.h"
-#include "../../../DataStructures/TreeDecomposition/ForgetVertexBag.h"
-#include "../../../DataStructures/TreeDecomposition/IntroduceVertexBag.h"
-#include "../../../DataStructures/TreeDecomposition/JoinBag.h"
-#include "../../../DataStructures/TreeDecomposition/LeafBag.h"
-#include "../../../DataStructures/TreeDecomposition/NiceBag.h"
-#include "../../../DataStructures/Colouring/ColouringQueue.h"
+#include "../../DataStructures/TreeDecomposition/TreeDecomposition.h"
+#include "../../DataStructures/TreeDecomposition/ForgetVertexBag.h"
+#include "../../DataStructures/TreeDecomposition/IntroduceVertexBag.h"
+#include "../../DataStructures/TreeDecomposition/JoinBag.h"
+#include "../../DataStructures/TreeDecomposition/LeafBag.h"
+#include "../../DataStructures/TreeDecomposition/NiceBag.h"
+#include "../../DataStructures/Colouring/ColouringQueue.h"
 
-#include "../MaximumHappyVerticesSolver.h"
-#include "../../SolverBase.h"
+#include "../SolverBase.h"
 
 #include <queue>
 
-namespace MaximumHappyVertices
+namespace Solvers
 {
     //    using ColouringQueue = std::priority_queue<DataStructures::Colouring*, std::vector<DataStructures::Colouring*>, Comparator>;
 
-    class HeuristicTreeDecompositionSolver : public MaximumHappyVerticesSolver
+    class HeuristicTreeDecompositionSolver : public Solvers::SolverBase
     {
     private:
+        const size_t nbSolutionsToKeep;
         const DataStructures::NiceTreeDecomposition* treeDecomposition;
 
     public:
         HeuristicTreeDecompositionSolver(const DataStructures::Graph* graph,
                                          const DataStructures::Colouring* partialColouring,
+                                         const DataStructures::ColouringEvaluator* evaluator,
+                                         size_t nbSolutionsToKeep,
                                          const DataStructures::NiceTreeDecomposition* treeDecomposition);
 
         [[nodiscard]] DataStructures::MutableColouring* solve() const override;

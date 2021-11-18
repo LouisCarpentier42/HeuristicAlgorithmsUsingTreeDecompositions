@@ -13,7 +13,8 @@
 #include "Solvers/SolverBase.h"
 #include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
 #include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
-#include "Solvers/MaximumHappyVertices/HeuristicTreeDecompositionAlgorithms/HeuristicTreeDecompositionSolver.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.h"
+#include "DataStructures/Colouring/AdvancedMHVEvaluator.h"
 
 #include <iostream>
 #include <random>
@@ -21,7 +22,7 @@
 
 DataStructures::Colouring generatePartialColouring(DataStructures::Graph& graph, int nbColours, double percentColouredVertices)
 { // TODO move somewhere else
-    static std::mt19937 rng;
+    static std::mt19937 rng{std::random_device{}()};
     std::uniform_int_distribution<DataStructures::ColourType> colourDistribution(1, nbColours);
 
     // Create a random shuffling of the vertices and colour them in this order
@@ -46,7 +47,7 @@ int main()
         "../GraphFiles/",
         "../TreeDecompositionFiles/"};
 
-    std::string graphName{"he005"};
+    std::string graphName{"ex100"};
     std::string graphFile{graphName + ".gr"};
     std::string treeFile{graphName + ".tw"};
     std::string niceTreeFile{graphName + "_nice.tw"};
@@ -66,20 +67,26 @@ int main()
 //    DataStructures::TreeDecomposition treeDecomposition = reader.readTreeDecomposition(niceTreeFile);
 //    std::cout << treeDecomposition;
     DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(niceTreeFile);
-    std::cout << "Treewidth: " << niceTreeDecomposition.getTreeWidth() << "\n";
     std::cout << niceTreeDecomposition;
 
+    std::cout << "Treewidth:   " << niceTreeDecomposition.getTreeWidth() << "\n";
+    std::cout << "Nb vertices: " << graph.getNbVertices() << "\n";
 
-    auto partialColouring = generatePartialColouring(graph, 5, 0.01);
-    std::cout << "Original colouring: " << partialColouring << '\n';
-    auto solver = MaximumHappyVertices::HeuristicTreeDecompositionSolver{&graph, &partialColouring, &niceTreeDecomposition};
-    auto greedySolver = MaximumHappyVertices::GreedyMHV{&graph, &partialColouring};
-    auto growthSolver = MaximumHappyVertices::GrowthMHV{&graph, &partialColouring};
-    DataStructures::MutableColouring* colouring = solver.solve();
+//    DataStructures::Colouring colouring{std::vector<DataStructures::ColourType>{0,0,0,2,0,0,0,0,0,3,1,0,0}};
+    DataStructures::Colouring colouring = generatePartialColouring(graph, 3, 0.01);
+    std::cout << "Original colouring: " << colouring << '\n';
+
+    DataStructures::AdvancedMHVEvaluator evaluator{&graph, 6, 2, -1};
+//    DataStructures::BasicMHVEvaluator evaluator{&graph};
+    auto solver = Solvers::HeuristicTreeDecompositionSolver{&graph, &colouring, &evaluator, 16, &niceTreeDecomposition};
+    DataStructures::MutableColouring* colouringMyAlgorithm = solver.solve();
+    std::cout << "My colouring:       " << *colouringMyAlgorithm << '\n';
+
+    auto greedySolver = MaximumHappyVertices::GreedyMHV{&graph, &colouring};
     DataStructures::MutableColouring* colouringGreedy = greedySolver.solve();
-    DataStructures::MutableColouring* colouringGrowth = growthSolver.solve();
-
-    std::cout << "My colouring:       " << *colouring << '\n';
     std::cout << "Greedy colouring:   " << *colouringGreedy << '\n';
+
+    auto growthSolver = MaximumHappyVertices::GrowthMHV{&graph, &colouring};
+    DataStructures::MutableColouring* colouringGrowth = growthSolver.solve();
     std::cout << "Growth colouring:   " << *colouringGrowth << '\n';
 }

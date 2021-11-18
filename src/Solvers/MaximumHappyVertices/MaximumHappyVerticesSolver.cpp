@@ -7,4 +7,4 @@
 MaximumHappyVertices::MaximumHappyVerticesSolver::MaximumHappyVerticesSolver(
             const DataStructures::Graph* graph,
             const DataStructures::Colouring* colouring)
-    : Solvers::SolverBase(graph, colouring, new DataStructures::MHVEvaluator(graph)) {}
+    : Solvers::SolverBase(graph, colouring, new DataStructures::BasicMHVEvaluator(graph)) {}

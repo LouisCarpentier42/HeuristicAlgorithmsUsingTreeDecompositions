@@ -5,37 +5,74 @@
 #include "ColouringQueue.h"
 
 #include <algorithm>
+#include <random>
+
+// TODO std::set
 
 DataStructures::ColouringQueue::ColouringQueue(size_t nbColourings, const DataStructures::ColouringEvaluator* comparator)
     : nbColourings{nbColourings}, evaluator{comparator}
 {}
 
-//DataStructures::ColouringQueue::~ColouringQueue()
-//{
-//    for (DataStructures::MutableColouring* colouring : queue)
-//        delete colouring;
-//}
-
 void DataStructures::ColouringQueue::push(DataStructures::MutableColouring* colouring)
 {
-//    std::cout << "--- BEGIN\n";
-//    std::cout << *this;
-//    std::cout << "Colouring to add: [" << evaluator->evaluate(colouring) << "] " << *colouring << "\n";
-    queue.push_back(colouring); // TODO check if the colouring is already in the queue
+    // If the colouring is already in the queue, then don't add it
+    if (std::any_of(queue.begin(), queue.end(), [colouring](auto* c){return *colouring==*c;}))
+        return;
+
+    // Add the colouring to the queue
+    queue.push_back(colouring);
+
+    // Prune the queue if it has too many elements
     if (queue.size() > nbColourings)
     {
+        // Find the worst element in the queue
         auto it = std::min_element(queue.begin(), queue.end(),
                                    [this](auto* c1, auto* c2){return (*evaluator)(c1, c2);});
-        std::cout << "Deleting [" << evaluator->evaluate(*it) << "] " << **it << "\n";
-        delete *it;
-        queue.erase(it);
-    }
-//    std::cout << "--- END\n";
-}
 
-bool DataStructures::ColouringQueue::isEmpty() const
-{
-    return queue.empty();
+        // Remove all the elements in the queue that have the worst evaluation
+        int worstEvaluation{evaluator->evaluate(*it)};
+        std::vector<DataStructures::MutableColouring*>allColourings{queue};
+        queue.clear();
+        std::copy_if(
+            allColourings.begin(),
+            allColourings.end(),
+            std::back_inserter(queue),
+            [this,worstEvaluation](auto* c){return evaluator->evaluate(c)>worstEvaluation;}
+        );
+
+        // If the queue is not full, then add random colourings with the worst evaluation to fill it
+        if (queue.size() < nbColourings)
+        {
+            std::vector<DataStructures::MutableColouring*>fillUpColourings{};
+            std::copy_if(
+                allColourings.begin(),
+                allColourings.end(),
+                std::back_inserter(fillUpColourings),
+                [this,worstEvaluation](auto* c){return evaluator->evaluate(c)==worstEvaluation;}
+            );
+            std::sample(
+                fillUpColourings.begin(),
+                fillUpColourings.end(),
+                std::back_inserter(queue),
+                nbColourings - queue.size(),
+                std::mt19937{std::random_device{}()}
+            );
+        }
+
+        if (queue.empty())
+        {
+            queue = allColourings;
+
+//            // If all colouring have the same (worst) evaluation, then sample some randomly
+//            std::sample(
+//                allColourings.begin(),
+//                allColourings.end(),
+//                std::back_inserter(queue),
+//                nbColourings,
+//                std::mt19937{std::random_device{}()}
+//            );
+        }
+    }
 }
 
 DataStructures::MutableColouring *DataStructures::ColouringQueue::retrieveBestColouring() const
