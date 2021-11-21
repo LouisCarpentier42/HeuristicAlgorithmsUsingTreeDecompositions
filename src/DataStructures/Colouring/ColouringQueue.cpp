@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <random>
 
-// TODO std::set
+// TODO optimize (eg with std::set)
 
 DataStructures::ColouringQueue::ColouringQueue(size_t nbColourings, const DataStructures::ColouringEvaluator* comparator)
     : nbColourings{nbColourings}, evaluator{comparator}

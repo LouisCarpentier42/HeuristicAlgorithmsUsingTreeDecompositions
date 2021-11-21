@@ -14,12 +14,11 @@ namespace Solvers
 {
     class SolverBase
     {
-    protected:
-        const DataStructures::Graph* graph;
+    public:
         const DataStructures::Colouring* colouring;
+        const DataStructures::Graph* graph;
         const DataStructures::ColouringEvaluator* evaluator;
 
-    public:
         SolverBase(const DataStructures::Graph* graph,
                    const DataStructures::Colouring* colouring,
                    const DataStructures::ColouringEvaluator* evaluator)

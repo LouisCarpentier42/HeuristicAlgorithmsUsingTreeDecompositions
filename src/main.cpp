@@ -1,23 +1,33 @@
 
+#include "IO/Reader.h"
+
 #include "ConstructingTreeDecompositions/TreeDecompositionSolverTimer.h"
 #include "ConstructingTreeDecompositions/FlowCutter/FlowCutterAdapter.h"
 #include "ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.h"
 
-#include "IO/Reader.h"
-#include "DataStructures/TreeDecomposition/Bag.h"
-#include "DataStructures/Graph/Graph.h"
-#include "DataStructures/TreeDecomposition/TreeDecomposition.h"
 
+#include "DataStructures/TreeDecomposition/Bag.h"
+#include "DataStructures/TreeDecomposition/TreeDecomposition.h"
+#include "DataStructures/Graph/Graph.h"
+#include "DataStructures/Colouring/AdvancedMHVEvaluator.h"
 #include "DataStructures/Colouring/MutableColouring.h"
 #include "DataStructures/Colouring/Colouring.h"
+
+
 #include "Solvers/SolverBase.h"
 #include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
 #include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
 #include "Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.h"
-#include "DataStructures/Colouring/AdvancedMHVEvaluator.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/LeafBag/ConcreteLeafBagHandlers.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBag/ConcreteIntroduceVertexBagHandlers.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/ForgetVertexBag/ConcreteForgetVertexBagHandlers.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/JoinBag/ConcreteJoinBagHandlers.h"
+
 
 #include <iostream>
 #include <random>
+#include <map>
+#include <chrono>
 
 
 DataStructures::Colouring generatePartialColouring(DataStructures::Graph& graph, int nbColours, double percentColouredVertices)
@@ -47,7 +57,7 @@ int main()
         "../GraphFiles/",
         "../TreeDecompositionFiles/"};
 
-    std::string graphName{"ex100"};
+    std::string graphName{"ex001"};
     std::string graphFile{graphName + ".gr"};
     std::string treeFile{graphName + ".tw"};
     std::string niceTreeFile{graphName + "_nice.tw"};
@@ -65,28 +75,38 @@ int main()
 
     DataStructures::Graph graph = reader.readGraph(graphFile);
 //    DataStructures::TreeDecomposition treeDecomposition = reader.readTreeDecomposition(niceTreeFile);
-//    std::cout << treeDecomposition;
     DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(niceTreeFile);
-    std::cout << niceTreeDecomposition;
 
     std::cout << "Treewidth:   " << niceTreeDecomposition.getTreeWidth() << "\n";
     std::cout << "Nb vertices: " << graph.getNbVertices() << "\n";
 
-//    DataStructures::Colouring colouring{std::vector<DataStructures::ColourType>{0,0,0,2,0,0,0,0,0,3,1,0,0}};
-    DataStructures::Colouring colouring = generatePartialColouring(graph, 3, 0.01);
-    std::cout << "Original colouring: " << colouring << '\n';
+    DataStructures::Colouring colouring = generatePartialColouring(graph, 5, 0.01);
+    std::cout << "Original colouring: " << colouring << "\n\n";
+
+    std::map<std::string, Solvers::SolverBase*> solvers{};
+    solvers["greedy_mhv"] = new MaximumHappyVertices::GreedyMHV{&graph, &colouring};
+    solvers["growth_mhv"] = new MaximumHappyVertices::GrowthMHV{&graph, &colouring};
 
     DataStructures::AdvancedMHVEvaluator evaluator{&graph, 6, 2, -1};
-//    DataStructures::BasicMHVEvaluator evaluator{&graph};
-    auto solver = Solvers::HeuristicTreeDecompositionSolver{&graph, &colouring, &evaluator, 16, &niceTreeDecomposition};
-    DataStructures::MutableColouring* colouringMyAlgorithm = solver.solve();
-    std::cout << "My colouring:       " << *colouringMyAlgorithm << '\n';
+    auto* leafBagHandler = new Solvers::ConcreteLeafBagHandlers{};
+    auto* introduceVertexBagHandler = new Solvers::BasicIntroduceVertexBagHandler{};
+    auto* forgetVertexBagHandler = new Solvers::BasicForgetVertexBagHandler{};
+    auto* joinBagHandler = new Solvers::BasicJoinBagHandler{};
+    solvers["my_solver"] = new Solvers::HeuristicTreeDecompositionSolver{
+                            &graph, &colouring, &evaluator, 16, &niceTreeDecomposition,
+                            leafBagHandler, introduceVertexBagHandler, forgetVertexBagHandler, joinBagHandler};
 
-    auto greedySolver = MaximumHappyVertices::GreedyMHV{&graph, &colouring};
-    DataStructures::MutableColouring* colouringGreedy = greedySolver.solve();
-    std::cout << "Greedy colouring:   " << *colouringGreedy << '\n';
+    DataStructures::BasicMHVEvaluator mhvEvaluator{&graph};
+    for (auto const& [name, solver] : solvers)
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        auto* solution = solver->solve();
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
-    auto growthSolver = MaximumHappyVertices::GrowthMHV{&graph, &colouring};
-    DataStructures::MutableColouring* colouringGrowth = growthSolver.solve();
-    std::cout << "Growth colouring:   " << *colouringGrowth << '\n';
+        std::cout << ">>> " << name << " <<<\n";
+        std::cout << "Evaluation: " << mhvEvaluator.evaluate(solution) << "\n";
+        std::cout << "Colouring:  " << *solution << "\n";
+        std::cout << "Time (µs):  " << duration.count() << "\n\n";
+    }
 }

@@ -4,33 +4,36 @@
 
 #include "GreedyMHV.h"
 
+#include <numeric>
+#include <algorithm>
+#include <queue>
+
 MaximumHappyVertices::GreedyMHV::GreedyMHV(
         const DataStructures::Graph* graph,
         const DataStructures::Colouring* colouring)
     : MaximumHappyVerticesSolver(graph, colouring)
 {}
 
+
 DataStructures::MutableColouring* MaximumHappyVertices::GreedyMHV::solve() const
 {
-    // TODO maybe this can be done fully with std::min_element?
-    //      -> probably need to change helper function colour all vertices to return the evaluation or a new colouring
+    auto* colouringToColour = new DataStructures::MutableColouring{colouring};
+    colourAllVertices(colouringToColour, 1);
     DataStructures::ColourType bestColour{1};
-    auto* solution = new DataStructures::MutableColouring{colouring};
-    int bestNbHappyVertices{0};
+    int bestNbHappyVertices{evaluator->evaluate(colouringToColour)};
 
-    for (DataStructures::ColourType colour{1}; colour <= colouring->getNbColours(); colour++)
+    for (DataStructures::ColourType colour{2}; colour <= colouring->getNbColours(); colour++)
     {
-        colourAllVertices(solution, colour);
-        int nbHappyVertices{evaluator->evaluate(solution)};
+        colourAllVertices(colouringToColour, colour);
+        int nbHappyVertices{evaluator->evaluate(colouringToColour)};
         if (nbHappyVertices > bestNbHappyVertices)
         {
             bestColour = colour;
             bestNbHappyVertices = nbHappyVertices;
         }
     }
-    colourAllVertices(solution, bestColour);
-    std::cout << "[GREEDY-MHV] Nb happy vertices: " << bestNbHappyVertices << "\n"; // TODO remove
-    return solution;
+    colourAllVertices(colouringToColour, bestColour);
+    return colouringToColour;
 }
 
 void MaximumHappyVertices::GreedyMHV::colourAllVertices(DataStructures::MutableColouring* colouringToColour, DataStructures::ColourType colour) const

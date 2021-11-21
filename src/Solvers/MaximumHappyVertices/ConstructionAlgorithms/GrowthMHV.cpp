@@ -87,7 +87,6 @@ DataStructures::MutableColouring* MaximumHappyVertices::GrowthMHV::solve() const
         }
         updateVertexTypes(solution, types);
     }
-    std::cout << "[Growth-MHV] Nb happy vertices: " << evaluator->evaluate(solution) << "\n"; // TODO remove
     return solution;
 }
 

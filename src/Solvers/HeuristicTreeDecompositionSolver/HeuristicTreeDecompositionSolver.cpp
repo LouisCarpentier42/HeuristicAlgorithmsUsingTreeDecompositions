@@ -1,29 +1,36 @@
 //
 // Created by louis on 10/11/2021.
 //
-
 #include "HeuristicTreeDecompositionSolver.h"
-#include "../../DataStructures/Colouring/BasicMHVEvaluator.h"
-
-#include <algorithm>
 
 Solvers::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositionSolver(
         const DataStructures::Graph* graph,
         const DataStructures::Colouring* partialColouring,
         const DataStructures::ColouringEvaluator* evaluator,
         size_t nbSolutionsToKeep,
-        const DataStructures::NiceTreeDecomposition* treeDecomposition)
+        const DataStructures::NiceTreeDecomposition* treeDecomposition,
+        LeafBagHandler* leafBagHandler,
+        IntroduceVertexBagHandler* introduceVertexBagHandler,
+        ForgetVertexBagHandler* forgetVertexBagHandler,
+        JoinBagHandler* joinBagHandler)
     : SolverBase(graph, partialColouring, evaluator),
       nbSolutionsToKeep{nbSolutionsToKeep},
-      treeDecomposition{treeDecomposition}
-{}
+      treeDecomposition{treeDecomposition},
+      leafBagHandler{leafBagHandler},
+      introduceVertexBagHandler{introduceVertexBagHandler},
+      forgetVertexBagHandler{forgetVertexBagHandler},
+      joinBagHandler{joinBagHandler}
+{
+    leafBagHandler->setSolver(this);
+    introduceVertexBagHandler->setSolver(this);
+    forgetVertexBagHandler->setSolver(this);
+    joinBagHandler->setSolver(this);
+}
 
 DataStructures::MutableColouring* Solvers::HeuristicTreeDecompositionSolver::solve() const
 {
     DataStructures::ColouringQueue rootColourings = solveAtBag(treeDecomposition->getRoot());
-    std::cout << "Root colourings: " << rootColourings;
-    std::cout << "[MY ALGO] Evaluation:        " << evaluator->evaluate(rootColourings.retrieveBestColouring()) << "\n"; // TODO remove
-    std::cout << "[MY ALGO] Nb happy vertices: " << DataStructures::BasicMHVEvaluator{graph}.evaluate(rootColourings.retrieveBestColouring()) << "\n"; // TODO remove
+    std::cout << "Root colourings: " << rootColourings; // TODO remove
     return rootColourings.retrieveBestColouring();
 }
 
@@ -32,17 +39,23 @@ DataStructures::ColouringQueue Solvers::HeuristicTreeDecompositionSolver::solveA
     switch(bag->getBagType())
     {
         case DataStructures::BagType::LeafBag:
-            return handleLeafBag(dynamic_cast<const DataStructures::LeafBag*>(bag));
+            return leafBagHandler->handleLeafBag(dynamic_cast<const DataStructures::LeafBag*>(bag));
         case DataStructures::BagType::IntroduceVertexBag:
-            return handleIntroduceVertexBag(dynamic_cast<const DataStructures::IntroduceVertexBag*>(bag));
+            return introduceVertexBagHandler->handleIntroduceVertexBag(dynamic_cast<const DataStructures::IntroduceVertexBag*>(bag));
         case DataStructures::BagType::ForgetVertexBag:
-            return handleForgetVertexBag(dynamic_cast<const DataStructures::ForgetVertexBag*>(bag));
+            return forgetVertexBagHandler->handleForgetVertexBag(dynamic_cast<const DataStructures::ForgetVertexBag*>(bag));
         case DataStructures::BagType::JoinBag:
-            return handleJoinBag(dynamic_cast<const DataStructures::JoinBag*>(bag));
+            return joinBagHandler->handleJoinBag(dynamic_cast<const DataStructures::JoinBag*>(bag));
     }
 }
 
 DataStructures::ColouringQueue Solvers::HeuristicTreeDecompositionSolver::createEmptyColouringQueue() const
 {
     return DataStructures::ColouringQueue{nbSolutionsToKeep, evaluator};
+}
+
+void Solvers::BagHandler::setSolver(Solvers::HeuristicTreeDecompositionSolver* newSolver)
+{
+    if (!solver)
+        solver = newSolver;
 }
