@@ -33,6 +33,14 @@ namespace Solvers
         explicit BasicJoinBagHandler(DataStructures::Graph* graph, Order order = Order::defaultOrder);
         [[nodiscard]] DataStructures::ColouringQueue handleJoinBag(const DataStructures::JoinBag* bag) const override;
     };
+
+    class DynamicOrderJoinBagHandler : public JoinBagHandler
+    {
+    public:
+        [[nodiscard]] DataStructures::ColouringQueue handleJoinBag(const DataStructures::JoinBag* bag) const override;
+    private:
+        [[nodiscard]] int nbColouredNeighbours(DataStructures::VertexType vertex, DataStructures::MutableColouring* colouring) const;
+    };
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_CONCRETEJOINBAGHANDLERS_H

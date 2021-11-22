@@ -64,4 +64,4 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/ConcreteJoinBagHandlers.h
         src/Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBagHandler/BasicIntroduceVertexBagHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBagHandler/ConcreteIntroduceVertexBagHandlers.h
-        src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/BasicJoinBagHandler.cpp)
+        src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/BasicJoinBagHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/DynamicOrderJoinBagHandler.cpp)

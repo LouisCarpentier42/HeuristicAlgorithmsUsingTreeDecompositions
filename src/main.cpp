@@ -63,7 +63,7 @@ int main(int argc, char** argv)
     }
     else
     {
-        graphName = "my_first_graph";
+        graphName = "he002";
         graphFilesDir = "../GraphFiles/";
         TreeDecompositionFilesDir = "../TreeDecompositionFiles/";
     }
@@ -79,6 +79,8 @@ int main(int argc, char** argv)
     {
         nbColours = 3;
     }
+
+    size_t nbSolutionsToKeep{16};
 
     std::string graphFile{graphName + ".gr"};
     std::string treeFile{graphName + ".tw"};
@@ -112,32 +114,39 @@ int main(int argc, char** argv)
 
     DataStructures::AdvancedMHVEvaluator evaluator{&graph, 6, 2, -1};
     solvers["my_basic_solver"] = new Solvers::HeuristicTreeDecompositionSolver{
-        &graph, &colouring, &evaluator, 16, &niceTreeDecomposition,
-        new Solvers::BasicLeafBagHandlers{},
-        new Solvers::BasicIntroduceVertexBagHandler{},
-        new Solvers::BasicForgetVertexBagHandler{},
-        new Solvers::BasicJoinBagHandler{&graph}
+            &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
+            new Solvers::BasicLeafBagHandlers{},
+            new Solvers::BasicIntroduceVertexBagHandler{},
+            new Solvers::BasicForgetVertexBagHandler{},
+            new Solvers::BasicJoinBagHandler{&graph}
     };
-    solvers["my_basic_solver_gdf"] = new Solvers::HeuristicTreeDecompositionSolver{
-        &graph, &colouring, &evaluator, 16, &niceTreeDecomposition,
+//    solvers["my_basic_solver_gdf"] = new Solvers::HeuristicTreeDecompositionSolver{
+//            &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
+//            new Solvers::BasicLeafBagHandlers{},
+//            new Solvers::BasicIntroduceVertexBagHandler{},
+//            new Solvers::BasicForgetVertexBagHandler{},
+//            new Solvers::BasicJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::greatestDegreeFirst}
+//    };
+//    solvers["my_basic_solver_sdf"] = new Solvers::HeuristicTreeDecompositionSolver{
+//            &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
+//            new Solvers::BasicLeafBagHandlers{},
+//            new Solvers::BasicIntroduceVertexBagHandler{},
+//            new Solvers::BasicForgetVertexBagHandler{},
+//            new Solvers::BasicJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::smallestDegreeFirst}
+//    };
+//    solvers["my_basic_solver_random"] = new Solvers::HeuristicTreeDecompositionSolver{
+//            &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
+//            new Solvers::BasicLeafBagHandlers{},
+//            new Solvers::BasicIntroduceVertexBagHandler{},
+//            new Solvers::BasicForgetVertexBagHandler{},
+//            new Solvers::BasicJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::random}
+//    };
+    solvers["my_solver_dynamic_order"] = new Solvers::HeuristicTreeDecompositionSolver{
+        &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
         new Solvers::BasicLeafBagHandlers{},
         new Solvers::BasicIntroduceVertexBagHandler{},
         new Solvers::BasicForgetVertexBagHandler{},
-        new Solvers::BasicJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::greatestDegreeFirst}
-    };
-    solvers["my_basic_solver_sdf"] = new Solvers::HeuristicTreeDecompositionSolver{
-        &graph, &colouring, &evaluator, 16, &niceTreeDecomposition,
-        new Solvers::BasicLeafBagHandlers{},
-        new Solvers::BasicIntroduceVertexBagHandler{},
-        new Solvers::BasicForgetVertexBagHandler{},
-        new Solvers::BasicJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::smallestDegreeFirst}
-    };
-    solvers["my_basic_solver_random"] = new Solvers::HeuristicTreeDecompositionSolver{
-        &graph, &colouring, &evaluator, 16, &niceTreeDecomposition,
-        new Solvers::BasicLeafBagHandlers{},
-        new Solvers::BasicIntroduceVertexBagHandler{},
-        new Solvers::BasicForgetVertexBagHandler{},
-        new Solvers::BasicJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::random}
+        new Solvers::DynamicOrderJoinBagHandler{}
     };
 
     DataStructures::BasicMHVEvaluator mhvEvaluator{&graph};
