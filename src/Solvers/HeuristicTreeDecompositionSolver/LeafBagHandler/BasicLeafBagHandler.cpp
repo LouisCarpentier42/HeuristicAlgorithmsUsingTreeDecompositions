@@ -4,7 +4,7 @@
 
 #include "ConcreteLeafBagHandlers.h"
 
-DataStructures::ColouringQueue Solvers::ConcreteLeafBagHandlers::handleLeafBag(const DataStructures::LeafBag *bag) const
+DataStructures::ColouringQueue Solvers::BasicLeafBagHandlers::handleLeafBag(const DataStructures::LeafBag *bag) const
 {
     DataStructures::ColouringQueue initialColouringQueue = solver->createEmptyColouringQueue();
     initialColouringQueue.push(new DataStructures::MutableColouring{solver->colouring});

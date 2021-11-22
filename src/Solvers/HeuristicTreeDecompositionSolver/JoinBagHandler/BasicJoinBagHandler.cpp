@@ -3,6 +3,33 @@
 //
 #include "ConcreteJoinBagHandlers.h"
 
+#include <numeric>
+#include <algorithm>
+#include <random>
+
+Solvers::BasicJoinBagHandler::BasicJoinBagHandler(DataStructures::Graph* graph, Solvers::BasicJoinBagHandler::Order order)
+: vertexOrder{std::vector<DataStructures::VertexType>(graph->getNbVertices())}
+{
+    static std::mt19937 rng{std::random_device{}()};
+    std::iota(vertexOrder.begin(), vertexOrder.end(), 0);
+    switch (order)
+    {
+        case Order::defaultOrder:
+            break;
+        case Order::greatestDegreeFirst:
+            std::sort(vertexOrder.begin(), vertexOrder.end(),
+                      [graph](auto v1, auto v2){ return graph->getDegree(v1) > graph->getDegree(v2); });
+            break;
+        case Order::smallestDegreeFirst:
+            std::sort(vertexOrder.begin(), vertexOrder.end(),
+                      [graph](auto v1, auto v2){ return graph->getDegree(v1) < graph->getDegree(v2); });
+            break;
+        case Order::random:
+            std::shuffle(vertexOrder.begin(), vertexOrder.end(), rng);
+            break;
+    }
+}
+
 DataStructures::ColouringQueue Solvers::BasicJoinBagHandler::handleJoinBag(const DataStructures::JoinBag *bag) const
 {
     DataStructures::ColouringQueue leftChildSolutions = solver->solveAtBag(bag->getLeftChild());
@@ -14,7 +41,7 @@ DataStructures::ColouringQueue Solvers::BasicJoinBagHandler::handleJoinBag(const
         for (DataStructures::MutableColouring* rightColouring : rightChildSolutions)
         {
             auto* newColouring = new DataStructures::MutableColouring{solver->colouring};
-            for (DataStructures::VertexType vertex{0}; vertex < solver->graph->getNbVertices(); vertex++)
+            for (DataStructures::VertexType vertex : vertexOrder)
             {
                 if (solver->colouring->isColoured(vertex)) continue; // Skip precoloured vertices
                 if (leftColouring->isColoured(vertex) && rightColouring->isColoured(vertex))

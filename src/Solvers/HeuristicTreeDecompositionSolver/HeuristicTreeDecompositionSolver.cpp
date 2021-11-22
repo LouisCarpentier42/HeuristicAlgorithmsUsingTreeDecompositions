@@ -30,7 +30,6 @@ Solvers::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositionSolver(
 DataStructures::MutableColouring* Solvers::HeuristicTreeDecompositionSolver::solve() const
 {
     DataStructures::ColouringQueue rootColourings = solveAtBag(treeDecomposition->getRoot());
-    std::cout << "Root colourings: " << rootColourings; // TODO remove
     return rootColourings.retrieveBestColouring();
 }
 

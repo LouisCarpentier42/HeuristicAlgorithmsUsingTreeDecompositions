@@ -9,7 +9,7 @@
 
 namespace Solvers
 {
-    class ConcreteLeafBagHandlers : public LeafBagHandler
+    class BasicLeafBagHandlers : public LeafBagHandler
     {
     public:
         [[nodiscard]] DataStructures::ColouringQueue handleLeafBag(const DataStructures::LeafBag* bag) const override;

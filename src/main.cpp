@@ -18,10 +18,10 @@
 #include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
 #include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
 #include "Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/LeafBag/ConcreteLeafBagHandlers.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBag/ConcreteIntroduceVertexBagHandlers.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/ForgetVertexBag/ConcreteForgetVertexBagHandlers.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/JoinBag/ConcreteJoinBagHandlers.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/LeafBagHandler/ConcreteLeafBagHandlers.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBagHandler/ConcreteIntroduceVertexBagHandlers.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/ForgetVertexBagHandler/ConcreteForgetVertexBagHandlers.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/ConcreteJoinBagHandlers.h"
 
 
 #include <iostream>
@@ -37,8 +37,7 @@ DataStructures::Colouring generatePartialColouring(DataStructures::Graph& graph,
 
     // Create a random shuffling of the vertices and colour them in this order
     std::vector<DataStructures::VertexType> allVertices(graph.getNbVertices());
-    for (DataStructures::VertexType vertex{0}; vertex < graph.getNbVertices(); vertex++)
-        allVertices[vertex] = vertex;
+    std::iota(allVertices.begin(), allVertices.end(), 0);
     std::shuffle(allVertices.begin(), allVertices.end(), rng);
 
     // Colour the first nbColours vertices in each colour before randomly colour the remaining vertices
@@ -51,17 +50,41 @@ DataStructures::Colouring generatePartialColouring(DataStructures::Graph& graph,
     return DataStructures::Colouring{colourVector};
 }
 
-int main()
+int main(int argc, char** argv)
 {
-    IO::Reader reader{
-        "../GraphFiles/",
-        "../TreeDecompositionFiles/"};
+    std::string graphName;
+    std::string graphFilesDir;
+    std::string TreeDecompositionFilesDir;
+    if (argc > 1)
+    {
+        graphName = argv[1];
+        graphFilesDir = "../../GraphFiles/";
+        TreeDecompositionFilesDir = "../../TreeDecompositionFiles/";
+    }
+    else
+    {
+        graphName = "my_first_graph";
+        graphFilesDir = "../GraphFiles/";
+        TreeDecompositionFilesDir = "../TreeDecompositionFiles/";
+    }
 
-    std::string graphName{"ex001"};
+    int nbColours;
+    if (argc > 2)
+    {
+        std::stringstream ss;
+        ss << argv[2];
+        ss >> nbColours;
+    }
+    else
+    {
+        nbColours = 3;
+    }
+
     std::string graphFile{graphName + ".gr"};
     std::string treeFile{graphName + ".tw"};
     std::string niceTreeFile{graphName + "_nice.tw"};
     std::string veryNiceTreeFile{graphName + "_very_nice.tw"};
+    IO::Reader reader{graphFilesDir, TreeDecompositionFilesDir};
 
 //    TreeDecompositionSolverTimer timer{1.0, 4.0, 10000.0, 0.20};
 //    timer.executeSolver(graphFile);
@@ -80,7 +103,7 @@ int main()
     std::cout << "Treewidth:   " << niceTreeDecomposition.getTreeWidth() << "\n";
     std::cout << "Nb vertices: " << graph.getNbVertices() << "\n";
 
-    DataStructures::Colouring colouring = generatePartialColouring(graph, 5, 0.01);
+    DataStructures::Colouring colouring = generatePartialColouring(graph, nbColours, 0.01);
     std::cout << "Original colouring: " << colouring << "\n\n";
 
     std::map<std::string, Solvers::SolverBase*> solvers{};
@@ -88,23 +111,45 @@ int main()
     solvers["growth_mhv"] = new MaximumHappyVertices::GrowthMHV{&graph, &colouring};
 
     DataStructures::AdvancedMHVEvaluator evaluator{&graph, 6, 2, -1};
-    auto* leafBagHandler = new Solvers::ConcreteLeafBagHandlers{};
-    auto* introduceVertexBagHandler = new Solvers::BasicIntroduceVertexBagHandler{};
-    auto* forgetVertexBagHandler = new Solvers::BasicForgetVertexBagHandler{};
-    auto* joinBagHandler = new Solvers::BasicJoinBagHandler{};
-    solvers["my_solver"] = new Solvers::HeuristicTreeDecompositionSolver{
-                            &graph, &colouring, &evaluator, 16, &niceTreeDecomposition,
-                            leafBagHandler, introduceVertexBagHandler, forgetVertexBagHandler, joinBagHandler};
+    solvers["my_basic_solver"] = new Solvers::HeuristicTreeDecompositionSolver{
+        &graph, &colouring, &evaluator, 16, &niceTreeDecomposition,
+        new Solvers::BasicLeafBagHandlers{},
+        new Solvers::BasicIntroduceVertexBagHandler{},
+        new Solvers::BasicForgetVertexBagHandler{},
+        new Solvers::BasicJoinBagHandler{&graph}
+    };
+    solvers["my_basic_solver_gdf"] = new Solvers::HeuristicTreeDecompositionSolver{
+        &graph, &colouring, &evaluator, 16, &niceTreeDecomposition,
+        new Solvers::BasicLeafBagHandlers{},
+        new Solvers::BasicIntroduceVertexBagHandler{},
+        new Solvers::BasicForgetVertexBagHandler{},
+        new Solvers::BasicJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::greatestDegreeFirst}
+    };
+    solvers["my_basic_solver_sdf"] = new Solvers::HeuristicTreeDecompositionSolver{
+        &graph, &colouring, &evaluator, 16, &niceTreeDecomposition,
+        new Solvers::BasicLeafBagHandlers{},
+        new Solvers::BasicIntroduceVertexBagHandler{},
+        new Solvers::BasicForgetVertexBagHandler{},
+        new Solvers::BasicJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::smallestDegreeFirst}
+    };
+    solvers["my_basic_solver_random"] = new Solvers::HeuristicTreeDecompositionSolver{
+        &graph, &colouring, &evaluator, 16, &niceTreeDecomposition,
+        new Solvers::BasicLeafBagHandlers{},
+        new Solvers::BasicIntroduceVertexBagHandler{},
+        new Solvers::BasicForgetVertexBagHandler{},
+        new Solvers::BasicJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::random}
+    };
 
     DataStructures::BasicMHVEvaluator mhvEvaluator{&graph};
     for (auto const& [name, solver] : solvers)
     {
+        std::cout << ">>> " << name << " <<<\n";
+
         auto start = std::chrono::high_resolution_clock::now();
         auto* solution = solver->solve();
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
-        std::cout << ">>> " << name << " <<<\n";
         std::cout << "Evaluation: " << mhvEvaluator.evaluate(solution) << "\n";
         std::cout << "Colouring:  " << *solution << "\n";
         std::cout << "Time (µs):  " << duration.count() << "\n\n";

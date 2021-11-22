@@ -7,6 +7,7 @@
 
 #include "../HeuristicTreeDecompositionSolver.h"
 
+
 // TODO ideas for join bag:
 //  - when merging the colourings, when they differ to much better to skip them
 //  - if left colour and right colour give equal evaluation, try to maintain both
@@ -18,6 +19,18 @@ namespace Solvers
     class BasicJoinBagHandler : public JoinBagHandler
     {
     public:
+        enum class Order {
+            defaultOrder,
+            greatestDegreeFirst,
+            smallestDegreeFirst,
+            random
+        };
+
+    private:
+        std::vector<DataStructures::VertexType> vertexOrder;
+
+    public:
+        explicit BasicJoinBagHandler(DataStructures::Graph* graph, Order order = Order::defaultOrder);
         [[nodiscard]] DataStructures::ColouringQueue handleJoinBag(const DataStructures::JoinBag* bag) const override;
     };
 }
