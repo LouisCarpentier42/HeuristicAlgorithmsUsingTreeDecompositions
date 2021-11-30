@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <random>
 
-Solvers::BasicJoinBagHandler::BasicJoinBagHandler(DataStructures::Graph* graph, Solvers::BasicJoinBagHandler::Order order)
+Solvers::StaticOrderJoinBagHandler::StaticOrderJoinBagHandler(DataStructures::Graph* graph, Solvers::StaticOrderJoinBagHandler::Order order)
 : vertexOrder{std::vector<DataStructures::VertexType>(graph->getNbVertices())}
 {
     static std::mt19937 rng{std::random_device{}()};
@@ -30,7 +30,7 @@ Solvers::BasicJoinBagHandler::BasicJoinBagHandler(DataStructures::Graph* graph, 
     }
 }
 
-DataStructures::ColouringQueue Solvers::BasicJoinBagHandler::handleJoinBag(const DataStructures::JoinBag *bag) const
+DataStructures::ColouringQueue Solvers::StaticOrderJoinBagHandler::handleJoinBag(const DataStructures::JoinBag *bag) const
 {
     DataStructures::ColouringQueue leftChildSolutions = solver->solveAtBag(bag->getLeftChild());
     DataStructures::ColouringQueue rightChildSolutions = solver->solveAtBag(bag->getRightChild());
