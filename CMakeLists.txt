@@ -64,4 +64,4 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/ConcreteJoinNodeHandlers.h
         src/Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/ColourAllIntroduceNodeHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/ConcreteIntroduceNodeHandlers.h
-        src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/StaticOrderJoinNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/DynamicOrderJoinNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/BestColourIntroduceNodeHandler.cpp)
+        src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/StaticOrderJoinNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/DynamicOrderJoinNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/BestColourIntroduceNodeHandler.cpp src/experimentalAnalysis.cpp src/experimentalAnalysis.h)
