@@ -9,7 +9,13 @@
 
 namespace Solvers
 {
-    class BasicIntroduceVertexBagHandler : public IntroduceVertexBagHandler
+    class ColourAllIntroduceVertexBagHandler : public IntroduceVertexBagHandler
+    {
+    public:
+        [[nodiscard]] DataStructures::ColouringQueue handleIntroduceVertexBag(const DataStructures::IntroduceVertexBag* bag) const override;
+    };
+
+    class BestColourIntroduceVertexBagHandler : public IntroduceVertexBagHandler
     {
     public:
         [[nodiscard]] DataStructures::ColouringQueue handleIntroduceVertexBag(const DataStructures::IntroduceVertexBag* bag) const override;

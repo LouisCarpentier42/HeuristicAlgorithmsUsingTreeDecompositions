@@ -27,12 +27,17 @@ namespace DataStructures
 
         void push(DataStructures::MutableColouring* colouring);
         [[nodiscard]] DataStructures::MutableColouring* retrieveBestColouring() const;
+        [[nodiscard]] DataStructures::MutableColouring* popBestColouring();
+
+        [[nodiscard]] bool isEmpty() const;
+        [[nodiscard]] bool reachedCapacity() const;
 
         [[nodiscard]] Iterator begin() const;
         [[nodiscard]] Iterator end() const;
 
         friend std::ostream& operator<<(std::ostream& out, const ColouringQueue& colouringQueue);
     };
+    std::ostream& operator<<(std::ostream& out, const ColouringQueue& colouringQueue);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_COLOURINGQUEUE_H

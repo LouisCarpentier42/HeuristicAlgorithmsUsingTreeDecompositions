@@ -60,8 +60,8 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/HeuristicTreeDecompositionSolver/ForgetVertexBagHandler/ConcreteForgetVertexBagHandlers.h
         src/Solvers/HeuristicTreeDecompositionSolver/LeafBagHandler/BasicLeafBagHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/LeafBagHandler/ConcreteLeafBagHandlers.h
-        src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/BasicJoinBagHandler.cpp
+        src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/StaticOrderJoinBagHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/ConcreteJoinBagHandlers.h
-        src/Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBagHandler/BasicIntroduceVertexBagHandler.cpp
+        src/Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBagHandler/ColourAllIntroduceVertexBagHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBagHandler/ConcreteIntroduceVertexBagHandlers.h
-        src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/BasicJoinBagHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/DynamicOrderJoinBagHandler.cpp)
+        src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/StaticOrderJoinBagHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/DynamicOrderJoinBagHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBagHandler/BestColourIntroduceVertexBagHandler.cpp)

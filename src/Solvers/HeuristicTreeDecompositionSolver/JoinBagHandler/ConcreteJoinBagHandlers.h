@@ -16,7 +16,7 @@
 
 namespace Solvers
 {
-    class BasicJoinBagHandler : public JoinBagHandler
+    class StaticOrderJoinBagHandler : public JoinBagHandler
     {
     public:
         enum class Order {
@@ -30,7 +30,7 @@ namespace Solvers
         std::vector<DataStructures::VertexType> vertexOrder;
 
     public:
-        explicit BasicJoinBagHandler(DataStructures::Graph* graph, Order order = Order::defaultOrder);
+        explicit StaticOrderJoinBagHandler(DataStructures::Graph* graph, Order order = Order::defaultOrder);
         [[nodiscard]] DataStructures::ColouringQueue handleJoinBag(const DataStructures::JoinBag* bag) const override;
     };
 

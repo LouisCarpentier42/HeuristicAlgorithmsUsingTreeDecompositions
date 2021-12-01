@@ -4,8 +4,7 @@
 
 #include "ConcreteIntroduceVertexBagHandlers.h"
 
-DataStructures::ColouringQueue
-Solvers::BasicIntroduceVertexBagHandler::handleIntroduceVertexBag(const DataStructures::IntroduceVertexBag *bag) const
+DataStructures::ColouringQueue Solvers::ColourAllIntroduceVertexBagHandler::handleIntroduceVertexBag(const DataStructures::IntroduceVertexBag *bag) const
 {
     DataStructures::ColouringQueue childColourings = solver->solveAtBag(bag->getChild());
     DataStructures::VertexType introducedVertex{bag->getIntroducedVertex()};
@@ -20,7 +19,6 @@ Solvers::BasicIntroduceVertexBagHandler::handleIntroduceVertexBag(const DataStru
         {
             auto* newColouring = new DataStructures::MutableColouring{*childColouring};
             newColouring->setColour(introducedVertex, colour);
-            std::vector<DataStructures::MutableColouring*> currentColourings;
             newColourings.push(newColouring);
         }
     }

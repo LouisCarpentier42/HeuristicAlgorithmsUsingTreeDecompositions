@@ -75,10 +75,29 @@ void DataStructures::ColouringQueue::push(DataStructures::MutableColouring* colo
     }
 }
 
-DataStructures::MutableColouring *DataStructures::ColouringQueue::retrieveBestColouring() const
+DataStructures::MutableColouring* DataStructures::ColouringQueue::retrieveBestColouring() const
 {
     return *std::max_element(queue.begin(), queue.end(),
                              [this](auto* c1, auto* c2){return (*evaluator)(c1, c2);});
+}
+
+DataStructures::MutableColouring* DataStructures::ColouringQueue::popBestColouring()
+{
+    std::sort(queue.begin(), queue.end(), [this](auto* c1, auto* c2){return (*evaluator)(c1, c2);});
+    DataStructures::MutableColouring* bestColouring = queue.back();
+    queue.pop_back();
+    return bestColouring;
+}
+
+
+bool DataStructures::ColouringQueue::isEmpty() const
+{
+    return queue.empty();
+}
+
+bool DataStructures::ColouringQueue::reachedCapacity() const
+{
+    return queue.size() >= nbColourings;
 }
 
 DataStructures::ColouringQueue::Iterator DataStructures::ColouringQueue::begin() const
@@ -91,7 +110,7 @@ DataStructures::ColouringQueue::Iterator DataStructures::ColouringQueue::end() c
     return queue.end();
 }
 
-std::ostream &DataStructures::operator<<(std::ostream &out, const DataStructures::ColouringQueue &colouringQueue)
+std::ostream& DataStructures::operator<<(std::ostream &out, const DataStructures::ColouringQueue &colouringQueue)
 {
     out << "COLOURING QUEUE [" << colouringQueue.queue.size() << "]\n";
     for (DataStructures::MutableColouring* colouring : colouringQueue)
