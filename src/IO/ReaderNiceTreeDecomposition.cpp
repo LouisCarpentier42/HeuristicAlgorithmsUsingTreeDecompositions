@@ -18,17 +18,17 @@ bool containSameElements(DataStructures::BagContent& bag1, DataStructures::BagCo
     return true;
 }
 
-DataStructures::NiceBag* transformToNiceBag(const DataStructures::Bag* bag)
+DataStructures::NiceNode* transformToNiceBag(const DataStructures::Node* bag)
 {
     if (bag->isLeaf())
     {
         if (!bag->isEmpty()) throw std::invalid_argument("A leaf bag in a nice tree decomposition must be empty!");
-        return new DataStructures::LeafBag{bag->getId()};
+        return new DataStructures::LeafNode{bag->getId()};
     }
 
     else if (bag->getNbChildren() == 1)
     {
-        DataStructures::Bag* child = *bag->beginChildrenIterator();
+        DataStructures::Node* child = *bag->beginChildrenIterator();
         DataStructures::BagContent parentContent = bag->getBagContent();
         DataStructures::BagContent childContent = child->getBagContent();
 
@@ -46,7 +46,7 @@ DataStructures::NiceBag* transformToNiceBag(const DataStructures::Bag* bag)
 
             if (forgottenVertex.empty()) throw std::invalid_argument("A vertex must be forgotten in forget node!");
 
-            return new DataStructures::ForgetVertexBag{
+            return new DataStructures::ForgetNode{
                 bag->getId(),
                 bag->getBagSize(),
                 bag->getBagContent(),
@@ -68,7 +68,7 @@ DataStructures::NiceBag* transformToNiceBag(const DataStructures::Bag* bag)
 
             if (introducedVertex.empty()) throw std::invalid_argument("A vertex must be introduced in an introduce node!");
 
-            return new DataStructures::IntroduceVertexBag{
+            return new DataStructures::IntroduceNode{
                 bag->getId(),
                 bag->getBagSize(),
                 bag->getBagContent(),
@@ -84,8 +84,8 @@ DataStructures::NiceBag* transformToNiceBag(const DataStructures::Bag* bag)
 
     else if (bag->getNbChildren() == 2)
     {
-        DataStructures::Bag* leftChild = *bag->beginChildrenIterator();
-        DataStructures::Bag* rightChild = *(bag->beginChildrenIterator()+1);
+        DataStructures::Node* leftChild = *bag->beginChildrenIterator();
+        DataStructures::Node* rightChild = *(bag->beginChildrenIterator()+1);
 
         DataStructures::BagContent parentContent = bag->getBagContent();
         DataStructures::BagContent leftChildContent = leftChild->getBagContent();
@@ -98,7 +98,7 @@ DataStructures::NiceBag* transformToNiceBag(const DataStructures::Bag* bag)
             throw std::invalid_argument("Children of a join bag must have the same content as the parent bag!");
         }
 
-        return new DataStructures::JoinBag{
+        return new DataStructures::JoinNode{
             bag->getId(),
             bag->getBagSize(),
             bag->getBagContent(),

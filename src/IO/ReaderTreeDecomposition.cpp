@@ -32,8 +32,8 @@ DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(std::string&
     int largestBagSize{convertToInt(tokens[3])};
     int nbVertices{convertToInt(tokens[4])};
 
-    std::vector<DataStructures::StandardBag*> bags(nbBags);
-    std::vector<std::pair<DataStructures::StandardBag*, DataStructures::StandardBag*>> edges(nbBags-1);
+    std::vector<DataStructures::StandardNode*> bags(nbBags);
+    std::vector<std::pair<DataStructures::StandardNode*, DataStructures::StandardNode*>> edges(nbBags-1);
 
     std::getline(file, line);
     tokens = tokenize(line);
@@ -47,7 +47,7 @@ DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(std::string&
             {
                 vertices[i] = convertToInt(tokens[i+2])-1;
             }
-            bags[bagId-1] = new DataStructures::StandardBag{bagId, bagSize, vertices};
+            bags[bagId-1] = new DataStructures::StandardNode{bagId, bagSize, vertices};
         }
         else if (rootId == -1 && tokens[1] == "ROOT_NICE_TREE") // From previous if we know (tokens[0] == "c")
         {
@@ -73,10 +73,10 @@ DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(std::string&
         tokens = tokenize(line);
     }
 
-    DataStructures::StandardBag* root{nullptr};
+    DataStructures::StandardNode* root{nullptr};
     if (rootId != -1)
     {
-        for (DataStructures::StandardBag* bag : bags)
+        for (DataStructures::StandardNode* bag : bags)
         {
             if (bag->getId() == rootId)
             {
@@ -89,7 +89,7 @@ DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(std::string&
     {
          // Use the first empty bag as root and otherwise use the first bag
         root = bags[0];
-        for (DataStructures::StandardBag* bag : bags) {
+        for (DataStructures::StandardNode* bag : bags) {
             if (bag->isEmpty()) {
                 root = bag;
                 break;
@@ -97,11 +97,11 @@ DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(std::string&
         }
     }
 
-    std::queue<DataStructures::StandardBag*> bagsToProcess{};
+    std::queue<DataStructures::StandardNode*> bagsToProcess{};
     bagsToProcess.push(root);
     while (!bagsToProcess.empty()) {
-        DataStructures::StandardBag* bagBeingProcessed{bagsToProcess.front()};
-        for (std::pair<DataStructures::StandardBag*, DataStructures::StandardBag*> edge : edges) {
+        DataStructures::StandardNode* bagBeingProcessed{bagsToProcess.front()};
+        for (std::pair<DataStructures::StandardNode*, DataStructures::StandardNode*> edge : edges) {
             if (bagBeingProcessed == edge.first) {
                 if (bagBeingProcessed->getParent() != edge.second) {
                     bagBeingProcessed->addChild(edge.second);

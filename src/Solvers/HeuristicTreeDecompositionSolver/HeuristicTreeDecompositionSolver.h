@@ -7,11 +7,11 @@
 
 
 #include "../../DataStructures/TreeDecomposition/TreeDecomposition.h"
-#include "../../DataStructures/TreeDecomposition/ForgetVertexBag.h"
-#include "../../DataStructures/TreeDecomposition/IntroduceVertexBag.h"
-#include "../../DataStructures/TreeDecomposition/JoinBag.h"
-#include "../../DataStructures/TreeDecomposition/LeafBag.h"
-#include "../../DataStructures/TreeDecomposition/NiceBag.h"
+#include "../../DataStructures/TreeDecomposition/ForgetNode.h"
+#include "../../DataStructures/TreeDecomposition/IntroduceNode.h"
+#include "../../DataStructures/TreeDecomposition/JoinNode.h"
+#include "../../DataStructures/TreeDecomposition/LeafNode.h"
+#include "../../DataStructures/TreeDecomposition/NiceNode.h"
 #include "../../DataStructures/Colouring/ColouringQueue.h"
 
 #include "../SolverBase.h"
@@ -20,20 +20,24 @@
 
 namespace Solvers
 {
-    class LeafBagHandler;
-    class IntroduceVertexBagHandler;
-    class ForgetVertexBagHandler;
-    class JoinBagHandler;
+    class LeafNodeHandler;
+    class IntroduceNodeHandler;
+    class ForgetNodeHandler;
+    class JoinNodeHandler;
 
     class HeuristicTreeDecompositionSolver : public Solvers::SolverBase
     {
     private:
+        /** Variable referring to the number of solutions that should be kept at each node. **/
         const size_t nbSolutionsToKeep;
+        /** The nice tree decomposition to use during when solving the problem. **/
         const DataStructures::NiceTreeDecomposition* treeDecomposition;
-        LeafBagHandler* leafBagHandler;
-        IntroduceVertexBagHandler* introduceVertexBagHandler;
-        ForgetVertexBagHandler* forgetVertexBagHandler;
-        JoinBagHandler* joinBagHandler;
+
+        /** Objects that should handle the different types of nodes of the tree decomposition. **/
+        LeafNodeHandler* leafNodeHandler;
+        IntroduceNodeHandler* introduceNodeHandler;
+        ForgetNodeHandler* forgetNodeHandler;
+        JoinNodeHandler* joinNodeHandler;
 
     public:
         HeuristicTreeDecompositionSolver(const DataStructures::Graph* graph,
@@ -41,17 +45,17 @@ namespace Solvers
                                          const DataStructures::ColouringEvaluator* evaluator,
                                          size_t nbSolutionsToKeep,
                                          const DataStructures::NiceTreeDecomposition* treeDecomposition,
-                                         LeafBagHandler* leafBagHandler,
-                                         IntroduceVertexBagHandler* introduceVertexBagHandler,
-                                         ForgetVertexBagHandler* forgetVertexBagHandler,
-                                         JoinBagHandler* joinBagHandler);
+                                         LeafNodeHandler* leafNodeHandler,
+                                         IntroduceNodeHandler* introduceNodeHandler,
+                                         ForgetNodeHandler* forgetNodeHandler,
+                                         JoinNodeHandler* joinNodeHandler);
 
         [[nodiscard]] DataStructures::MutableColouring* solve() const override;
-        [[nodiscard]] DataStructures::ColouringQueue solveAtBag(const DataStructures::NiceBag* bag) const;
+        [[nodiscard]] DataStructures::ColouringQueue solveAtNode(const DataStructures::NiceNode* node) const;
         [[nodiscard]] DataStructures::ColouringQueue createEmptyColouringQueue() const;
     };
 
-    class BagHandler
+    class NodeHandler
     {
     protected:
         const HeuristicTreeDecompositionSolver* solver{nullptr};
@@ -60,28 +64,28 @@ namespace Solvers
         void setSolver(HeuristicTreeDecompositionSolver* newSolver);
     };
 
-    class LeafBagHandler : public Solvers::BagHandler
+    class LeafNodeHandler : public Solvers::NodeHandler
     {
     public:
-        [[nodiscard]] virtual DataStructures::ColouringQueue handleLeafBag(const DataStructures::LeafBag* bag) const = 0;
+        [[nodiscard]] virtual DataStructures::ColouringQueue handleLeafNode(const DataStructures::LeafNode* node) const = 0;
     };
 
-    class IntroduceVertexBagHandler : public Solvers::BagHandler
+    class IntroduceNodeHandler : public Solvers::NodeHandler
     {
     public:
-        [[nodiscard]] virtual DataStructures::ColouringQueue handleIntroduceVertexBag(const DataStructures::IntroduceVertexBag* bag) const = 0;
+        [[nodiscard]] virtual DataStructures::ColouringQueue handleIntroduceNode(const DataStructures::IntroduceNode* node) const = 0;
     };
 
-    class ForgetVertexBagHandler : public Solvers::BagHandler
+    class ForgetNodeHandler : public Solvers::NodeHandler
     {
     public:
-        [[nodiscard]] virtual DataStructures::ColouringQueue handleForgetVertexBag(const DataStructures::ForgetVertexBag* bag) const = 0;
+        [[nodiscard]] virtual DataStructures::ColouringQueue handleForgetVertexBag(const DataStructures::ForgetNode* node) const = 0;
     };
 
-    class JoinBagHandler : public Solvers::BagHandler
+    class JoinNodeHandler : public Solvers::NodeHandler
     {
     public:
-        [[nodiscard]] virtual DataStructures::ColouringQueue handleJoinBag(const DataStructures::JoinBag* bag) const = 0;
+        [[nodiscard]] virtual DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const = 0;
     };
 }
 

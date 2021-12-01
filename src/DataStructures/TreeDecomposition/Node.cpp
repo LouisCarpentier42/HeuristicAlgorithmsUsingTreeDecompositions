@@ -2,61 +2,61 @@
 // Created by louis on 03/09/2021.
 //
 
-#include "Bag.h"
+#include "Node.h"
 
-DataStructures::Bag::Bag(int id, size_t size, BagContent bagContent, ChildVector childVector)
+DataStructures::Node::Node(int id, size_t size, BagContent bagContent, ChildVector childVector)
     : id{id}, bagSize{size}, bagContent{std::move(bagContent)}, childVector{std::move(childVector)}
 {
-    for (Bag* child : this->childVector)
+    for (Node* child : this->childVector)
         child->setParent(this);
 }
 
-int DataStructures::Bag::getId() const
+int DataStructures::Node::getId() const
 {
     return id;
 }
 
-size_t DataStructures::Bag::getBagSize() const
+size_t DataStructures::Node::getBagSize() const
 {
     return bagSize;
 }
 
-bool DataStructures::Bag::isEmpty() const
+bool DataStructures::Node::isEmpty() const
 {
     return bagContent.empty();
 }
 
-DataStructures::BagContent DataStructures::Bag::getBagContent() const
+DataStructures::BagContent DataStructures::Node::getBagContent() const
 {
     return bagContent;
 }
 
-const DataStructures::Bag* DataStructures::Bag::getParent() const
+const DataStructures::Node* DataStructures::Node::getParent() const
 {
     return parent;
 }
 
-void DataStructures::Bag::setParent(DataStructures::Bag* newParent)
+void DataStructures::Node::setParent(DataStructures::Node* newParent)
 {
     this->parent = newParent;
 }
 
-bool DataStructures::Bag::isLeaf() const
+bool DataStructures::Node::isLeaf() const
 {
     return childVector.empty();
 }
 
-int DataStructures::Bag::getNbChildren() const
+int DataStructures::Node::getNbChildren() const
 {
     return childVector.size();
 }
 
-std::vector<DataStructures::Bag*>::const_iterator DataStructures::Bag::beginChildrenIterator() const
+std::vector<DataStructures::Node*>::const_iterator DataStructures::Node::beginChildrenIterator() const
 {
     return childVector.begin();
 }
 
-std::vector<DataStructures::Bag*>::const_iterator DataStructures::Bag::endChildrenIterator() const
+std::vector<DataStructures::Node*>::const_iterator DataStructures::Node::endChildrenIterator() const
 {
     return childVector.end();
 }
@@ -64,13 +64,13 @@ std::vector<DataStructures::Bag*>::const_iterator DataStructures::Bag::endChildr
 
 
 
-std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures::Bag& bag)
+std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures::Node& node)
 {
     std::string prefix{};
-    return bag.prettyPrint(out, prefix);
+    return node.prettyPrint(out, prefix);
 }
 
-std::ostream& DataStructures::Bag::prettyPrint(std::ostream& out, std::string& prefix) const
+std::ostream& DataStructures::Node::prettyPrint(std::ostream& out, std::string& prefix) const
 {
     out << "b(" << id << "): " << "{";
     if (bagSize > 0)
@@ -96,7 +96,7 @@ std::ostream& DataStructures::Bag::prettyPrint(std::ostream& out, std::string& p
    return out;
 }
 
-std::string DataStructures::Bag::getTypeString() const
+std::string DataStructures::Node::getTypeString() const
 {
     return "";
 }

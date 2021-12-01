@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/main.cpp src/ConstructingTreeDecompositions/FlowCutter/FlowCutterAdapter.cpp
         src/ConstructingTreeDecompositions/FlowCutter/FlowCutterAdapter.h
-        src/DataStructures/TreeDecomposition/Bag.cpp
-        src/DataStructures/TreeDecomposition/Bag.h
+        src/DataStructures/TreeDecomposition/Node.cpp
+        src/DataStructures/TreeDecomposition/Node.h
         src/IO/Reader.cpp
         src/IO/Reader.h
         src/ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.cpp
@@ -28,20 +28,20 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h
         src/Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.h
-        src/DataStructures/TreeDecomposition/NiceBag.cpp
-        src/DataStructures/TreeDecomposition/NiceBag.h
-        src/DataStructures/TreeDecomposition/StandardBag.cpp
-        src/DataStructures/TreeDecomposition/StandardBag.h
-        src/DataStructures/TreeDecomposition/IntroduceVertexBag.cpp
-        src/DataStructures/TreeDecomposition/IntroduceVertexBag.h
-        src/DataStructures/TreeDecomposition/ForgetVertexBag.cpp
-        src/DataStructures/TreeDecomposition/ForgetVertexBag.h
-        src/DataStructures/TreeDecomposition/IntroduceForgetVertexBagBase.cpp
-        src/DataStructures/TreeDecomposition/IntroduceForgetVertexBagBase.h
-        src/DataStructures/TreeDecomposition/JoinBag.cpp
-        src/DataStructures/TreeDecomposition/JoinBag.h
-        src/DataStructures/TreeDecomposition/LeafBag.cpp
-        src/DataStructures/TreeDecomposition/LeafBag.h
+        src/DataStructures/TreeDecomposition/NiceNode.cpp
+        src/DataStructures/TreeDecomposition/NiceNode.h
+        src/DataStructures/TreeDecomposition/StandardNode.cpp
+        src/DataStructures/TreeDecomposition/StandardNode.h
+        src/DataStructures/TreeDecomposition/IntroduceNode.cpp
+        src/DataStructures/TreeDecomposition/IntroduceNode.h
+        src/DataStructures/TreeDecomposition/ForgetNode.cpp
+        src/DataStructures/TreeDecomposition/ForgetNode.h
+        src/DataStructures/TreeDecomposition/IntroduceForgetNodeBase.cpp
+        src/DataStructures/TreeDecomposition/IntroduceForgetNodeBase.h
+        src/DataStructures/TreeDecomposition/JoinNode.cpp
+        src/DataStructures/TreeDecomposition/JoinNode.h
+        src/DataStructures/TreeDecomposition/LeafNode.cpp
+        src/DataStructures/TreeDecomposition/LeafNode.h
         src/IO/ReaderGraph.cpp
         src/IO/ReaderTreeDecomposition.cpp
         src/IO/ReaderNiceTreeDecomposition.cpp
@@ -56,12 +56,12 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/MaximumHappyVertices/MaximumHappyVerticesSolver.h
         src/DataStructures/Colouring/AdvancedMHVEvaluator.cpp
         src/DataStructures/Colouring/AdvancedMHVEvaluator.h
-        src/Solvers/HeuristicTreeDecompositionSolver/ForgetVertexBagHandler/BasicForgetVertexBagHandler.cpp
-        src/Solvers/HeuristicTreeDecompositionSolver/ForgetVertexBagHandler/ConcreteForgetVertexBagHandlers.h
-        src/Solvers/HeuristicTreeDecompositionSolver/LeafBagHandler/BasicLeafBagHandler.cpp
-        src/Solvers/HeuristicTreeDecompositionSolver/LeafBagHandler/ConcreteLeafBagHandlers.h
-        src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/StaticOrderJoinBagHandler.cpp
-        src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/ConcreteJoinBagHandlers.h
-        src/Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBagHandler/ColourAllIntroduceVertexBagHandler.cpp
-        src/Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBagHandler/ConcreteIntroduceVertexBagHandlers.h
-        src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/StaticOrderJoinBagHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/DynamicOrderJoinBagHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBagHandler/BestColourIntroduceVertexBagHandler.cpp)
+        src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/PassiveForgetNodeHandler.cpp
+        src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h
+        src/Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/PassiveLeafNodeHandlers.cpp
+        src/Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/ConcreteLeafNodeHandlers.h
+        src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/StaticOrderJoinNodeHandler.cpp
+        src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/ConcreteJoinNodeHandlers.h
+        src/Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/ColourAllIntroduceNodeHandler.cpp
+        src/Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/ConcreteIntroduceNodeHandlers.h
+        src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/StaticOrderJoinNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/DynamicOrderJoinNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/BestColourIntroduceNodeHandler.cpp)

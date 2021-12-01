@@ -2,12 +2,12 @@
 // Created by louis on 21/11/2021.
 //
 
-#include "ConcreteIntroduceVertexBagHandlers.h"
+#include "ConcreteIntroduceNodeHandlers.h"
 
-DataStructures::ColouringQueue Solvers::ColourAllIntroduceVertexBagHandler::handleIntroduceVertexBag(const DataStructures::IntroduceVertexBag *bag) const
+DataStructures::ColouringQueue Solvers::ColourAllIntroduceNodeHandler::handleIntroduceNode(const DataStructures::IntroduceNode *node) const
 {
-    DataStructures::ColouringQueue childColourings = solver->solveAtBag(bag->getChild());
-    DataStructures::VertexType introducedVertex{bag->getIntroducedVertex()};
+    DataStructures::ColouringQueue childColourings = solver->solveAtNode(node->getChild());
+    DataStructures::VertexType introducedVertex{node->getIntroducedVertex()};
 
     // Precoloured vertices may not receive a new colour
     if (solver->colouring->isColoured(introducedVertex)) return childColourings;

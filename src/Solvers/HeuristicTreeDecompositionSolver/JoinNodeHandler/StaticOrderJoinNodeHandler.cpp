@@ -1,13 +1,13 @@
 //
 // Created by louis on 21/11/2021.
 //
-#include "ConcreteJoinBagHandlers.h"
+#include "ConcreteJoinNodeHandlers.h"
 
 #include <numeric>
 #include <algorithm>
 #include <random>
 
-Solvers::StaticOrderJoinBagHandler::StaticOrderJoinBagHandler(DataStructures::Graph* graph, Solvers::StaticOrderJoinBagHandler::Order order)
+Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(DataStructures::Graph* graph, Solvers::StaticOrderJoinNodeHandler::Order order)
 : vertexOrder{std::vector<DataStructures::VertexType>(graph->getNbVertices())}
 {
     static std::mt19937 rng{std::random_device{}()};
@@ -30,10 +30,10 @@ Solvers::StaticOrderJoinBagHandler::StaticOrderJoinBagHandler(DataStructures::Gr
     }
 }
 
-DataStructures::ColouringQueue Solvers::StaticOrderJoinBagHandler::handleJoinBag(const DataStructures::JoinBag *bag) const
+DataStructures::ColouringQueue Solvers::StaticOrderJoinNodeHandler::handleJoinNode(const DataStructures::JoinNode *node) const
 {
-    DataStructures::ColouringQueue leftChildSolutions = solver->solveAtBag(bag->getLeftChild());
-    DataStructures::ColouringQueue rightChildSolutions = solver->solveAtBag(bag->getRightChild());
+    DataStructures::ColouringQueue leftChildSolutions = solver->solveAtNode(node->getLeftChild());
+    DataStructures::ColouringQueue rightChildSolutions = solver->solveAtNode(node->getRightChild());
 
     DataStructures::ColouringQueue newSolutions = solver->createEmptyColouringQueue();
     for (DataStructures::MutableColouring* leftColouring : leftChildSolutions)

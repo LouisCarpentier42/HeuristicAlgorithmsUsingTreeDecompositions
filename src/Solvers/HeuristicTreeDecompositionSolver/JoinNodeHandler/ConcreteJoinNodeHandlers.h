@@ -2,8 +2,8 @@
 // Created by louis on 21/11/2021.
 //
 
-#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_CONCRETEJOINBAGHANDLERS_H
-#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_CONCRETEJOINBAGHANDLERS_H
+#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_CONCRETEJOINNODEHANDLERS_H
+#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_CONCRETEJOINNODEHANDLERS_H
 
 #include "../HeuristicTreeDecompositionSolver.h"
 
@@ -16,7 +16,7 @@
 
 namespace Solvers
 {
-    class StaticOrderJoinBagHandler : public JoinBagHandler
+    class StaticOrderJoinNodeHandler : public JoinNodeHandler
     {
     public:
         enum class Order {
@@ -25,22 +25,20 @@ namespace Solvers
             smallestDegreeFirst,
             random
         };
-
     private:
         std::vector<DataStructures::VertexType> vertexOrder;
-
     public:
-        explicit StaticOrderJoinBagHandler(DataStructures::Graph* graph, Order order = Order::defaultOrder);
-        [[nodiscard]] DataStructures::ColouringQueue handleJoinBag(const DataStructures::JoinBag* bag) const override;
+        explicit StaticOrderJoinNodeHandler(DataStructures::Graph* graph, Order order = Order::defaultOrder);
+        [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
     };
 
-    class DynamicOrderJoinBagHandler : public JoinBagHandler
+    class DynamicOrderJoinNodeHandler : public JoinNodeHandler
     {
     public:
-        [[nodiscard]] DataStructures::ColouringQueue handleJoinBag(const DataStructures::JoinBag* bag) const override;
+        [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
     private:
         [[nodiscard]] int nbColouredNeighbours(DataStructures::VertexType vertex, DataStructures::MutableColouring* colouring) const;
     };
 }
 
-#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_CONCRETEJOINBAGHANDLERS_H
+#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_CONCRETEJOINNODEHANDLERS_H

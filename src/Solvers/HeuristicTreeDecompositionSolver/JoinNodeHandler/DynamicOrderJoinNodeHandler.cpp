@@ -2,14 +2,14 @@
 // Created by louis on 22/11/2021.
 //
 
-#include "ConcreteJoinBagHandlers.h"
+#include "ConcreteJoinNodeHandlers.h"
 
 #include <algorithm>
 
-DataStructures::ColouringQueue Solvers::DynamicOrderJoinBagHandler::handleJoinBag(const DataStructures::JoinBag *bag) const
+DataStructures::ColouringQueue Solvers::DynamicOrderJoinNodeHandler::handleJoinNode(const DataStructures::JoinNode *node) const
 {
-    DataStructures::ColouringQueue leftChildSolutions = solver->solveAtBag(bag->getLeftChild());
-    DataStructures::ColouringQueue rightChildSolutions = solver->solveAtBag(bag->getRightChild());
+    DataStructures::ColouringQueue leftChildSolutions = solver->solveAtNode(node->getLeftChild());
+    DataStructures::ColouringQueue rightChildSolutions = solver->solveAtNode(node->getRightChild());
 
     DataStructures::ColouringQueue newSolutions = solver->createEmptyColouringQueue();
     for (DataStructures::MutableColouring* leftColouring : leftChildSolutions)
@@ -28,7 +28,7 @@ DataStructures::ColouringQueue Solvers::DynamicOrderJoinBagHandler::handleJoinBa
                     newColouring->setColour(vertex, rightColouring->getColour(vertex));
             }
 
-            DataStructures::BagContent verticesToColour{bag->getBagContent()};
+            DataStructures::BagContent verticesToColour{node->getBagContent()};
             while (!verticesToColour.empty())
             {
                 // Order: the vertex that is connected to the most coloured vertices is chosen first
@@ -56,7 +56,7 @@ DataStructures::ColouringQueue Solvers::DynamicOrderJoinBagHandler::handleJoinBa
     return newSolutions;
 }
 
-int Solvers::DynamicOrderJoinBagHandler::nbColouredNeighbours(DataStructures::VertexType vertex, DataStructures::MutableColouring *colouring) const
+int Solvers::DynamicOrderJoinNodeHandler::nbColouredNeighbours(DataStructures::VertexType vertex, DataStructures::MutableColouring *colouring) const
 {
     const std::vector<DataStructures::VertexType>* neighbours{solver->graph->getNeighbours(vertex)};
     return std::count_if(neighbours->begin(), neighbours->end(),

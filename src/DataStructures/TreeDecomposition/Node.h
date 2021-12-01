@@ -2,8 +2,8 @@
 // Created by louis on 03/09/2021.
 //
 
-#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BAG_H
-#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BAG_H
+#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_NODE_H
+#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_NODE_H
 
 #include "../Graph/Graph.h"
 
@@ -12,45 +12,46 @@
 
 namespace DataStructures
 {
-    class Bag;
+    class Node;
     using BagContent = std::vector<DataStructures::VertexType>;
-    using ChildVector = std::vector<Bag*>;
+    using ChildVector = std::vector<Node*>;
 
-    class Bag
+    class Node
     {
     protected:
-        std::vector<Bag*> childVector;
+        std::vector<Node*> childVector;
     private:
         const int id;
         const size_t bagSize;
         const DataStructures::BagContent bagContent;
-        Bag* parent{nullptr};
+        Node* parent{nullptr};
 
 
     protected:
-        Bag(int id, size_t size, DataStructures::BagContent bagContent, ChildVector childVector);
+        Node(int id, size_t size, DataStructures::BagContent bagContent, ChildVector childVector);
 
     public:
         [[nodiscard]] int getId() const;
         [[nodiscard]] size_t getBagSize() const;
         [[nodiscard]] bool isEmpty() const;
         [[nodiscard]] BagContent getBagContent() const;
-        [[nodiscard]] const Bag* getParent() const;
+        [[nodiscard]] const Node* getParent() const;
         [[nodiscard]] bool isLeaf() const;
         [[nodiscard]] int getNbChildren() const;
 
-        [[nodiscard]] std::vector<Bag*>::const_iterator beginChildrenIterator() const;
-        [[nodiscard]] std::vector<Bag*>::const_iterator endChildrenIterator() const;
+        [[nodiscard]] std::vector<Node*>::const_iterator beginChildrenIterator() const;
+        [[nodiscard]] std::vector<Node*>::const_iterator endChildrenIterator() const;
 
     protected:
-        void setParent(Bag* newParent);
+        void setParent(Node* newParent);
 
     public:
-        friend std::ostream& operator<<(std::ostream& out, const Bag& bag);
+        friend std::ostream& operator<<(std::ostream& out, const Node& node);
     private:
         std::ostream& prettyPrint(std::ostream& out, std::string& prefix) const;
         [[nodiscard]] virtual std::string getTypeString() const;
     };
+    std::ostream& operator<<(std::ostream& out, const Node& node);
 }
 
-#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BAG_H
+#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_NODE_H

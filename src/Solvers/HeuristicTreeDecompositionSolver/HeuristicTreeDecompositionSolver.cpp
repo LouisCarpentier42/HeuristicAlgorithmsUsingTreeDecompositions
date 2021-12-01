@@ -9,42 +9,42 @@ Solvers::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositionSolver(
         const DataStructures::ColouringEvaluator* evaluator,
         size_t nbSolutionsToKeep,
         const DataStructures::NiceTreeDecomposition* treeDecomposition,
-        LeafBagHandler* leafBagHandler,
-        IntroduceVertexBagHandler* introduceVertexBagHandler,
-        ForgetVertexBagHandler* forgetVertexBagHandler,
-        JoinBagHandler* joinBagHandler)
+        LeafNodeHandler* leafNodeHandler,
+        IntroduceNodeHandler* introduceNodeHandler,
+        ForgetNodeHandler* forgetNodeHandler,
+        JoinNodeHandler* joinNodeHandler)
     : SolverBase(graph, partialColouring, evaluator),
       nbSolutionsToKeep{nbSolutionsToKeep},
       treeDecomposition{treeDecomposition},
-      leafBagHandler{leafBagHandler},
-      introduceVertexBagHandler{introduceVertexBagHandler},
-      forgetVertexBagHandler{forgetVertexBagHandler},
-      joinBagHandler{joinBagHandler}
+      leafNodeHandler{leafNodeHandler},
+      introduceNodeHandler{introduceNodeHandler},
+      forgetNodeHandler{forgetNodeHandler},
+      joinNodeHandler{joinNodeHandler}
 {
-    leafBagHandler->setSolver(this);
-    introduceVertexBagHandler->setSolver(this);
-    forgetVertexBagHandler->setSolver(this);
-    joinBagHandler->setSolver(this);
+    leafNodeHandler->setSolver(this);
+    introduceNodeHandler->setSolver(this);
+    forgetNodeHandler->setSolver(this);
+    joinNodeHandler->setSolver(this);
 }
 
 DataStructures::MutableColouring* Solvers::HeuristicTreeDecompositionSolver::solve() const
 {
-    DataStructures::ColouringQueue rootColourings = solveAtBag(treeDecomposition->getRoot());
+    DataStructures::ColouringQueue rootColourings = solveAtNode(treeDecomposition->getRoot());
     return rootColourings.retrieveBestColouring();
 }
 
-DataStructures::ColouringQueue Solvers::HeuristicTreeDecompositionSolver::solveAtBag(const DataStructures::NiceBag* bag) const
+DataStructures::ColouringQueue Solvers::HeuristicTreeDecompositionSolver::solveAtNode(const DataStructures::NiceNode* node) const
 {
-    switch(bag->getBagType())
+    switch(node->getNodeType())
     {
-        case DataStructures::BagType::LeafBag:
-            return leafBagHandler->handleLeafBag(dynamic_cast<const DataStructures::LeafBag*>(bag));
-        case DataStructures::BagType::IntroduceVertexBag:
-            return introduceVertexBagHandler->handleIntroduceVertexBag(dynamic_cast<const DataStructures::IntroduceVertexBag*>(bag));
-        case DataStructures::BagType::ForgetVertexBag:
-            return forgetVertexBagHandler->handleForgetVertexBag(dynamic_cast<const DataStructures::ForgetVertexBag*>(bag));
-        case DataStructures::BagType::JoinBag:
-            return joinBagHandler->handleJoinBag(dynamic_cast<const DataStructures::JoinBag*>(bag));
+        case DataStructures::NodeType::LeafNode:
+            return leafNodeHandler->handleLeafNode(dynamic_cast<const DataStructures::LeafNode*>(node));
+        case DataStructures::NodeType::IntroduceNode:
+            return introduceNodeHandler->handleIntroduceNode(dynamic_cast<const DataStructures::IntroduceNode*>(node));
+        case DataStructures::NodeType::ForgetNode:
+            return forgetNodeHandler->handleForgetVertexBag(dynamic_cast<const DataStructures::ForgetNode*>(node));
+        case DataStructures::NodeType::JoinNode:
+            return joinNodeHandler->handleJoinNode(dynamic_cast<const DataStructures::JoinNode*>(node));
     }
 }
 
@@ -53,7 +53,7 @@ DataStructures::ColouringQueue Solvers::HeuristicTreeDecompositionSolver::create
     return DataStructures::ColouringQueue{nbSolutionsToKeep, evaluator};
 }
 
-void Solvers::BagHandler::setSolver(Solvers::HeuristicTreeDecompositionSolver* newSolver)
+void Solvers::NodeHandler::setSolver(Solvers::HeuristicTreeDecompositionSolver* newSolver)
 {
     if (!solver)
         solver = newSolver;

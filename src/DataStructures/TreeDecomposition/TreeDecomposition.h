@@ -5,8 +5,8 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITION_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITION_H
 
-#include "Bag.h"
-#include "NiceBag.h"
+#include "Node.h"
+#include "NiceNode.h"
 
 #include <utility>
 #include <vector>
@@ -33,8 +33,8 @@ namespace DataStructures
         return out << *treeDecomposition.getRoot();
     }
 
-    using NiceTreeDecomposition = TreeDecompositionTemplate<NiceBag>;
-    using TreeDecomposition = TreeDecompositionTemplate<Bag>;
+    using NiceTreeDecomposition = TreeDecompositionTemplate<NiceNode>;
+    using TreeDecomposition = TreeDecompositionTemplate<Node>;
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITION_H

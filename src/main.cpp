@@ -6,7 +6,7 @@
 #include "ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.h"
 
 
-#include "DataStructures/TreeDecomposition/Bag.h"
+#include "DataStructures/TreeDecomposition/Node.h"
 #include "DataStructures/TreeDecomposition/TreeDecomposition.h"
 #include "DataStructures/Graph/Graph.h"
 #include "DataStructures/Colouring/AdvancedMHVEvaluator.h"
@@ -18,10 +18,10 @@
 #include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
 #include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
 #include "Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/LeafBagHandler/ConcreteLeafBagHandlers.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/IntroduceVertexBagHandler/ConcreteIntroduceVertexBagHandlers.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/ForgetVertexBagHandler/ConcreteForgetVertexBagHandlers.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/JoinBagHandler/ConcreteJoinBagHandlers.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/ConcreteLeafNodeHandlers.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/ConcreteIntroduceNodeHandlers.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h"
+#include "Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/ConcreteJoinNodeHandlers.h"
 
 
 #include <iostream>
@@ -115,47 +115,19 @@ int main(int argc, char** argv)
     solvers["growth_mhv"] = new MaximumHappyVertices::GrowthMHV{&graph, &colouring};
 
     DataStructures::AdvancedMHVEvaluator evaluator{&graph, 6, 2, -1};
-//    solvers["my_basic_solver"] = new Solvers::HeuristicTreeDecompositionSolver{
-//            &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
-//            new Solvers::BasicLeafBagHandlers{},
-//            new Solvers::ColourAllIntroduceVertexBagHandler{},
-//            new Solvers::BasicForgetVertexBagHandler{},
-//            new Solvers::StaticOrderJoinBagHandler{&graph}
-//    };
-//    solvers["my_basic_solver_gdf"] = new Solvers::HeuristicTreeDecompositionSolver{
-//            &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
-//            new Solvers::BasicLeafBagHandlers{},
-//            new Solvers::ColourAllIntroduceVertexBagHandler{},
-//            new Solvers::BasicForgetVertexBagHandler{},
-//            new Solvers::StaticOrderJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::greatestDegreeFirst}
-//    };
-//    solvers["my_basic_solver_sdf"] = new Solvers::HeuristicTreeDecompositionSolver{
-//            &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
-//            new Solvers::BasicLeafBagHandlers{},
-//            new Solvers::ColourAllIntroduceVertexBagHandler{},
-//            new Solvers::BasicForgetVertexBagHandler{},
-//            new Solvers::StaticOrderJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::smallestDegreeFirst}
-//    };
-//    solvers["my_basic_solver_random"] = new Solvers::HeuristicTreeDecompositionSolver{
-//            &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
-//            new Solvers::BasicLeafBagHandlers{},
-//            new Solvers::ColourAllIntroduceVertexBagHandler{},
-//            new Solvers::BasicForgetVertexBagHandler{},
-//            new Solvers::StaticOrderJoinBagHandler{&graph, Solvers::BasicJoinBagHandler::Order::random}
-//    };
-//    solvers["my_solver_dynamic_order"] = new Solvers::HeuristicTreeDecompositionSolver{
-//            &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
-//            new Solvers::BasicLeafBagHandlers{},
-//            new Solvers::ColourAllIntroduceVertexBagHandler{},
-//            new Solvers::BasicForgetVertexBagHandler{},
-//            new Solvers::DynamicOrderJoinBagHandler{}
-//    };
+    solvers["my_basic_solver"] = new Solvers::HeuristicTreeDecompositionSolver{
+            &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
+            new Solvers::PassiveLeafNodeHandlers{},
+            new Solvers::ColourAllIntroduceNodeHandler{},
+            new Solvers::PassiveForgetNodeHandler{},
+            new Solvers::StaticOrderJoinNodeHandler{&graph}
+    };
     solvers["my_solver_best_colour_introduce"] = new Solvers::HeuristicTreeDecompositionSolver{
             &graph, &colouring, &evaluator, nbSolutionsToKeep, &niceTreeDecomposition,
-            new Solvers::BasicLeafBagHandlers{},
-            new Solvers::BestColourIntroduceVertexBagHandler{},
-            new Solvers::BasicForgetVertexBagHandler{},
-            new Solvers::DynamicOrderJoinBagHandler{}
+            new Solvers::PassiveLeafNodeHandlers{},
+            new Solvers::BestColourIntroduceNodeHandler{},
+            new Solvers::PassiveForgetNodeHandler{},
+            new Solvers::StaticOrderJoinNodeHandler{&graph}
     };
 
     DataStructures::BasicMHVEvaluator mhvEvaluator{&graph};

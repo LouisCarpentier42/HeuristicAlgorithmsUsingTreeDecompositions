@@ -5,13 +5,13 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITIONREADER_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITIONREADER_H
 
-#include "../DataStructures/TreeDecomposition/Bag.h"
-#include "../DataStructures/TreeDecomposition/NiceBag.h"
-#include "../DataStructures/TreeDecomposition/LeafBag.h"
-#include "../DataStructures/TreeDecomposition/JoinBag.h"
-#include "../DataStructures/TreeDecomposition/IntroduceVertexBag.h"
-#include "../DataStructures/TreeDecomposition/ForgetVertexBag.h"
-#include "../DataStructures/TreeDecomposition/StandardBag.h"
+#include "../DataStructures/TreeDecomposition/Node.h"
+#include "../DataStructures/TreeDecomposition/NiceNode.h"
+#include "../DataStructures/TreeDecomposition/LeafNode.h"
+#include "../DataStructures/TreeDecomposition/JoinNode.h"
+#include "../DataStructures/TreeDecomposition/IntroduceNode.h"
+#include "../DataStructures/TreeDecomposition/ForgetNode.h"
+#include "../DataStructures/TreeDecomposition/StandardNode.h"
 #include "../DataStructures/TreeDecomposition/TreeDecomposition.h"
 #include "../DataStructures/Graph/Graph.h"
 
