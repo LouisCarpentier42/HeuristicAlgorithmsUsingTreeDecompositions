@@ -5,114 +5,93 @@
 #include <chrono>
 #include <random>
 #include "experimentalAnalysis.h"
-#include "../Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
-#include "../Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
-#include "../Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.h"
-#include "../DataStructures/Colouring/AdvancedMHVEvaluator.h"
-#include "../Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/ConcreteLeafNodeHandlers.h"
-#include "../Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h"
-#include "../Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/ConcreteIntroduceNodeHandlers.h"
-#include "../Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/ConcreteJoinNodeHandlers.h"
 
 
 void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& experiment)
 {
-    std::string graphFile{experiment.graphName + ".gr"};
-    std::string niceTreeFile{experiment.graphName + "_nice.tw"};
-
-    DataStructures::Graph graph = reader.readGraph(graphFile);
-    DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(niceTreeFile);
-    DataStructures::BasicMHVEvaluator basicMhvEvaluator{};
-
-    for (int i{0}; i < experiment.nbColouringsPerGraph; i++)
+    for (const TestInstance& testInstance : experiment.testInstances)
     {
-        DataStructures::Colouring colouring = generatePartialColouring(graph, experiment.nbColours, 0.01);
+        DataStructures::Graph graph = reader.readGraph(testInstance.graphName);
+        DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
 
-        std::map<std::string, Solvers::SolverBase*> baselines{};
-        baselines["greedy_mhv"] = new MaximumHappyVertices::GreedyMHV{};
-        baselines["growth_mhv"] = new MaximumHappyVertices::GrowthMHV{};
-
-        // The tree decomposition heuristics to test
-        std::map<std::string, Solvers::HeuristicTreeDecompositionSolver*> solvers{};
-        DataStructures::AdvancedMHVEvaluator evaluator{6, 2, -1};
-        solvers["my_basic_solver"] = new Solvers::HeuristicTreeDecompositionSolver{
-            experiment.nbColouringsToKeep,
-            &evaluator,
-            new Solvers::PassiveLeafNodeHandlers{},
-            new Solvers::ColourAllIntroduceNodeHandler{},
-            new Solvers::PassiveForgetNodeHandler{},
-            new Solvers::StaticOrderJoinNodeHandler{}
-        };
-        solvers["my_solver_best_colour_introduce"] = new Solvers::HeuristicTreeDecompositionSolver{
-            experiment.nbColouringsToKeep,
-            &evaluator,
-            new Solvers::PassiveLeafNodeHandlers{},
-            new Solvers::BestColourIntroduceNodeHandler{},
-            new Solvers::PassiveForgetNodeHandler{},
-            new Solvers::StaticOrderJoinNodeHandler{}
-        };
-
-        // Test the baselines
-        for (auto const& [name, baseline] : baselines)
+        for (size_t colouringNb{0}; colouringNb < testInstance.nbColouringsPerGraph; colouringNb++)
         {
-            std::cout << ">>> " << name << " <<<\n";
-            DataStructures::Colouring* solution;
-            std::chrono::microseconds duration{0};
-            int evaluation{0};
-            auto start = std::chrono::high_resolution_clock::now();
-            solution = baseline->solve(&graph, &colouring);
-            auto stop = std::chrono::high_resolution_clock::now();
-            duration += std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-            evaluation += basicMhvEvaluator.evaluate(&graph, solution);
+            DataStructures::Colouring colouring = generatePartialColouring(graph, testInstance.nbColours, testInstance.percentColouredVertices);
 
-            std::cout << "Evaluation: " << evaluation << "\n";
-            std::cout << "Time (µs):  " << duration.count() << "\n\n";
-        }
-
-        // Test the solvers
-        for (auto const& [name, solver] : solvers)
-        {
-            std::cout << ">>> " << name << " <<<\n";
-            DataStructures::Colouring* solution;
-            std::chrono::microseconds duration{0};
-            int evaluation{0};
-            for (int j{0}; j < experiment.nbRepetitionsPerColouring; j++)
+            // Test the baselines
+            for (auto const& [name, baseline] : experiment.baselines)
             {
+                std::cout << ">>> " << name << " <<<\n";
+
                 auto start = std::chrono::high_resolution_clock::now();
-                solution = solver->solve(&graph, &colouring, &niceTreeDecomposition);
+                DataStructures::Colouring* solution = baseline->solve(&graph, &colouring);
                 auto stop = std::chrono::high_resolution_clock::now();
-                duration += std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-                evaluation += basicMhvEvaluator.evaluate(&graph, solution);
+                int evaluation{experiment.evaluator->evaluate(&graph, solution)};
+                std::chrono::microseconds duration{std::chrono::duration_cast<std::chrono::microseconds>(stop - start)};
+
+                std::cout << "Evaluation: " << evaluation << "\n";
+                std::cout << "Time (µs):  " << duration.count() << "\n\n";
             }
 
-            std::cout << "Evaluation: " << evaluation/experiment.nbRepetitionsPerColouring << "\n";
-            std::cout << "Time (µs):  " << duration.count()/experiment.nbRepetitionsPerColouring << "\n\n";
+            // Test the solvers
+            for (auto const& [name, solver] : experiment.treeDecompositionSolvers)
+            {
+                std::cout << ">>> " << name << " <<<\n";
+                std::chrono::microseconds duration{0};
+                int evaluation{0};
+                for (int repetition{0}; repetition < testInstance.nbRepetitionsPerColouring; repetition++)
+                {
+                    auto start = std::chrono::high_resolution_clock::now();
+                    DataStructures::Colouring* solution = solver->solve(&graph, &colouring, &niceTreeDecomposition);
+                    auto stop = std::chrono::high_resolution_clock::now();
+                    duration += std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+                    evaluation += experiment.evaluator->evaluate(&graph, solution);
+                }
+
+                std::cout << "Evaluation: " << evaluation/testInstance.nbRepetitionsPerColouring << "\n";
+                std::cout << "Time (µs):  " << duration.count()/testInstance.nbRepetitionsPerColouring << "\n\n";
+            }
         }
     }
 }
 
-//void ExperimentalAnalysis::writeResults(
-//        size_t nbRepetitionsPerColouring,
-//        const std::string& solverName,
-//        const Solvers::SolverBase* solver,
-//        const DataStructures::ColouringEvaluator& evaluator)
-//{
-//    std::cout << ">>> " << solverName << " <<<\n";
-//    DataStructures::Colouring* solution;
-//    std::chrono::microseconds duration{0};
-//    int evaluation{0};
-//    for (int i{0}; i < nbRepetitionsPerColouring; i++)
-//    {
-//        auto start = std::chrono::high_resolution_clock::now();
-//        solution = solver->solve();
-//        auto stop = std::chrono::high_resolution_clock::now();
-//        duration += std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-//        evaluation += evaluator.evaluate(solution);
-//    }
+
+
+//    std::string graphFile{experiment.graphName + ".gr"};
+//    std::string niceTreeFile{experiment.graphName + "_nice.tw"};
 //
-//    std::cout << "Evaluation: " << evaluation/nbRepetitionsPerColouring << "\n";
-//    std::cout << "Time (µs):  " << duration.count()/nbRepetitionsPerColouring << "\n\n";
-//}
+//    DataStructures::Graph graph = reader.readGraph(graphFile);
+//    DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(niceTreeFile);
+//    DataStructures::BasicMHVEvaluator basicMhvEvaluator{};
+//
+//    for (int i{0}; i < experiment.nbColouringsPerGraph; i++)
+//    {
+//        DataStructures::Colouring colouring = generatePartialColouring(graph, experiment.nbColours, 0.01);
+
+//        std::map<std::string, Solvers::SolverBase*> baselines{};
+//        baselines["greedy_mhv"] = new MaximumHappyVertices::GreedyMHV{};
+//        baselines["growth_mhv"] = new MaximumHappyVertices::GrowthMHV{};
+
+        // The tree decomposition heuristics to test
+//        std::map<std::string, Solvers::HeuristicTreeDecompositionSolver*> solvers{};
+//        DataStructures::AdvancedMHVEvaluator evaluator{6, 2, -1};
+//        solvers["my_basic_solver"] = new Solvers::HeuristicTreeDecompositionSolver{
+//            experiment.nbColouringsToKeep,
+//            &evaluator,
+//            new Solvers::PassiveLeafNodeHandlers{},
+//            new Solvers::ColourAllIntroduceNodeHandler{},
+//            new Solvers::PassiveForgetNodeHandler{},
+//            new Solvers::StaticOrderJoinNodeHandler{}
+//        };
+//        solvers["my_solver_best_colour_introduce"] = new Solvers::HeuristicTreeDecompositionSolver{
+//            experiment.nbColouringsToKeep,
+//            &evaluator,
+//            new Solvers::PassiveLeafNodeHandlers{},
+//            new Solvers::BestColourIntroduceNodeHandler{},
+//            new Solvers::PassiveForgetNodeHandler{},
+//            new Solvers::StaticOrderJoinNodeHandler{}
+//        };
+
 
 
 DataStructures::Colouring ExperimentalAnalysis::generatePartialColouring(DataStructures::Graph& graph, size_t nbColours, double percentColouredVertices)

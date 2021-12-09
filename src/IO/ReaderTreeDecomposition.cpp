@@ -6,7 +6,7 @@
 
 #include <queue>
 
-DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(std::string& filename) const
+DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(const std::string& filename) const
 {
     std::ifstream file{treeDecompositionFilesDir + filename};
     if (!file)

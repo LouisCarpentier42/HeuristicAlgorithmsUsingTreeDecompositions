@@ -29,13 +29,14 @@ namespace Solvers
         const Order order;
         std::vector<DataStructures::VertexType> vertexOrder;
     public:
-        explicit StaticOrderJoinNodeHandler(Order order = Order::defaultOrder);
+        explicit StaticOrderJoinNodeHandler(Order order);
         void setGraph(const DataStructures::Graph* graphToSolve) override;
         [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
     };
 
     class DynamicOrderJoinNodeHandler : public JoinNodeHandler
     {
+        // TODO add order parameter in this class
     public:
         [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
     private:

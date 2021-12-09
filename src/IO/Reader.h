@@ -14,6 +14,7 @@
 #include "../DataStructures/TreeDecomposition/StandardNode.h"
 #include "../DataStructures/TreeDecomposition/TreeDecomposition.h"
 #include "../DataStructures/Graph/Graph.h"
+#include "../ExperimentalAnalysis/Experiment.h"
 
 #include <string>
 #include <fstream>
@@ -29,15 +30,20 @@ namespace IO
     private:
         const std::string graphFilesDir;
         const std::string treeDecompositionFilesDir;
+        const std::string experimentFilesDir;
 
     public:
-        Reader(std::string graphFilesDir, std::string treeDecompositionFilesDir);
+        Reader(
+            std::string graphFilesDir,
+            std::string treeDecompositionFilesDir,
+            std::string experimentFilesDir
+        );
 
-        DataStructures::Graph readGraph(std::string& filename) const;
-        DataStructures::TreeDecomposition readTreeDecomposition(std::string& filename) const;
-        DataStructures::NiceTreeDecomposition readNiceTreeDecomposition(std::string& filename) const;
+        [[nodiscard]] DataStructures::Graph readGraph(const std::string& filename) const;
+        [[nodiscard]] DataStructures::TreeDecomposition readTreeDecomposition(const std::string& filename) const;
+        [[nodiscard]] DataStructures::NiceTreeDecomposition readNiceTreeDecomposition(const std::string& filename) const;
+        [[nodiscard]] ExperimentalAnalysis::Experiment readExperiment(const std::string& filename) const;
 
-    private:
         static std::vector<std::string> tokenize(std::string& line);
         static int convertToInt(std::string& str);
     };

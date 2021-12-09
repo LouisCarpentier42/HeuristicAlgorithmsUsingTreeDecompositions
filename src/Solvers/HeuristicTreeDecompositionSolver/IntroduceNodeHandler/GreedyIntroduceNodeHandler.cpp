@@ -4,7 +4,7 @@
 
 #include "ConcreteIntroduceNodeHandlers.h"
 
-DataStructures::ColouringQueue Solvers::ColourAllIntroduceNodeHandler::handleIntroduceNode(const DataStructures::IntroduceNode *node) const
+DataStructures::ColouringQueue Solvers::GreedyIntroduceNodeHandler::handleIntroduceNode(const DataStructures::IntroduceNode *node) const
 {
     DataStructures::ColouringQueue childColourings = solver->solveAtNode(node->getChild());
     DataStructures::VertexType introducedVertex{node->getIntroducedVertex()};

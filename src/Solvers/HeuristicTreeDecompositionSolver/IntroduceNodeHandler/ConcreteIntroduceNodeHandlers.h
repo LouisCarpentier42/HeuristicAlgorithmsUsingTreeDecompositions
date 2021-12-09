@@ -9,7 +9,7 @@
 
 namespace Solvers
 {
-    class ColourAllIntroduceNodeHandler : public IntroduceNodeHandler
+    class GreedyIntroduceNodeHandler : public IntroduceNodeHandler
     {
     public:
         [[nodiscard]] DataStructures::ColouringQueue handleIntroduceNode(const DataStructures::IntroduceNode* node) const override;

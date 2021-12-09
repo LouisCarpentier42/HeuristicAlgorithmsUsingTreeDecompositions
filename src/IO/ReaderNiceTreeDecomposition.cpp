@@ -113,7 +113,7 @@ DataStructures::NiceNode* transformToNiceBag(const DataStructures::Node* bag)
     }
 }
 
-DataStructures::NiceTreeDecomposition IO::Reader::readNiceTreeDecomposition(std::string &filename) const
+DataStructures::NiceTreeDecomposition IO::Reader::readNiceTreeDecomposition(const std::string &filename) const
 {
     DataStructures::TreeDecomposition treeDecomposition = readTreeDecomposition(filename);
 

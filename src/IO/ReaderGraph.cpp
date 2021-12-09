@@ -4,7 +4,7 @@
 
 #include "Reader.h"
 
-DataStructures::Graph IO::Reader::readGraph(std::string &filename) const
+DataStructures::Graph IO::Reader::readGraph(const std::string &filename) const
 {
     std::ifstream file{graphFilesDir + filename};
     if (!file)

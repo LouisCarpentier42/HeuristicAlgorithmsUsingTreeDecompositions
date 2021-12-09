@@ -1,5 +1,6 @@
 
 #include "IO/Reader.h"
+#include "ExperimentalAnalysis/Experiment.h"
 #include "ExperimentalAnalysis/experimentalAnalysis.h"
 
 
@@ -10,16 +11,15 @@ int main(int argc, char** argv)
 
     std::string graphFilesDir = "../GraphFiles/";
     std::string treeDecompositionFilesDir = "../TreeDecompositionFiles/";
-    IO::Reader reader{graphFilesDir, treeDecompositionFilesDir};
-
-    ExperimentalAnalysis::Experiment experiment{
-        "ex001",
-        3,
-        8,
-        5,
-        2
+    std::string experimentFilesDir = "../ExperimentFiles/";
+    IO::Reader reader{
+        graphFilesDir,
+        treeDecompositionFilesDir,
+        experimentFilesDir
     };
 
+    std::string experimentFile{"initial_experiment.exp"};
+    ExperimentalAnalysis::Experiment experiment = reader.readExperiment(experimentFile);
     ExperimentalAnalysis::executeExperiment(reader, experiment);
 
 
