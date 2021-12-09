@@ -1,10 +1,10 @@
+////
+//// Created by louis on 14/11/2021.
+////
 //
-// Created by louis on 14/11/2021.
+//#include "MaximumHappyVerticesSolver.h" // TODO remove if refactoring ok
 //
-
-#include "MaximumHappyVerticesSolver.h"
-
-MaximumHappyVertices::MaximumHappyVerticesSolver::MaximumHappyVerticesSolver(
-            const DataStructures::Graph* graph,
-            const DataStructures::Colouring* colouring)
-    : Solvers::SolverBase(graph, colouring, new DataStructures::BasicMHVEvaluator(graph)) {}
+//MaximumHappyVertices::MaximumHappyVerticesSolver::MaximumHappyVerticesSolver(
+//            const DataStructures::Graph* graph,
+//            const DataStructures::Colouring* colouring)
+//    : Solvers::SolverBase(graph, colouring, new DataStructures::BasicMHVEvaluator(graph)) {}

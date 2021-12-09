@@ -6,7 +6,7 @@
 
 DataStructures::ColouringQueue Solvers::PassiveLeafNodeHandlers::handleLeafNode(const DataStructures::LeafNode* node) const
 {
-    DataStructures::ColouringQueue initialColouringQueue = solver->createEmptyColouringQueue();
-    initialColouringQueue.push(new DataStructures::MutableColouring{solver->colouring});
+    DataStructures::ColouringQueue initialColouringQueue = createEmptyColouringQueue();
+    initialColouringQueue.push(new DataStructures::MutableColouring{colouring});
     return initialColouringQueue;
 }

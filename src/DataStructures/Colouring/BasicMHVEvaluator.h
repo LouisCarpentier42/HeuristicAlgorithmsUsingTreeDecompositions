@@ -12,9 +12,9 @@ namespace DataStructures
     class BasicMHVEvaluator : public ColouringEvaluator
     {
     public:
-        explicit BasicMHVEvaluator(const DataStructures::Graph* graph);
+        BasicMHVEvaluator() = default;
 
-        [[nodiscard]] int evaluate(const DataStructures::Colouring* colouring) const override;
+        [[nodiscard]] int evaluate(const DataStructures::Graph* graph, const DataStructures::Colouring* colouring) const override;
     };
 }
 

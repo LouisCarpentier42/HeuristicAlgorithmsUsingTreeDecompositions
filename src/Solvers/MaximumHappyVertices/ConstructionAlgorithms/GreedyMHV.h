@@ -13,14 +13,24 @@
 
 namespace MaximumHappyVertices
 {
-    class GreedyMHV : public MaximumHappyVerticesSolver
+    class GreedyMHV : public MaximumHappyVerticesSolver // TODO comments
     {
     public:
-        GreedyMHV(const DataStructures::Graph* graph, const DataStructures::Colouring* colouring);
-        [[nodiscard]] DataStructures::MutableColouring* solve() const override;
+        GreedyMHV() = default;
+//        GreedyMHV(const DataStructures::Graph* graph, const DataStructures::Colouring* colouring);
+
+        [[nodiscard]] DataStructures::MutableColouring* solve(
+            const DataStructures::Graph* graph,
+            const DataStructures::Colouring* colouring
+        ) const override;
 
     private:
-        void colourAllVertices(DataStructures::MutableColouring* colouringToColour, DataStructures::ColourType colour) const;
+        static void colourAllVertices(
+            const DataStructures::Graph* graph,
+            const DataStructures::Colouring* initialColouring,
+            DataStructures::MutableColouring* colouringToColour,
+            DataStructures::ColourType colour
+        ) ;
     };
 }
 

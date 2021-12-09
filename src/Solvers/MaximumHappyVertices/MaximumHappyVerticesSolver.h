@@ -15,8 +15,9 @@ namespace MaximumHappyVertices
     class MaximumHappyVerticesSolver : public Solvers::SolverBase
     {
     public:
-        MaximumHappyVerticesSolver(const DataStructures::Graph* graph,
-                                   const DataStructures::Colouring* colouring);
+        MaximumHappyVerticesSolver() : Solvers::SolverBase(new DataStructures::BasicMHVEvaluator()) {}
+//        MaximumHappyVerticesSolver(const DataStructures::Graph* graph,
+//                                   const DataStructures::Colouring* colouring);
 
    };
 }

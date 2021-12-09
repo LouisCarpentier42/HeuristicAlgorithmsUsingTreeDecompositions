@@ -20,10 +20,15 @@ namespace DataStructures
     private:
         const size_t nbColourings;
         const ColouringEvaluator* evaluator;
+        const Graph* graph;
         std::vector<DataStructures::MutableColouring*> queue;
 
     public:
-        ColouringQueue(size_t nbColourings, const DataStructures::ColouringEvaluator* comparator);
+        ColouringQueue(
+            size_t nbColourings,
+            const DataStructures::ColouringEvaluator* evaluator,
+            const DataStructures::Graph* graph
+        );
 
         void push(DataStructures::MutableColouring* colouring);
         [[nodiscard]] DataStructures::MutableColouring* retrieveBestColouring() const;

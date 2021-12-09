@@ -8,39 +8,45 @@
 #include <algorithm>
 #include <queue>
 
-MaximumHappyVertices::GreedyMHV::GreedyMHV(
-        const DataStructures::Graph* graph,
-        const DataStructures::Colouring* colouring)
-    : MaximumHappyVerticesSolver(graph, colouring)
-{}
+//MaximumHappyVertices::GreedyMHV::GreedyMHV( // TOOD comments
+//        const DataStructures::Graph* graph,
+//        const DataStructures::Colouring* colouring)
+//    : MaximumHappyVerticesSolver(graph, colouring)
+//{}
 
 
-DataStructures::MutableColouring* MaximumHappyVertices::GreedyMHV::solve() const
+DataStructures::MutableColouring* MaximumHappyVertices::GreedyMHV::solve(const DataStructures::Graph* graph, const DataStructures::Colouring* colouring) const
 {
     auto* colouringToColour = new DataStructures::MutableColouring{colouring};
-    colourAllVertices(colouringToColour, 1);
+    colourAllVertices(graph, colouring, colouringToColour, 1);
+//    colourAllVertices(colouringToColour, 1);
     DataStructures::ColourType bestColour{1};
-    int bestNbHappyVertices{evaluator->evaluate(colouringToColour)};
+//    int bestNbHappyVertices{evaluator->evaluate(colouringToColour)};
+    int bestNbHappyVertices{evaluator->evaluate(graph, colouringToColour)};
 
     for (DataStructures::ColourType colour{2}; colour <= colouring->getNbColours(); colour++)
     {
-        colourAllVertices(colouringToColour, colour);
-        int nbHappyVertices{evaluator->evaluate(colouringToColour)};
+        colourAllVertices(graph, colouring, colouringToColour, colour);
+//        colourAllVertices(colouringToColour, colour);
+        int nbHappyVertices{evaluator->evaluate(graph, colouringToColour)};
+//        int nbHappyVertices{evaluator->evaluate(colouringToColour)};
         if (nbHappyVertices > bestNbHappyVertices)
         {
             bestColour = colour;
             bestNbHappyVertices = nbHappyVertices;
         }
     }
-    colourAllVertices(colouringToColour, bestColour);
+//    colourAllVertices(colouringToColour, bestColour);
+    colourAllVertices(graph, colouring, colouringToColour, bestColour);
     return colouringToColour;
 }
 
-void MaximumHappyVertices::GreedyMHV::colourAllVertices(DataStructures::MutableColouring* colouringToColour, DataStructures::ColourType colour) const
+// TODO set param a little cleaner
+void MaximumHappyVertices::GreedyMHV::colourAllVertices(const DataStructures::Graph* graph, const DataStructures::Colouring* initialColouring, DataStructures::MutableColouring* colouringToColour, DataStructures::ColourType colour)
 {
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
-        if (!colouring->isColoured(vertex))
+        if (!initialColouring->isColoured(vertex))
         {
             colouringToColour->setColour(vertex, colour);
         }

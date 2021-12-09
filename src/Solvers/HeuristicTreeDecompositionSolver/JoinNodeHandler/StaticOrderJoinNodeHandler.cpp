@@ -35,21 +35,21 @@ DataStructures::ColouringQueue Solvers::StaticOrderJoinNodeHandler::handleJoinNo
     DataStructures::ColouringQueue leftChildSolutions = solver->solveAtNode(node->getLeftChild());
     DataStructures::ColouringQueue rightChildSolutions = solver->solveAtNode(node->getRightChild());
 
-    DataStructures::ColouringQueue newSolutions = solver->createEmptyColouringQueue();
+    DataStructures::ColouringQueue newSolutions = createEmptyColouringQueue();
     for (DataStructures::MutableColouring* leftColouring : leftChildSolutions)
     {
         for (DataStructures::MutableColouring* rightColouring : rightChildSolutions)
         {
-            auto* newColouring = new DataStructures::MutableColouring{solver->colouring};
+            auto* newColouring = new DataStructures::MutableColouring{colouring};
             for (DataStructures::VertexType vertex : vertexOrder)
             {
-                if (solver->colouring->isColoured(vertex)) continue; // Skip precoloured vertices
+                if (colouring->isColoured(vertex)) continue; // Skip precoloured vertices
                 if (leftColouring->isColoured(vertex) && rightColouring->isColoured(vertex))
                 {
                     newColouring->setColour(vertex, leftColouring->getColour(vertex));
-                    int leftNbHappyVertices{solver->evaluator->evaluate(newColouring)};
+                    int leftNbHappyVertices{evaluator->evaluate(graph, newColouring)};
                     newColouring->setColour(vertex, rightColouring->getColour(vertex));
-                    int rightNbHappyVertices{solver->evaluator->evaluate(newColouring)};
+                    int rightNbHappyVertices{evaluator->evaluate(graph, newColouring)};
 
                     if (leftNbHappyVertices > rightNbHappyVertices)
                     {

@@ -4,11 +4,12 @@
 
 #include "BasicMHVEvaluator.h"
 
-DataStructures::BasicMHVEvaluator::BasicMHVEvaluator(const DataStructures::Graph* graph)
-    : ColouringEvaluator(graph)
-{}
+// TODO comments
+//DataStructures::BasicMHVEvaluator::BasicMHVEvaluator(const DataStructures::Graph* graph)
+//    : ColouringEvaluator(graph)
+//{}
 
-int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Colouring *colouring) const
+int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* graph, const DataStructures::Colouring* colouring) const
 {
     int nbHappyVertices{0};
     for (DataStructures::VertexType vertex{0}; vertex < colouring->getNbVertices(); vertex++)

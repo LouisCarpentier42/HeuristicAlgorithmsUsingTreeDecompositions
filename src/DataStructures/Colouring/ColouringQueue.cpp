@@ -9,8 +9,11 @@
 
 // TODO optimize (eg with std::set)
 
-DataStructures::ColouringQueue::ColouringQueue(size_t nbColourings, const DataStructures::ColouringEvaluator* comparator)
-    : nbColourings{nbColourings}, evaluator{comparator}
+DataStructures::ColouringQueue::ColouringQueue(
+        size_t nbColourings,
+        const DataStructures::ColouringEvaluator* evaluator,
+        const DataStructures::Graph* graph)
+    : nbColourings{nbColourings}, evaluator{evaluator}, graph{graph}
 {}
 
 void DataStructures::ColouringQueue::push(DataStructures::MutableColouring* colouring)
@@ -27,17 +30,17 @@ void DataStructures::ColouringQueue::push(DataStructures::MutableColouring* colo
     {
         // Find the worst element in the queue
         auto it = std::min_element(queue.begin(), queue.end(),
-                                   [this](auto* c1, auto* c2){return (*evaluator)(c1, c2);});
+                                   [this](auto* c1, auto* c2){return evaluator->compare(graph, c1, c2);});
 
         // Remove all the elements in the queue that have the worst evaluation
-        int worstEvaluation{evaluator->evaluate(*it)};
+        int worstEvaluation{evaluator->evaluate(graph, *it)};
         std::vector<DataStructures::MutableColouring*>allColourings{queue};
         queue.clear();
         std::copy_if(
             allColourings.begin(),
             allColourings.end(),
             std::back_inserter(queue),
-            [this,worstEvaluation](auto* c){return evaluator->evaluate(c)>worstEvaluation;}
+            [this,worstEvaluation](auto* c){return evaluator->evaluate(graph, c)>worstEvaluation;}
         );
 
         // If the queue is not full, then add random colourings with the worst evaluation to fill it
@@ -48,7 +51,7 @@ void DataStructures::ColouringQueue::push(DataStructures::MutableColouring* colo
                 allColourings.begin(),
                 allColourings.end(),
                 std::back_inserter(fillUpColourings),
-                [this,worstEvaluation](auto* c){return evaluator->evaluate(c)==worstEvaluation;}
+                [this,worstEvaluation](auto* c){return evaluator->evaluate(graph, c)==worstEvaluation;}
             );
             std::sample(
                 fillUpColourings.begin(),
@@ -78,12 +81,12 @@ void DataStructures::ColouringQueue::push(DataStructures::MutableColouring* colo
 DataStructures::MutableColouring* DataStructures::ColouringQueue::retrieveBestColouring() const
 {
     return *std::max_element(queue.begin(), queue.end(),
-                             [this](auto* c1, auto* c2){return (*evaluator)(c1, c2);});
+                             [this](auto* c1, auto* c2){return evaluator->compare(graph, c1, c2);});
 }
 
 DataStructures::MutableColouring* DataStructures::ColouringQueue::popBestColouring()
 {
-    std::sort(queue.begin(), queue.end(), [this](auto* c1, auto* c2){return (*evaluator)(c1, c2);});
+    std::sort(queue.begin(), queue.end(), [this](auto* c1, auto* c2){return evaluator->compare(graph, c1, c2);});
     DataStructures::MutableColouring* bestColouring = queue.back();
     queue.pop_back();
     return bestColouring;
@@ -110,10 +113,10 @@ DataStructures::ColouringQueue::Iterator DataStructures::ColouringQueue::end() c
     return queue.end();
 }
 
-std::ostream& DataStructures::operator<<(std::ostream &out, const DataStructures::ColouringQueue &colouringQueue)
+std::ostream& DataStructures::operator<<(std::ostream &out, const DataStructures::ColouringQueue& colouringQueue)
 {
     out << "COLOURING QUEUE [" << colouringQueue.queue.size() << "]\n";
     for (DataStructures::MutableColouring* colouring : colouringQueue)
-        std::cout << "[" << colouringQueue.evaluator->evaluate(colouring) << "] " << *colouring << '\n';
+        std::cout << "[" << colouringQueue.evaluator->evaluate(colouringQueue.graph, colouring) << "] " << *colouring << '\n';
     return out;
 }

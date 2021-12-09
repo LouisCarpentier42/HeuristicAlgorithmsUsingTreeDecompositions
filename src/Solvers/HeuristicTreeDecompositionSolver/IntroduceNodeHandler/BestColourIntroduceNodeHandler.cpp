@@ -10,14 +10,14 @@ DataStructures::ColouringQueue Solvers::BestColourIntroduceNodeHandler::handleIn
     DataStructures::VertexType introducedVertex{node->getIntroducedVertex()};
 
     // Precoloured vertices may not receive a new colour
-    if (solver->colouring->isColoured(introducedVertex)) return childColourings;
+    if (colouring->isColoured(introducedVertex)) return childColourings;
 
-    DataStructures::ColouringQueue bestColourings = solver->createEmptyColouringQueue();
-    DataStructures::ColouringQueue allColourings = solver->createEmptyColouringQueue();
+    DataStructures::ColouringQueue bestColourings = createEmptyColouringQueue();
+    DataStructures::ColouringQueue allColourings = createEmptyColouringQueue();
     for (DataStructures::MutableColouring* childColouring : childColourings)
     {
-        DataStructures::ColouringQueue newColourings = solver->createEmptyColouringQueue();
-        for (DataStructures::ColourType colour{1}; colour <= solver->colouring->getNbColours(); colour++)
+        DataStructures::ColouringQueue newColourings = createEmptyColouringQueue();
+        for (DataStructures::ColourType colour{1}; colour <= colouring->getNbColours(); colour++)
         {
             auto* newColouring = new DataStructures::MutableColouring{*childColouring};
             newColouring->setColour(introducedVertex, colour);

@@ -8,18 +8,18 @@
 
 // TODO optimize the algorithm!
 
-MaximumHappyVertices::GrowthMHV::GrowthMHV(
-        const DataStructures::Graph* graph,
-        const DataStructures::Colouring* colouring)
-    : MaximumHappyVerticesSolver(graph, colouring)
-{}
+//MaximumHappyVertices::GrowthMHV::GrowthMHV( // TODO comments
+//        const DataStructures::Graph* graph,
+//        const DataStructures::Colouring* colouring)
+//    : MaximumHappyVerticesSolver(graph, colouring)
+//{}
 
-DataStructures::MutableColouring* MaximumHappyVertices::GrowthMHV::solve() const
+DataStructures::MutableColouring* MaximumHappyVertices::GrowthMHV::solve(const DataStructures::Graph* graph, const DataStructures::Colouring* colouring) const
 {
     std::vector<VertexTypeMHV> types(graph->getNbVertices());
     auto* solution = new DataStructures::MutableColouring{colouring};
 
-    updateVertexTypes(solution, types);
+    updateVertexTypes(graph, solution, types);
 
     while (std::any_of(
             types.begin(),
@@ -85,12 +85,12 @@ DataStructures::MutableColouring* MaximumHappyVertices::GrowthMHV::solve() const
                 }
             }
         }
-        updateVertexTypes(solution, types);
+        updateVertexTypes(graph, solution, types);
     }
     return solution;
 }
 
-void MaximumHappyVertices::GrowthMHV::updateVertexTypes(DataStructures::MutableColouring* solution, std::vector<VertexTypeMHV>& types) const
+void MaximumHappyVertices::GrowthMHV::updateVertexTypes(const DataStructures::Graph* graph, DataStructures::MutableColouring* solution, std::vector<VertexTypeMHV>& types)
 {
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {

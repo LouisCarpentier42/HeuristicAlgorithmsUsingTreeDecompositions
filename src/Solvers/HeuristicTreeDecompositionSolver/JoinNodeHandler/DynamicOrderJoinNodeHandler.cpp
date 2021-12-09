@@ -11,16 +11,16 @@ DataStructures::ColouringQueue Solvers::DynamicOrderJoinNodeHandler::handleJoinN
     DataStructures::ColouringQueue leftChildSolutions = solver->solveAtNode(node->getLeftChild());
     DataStructures::ColouringQueue rightChildSolutions = solver->solveAtNode(node->getRightChild());
 
-    DataStructures::ColouringQueue newSolutions = solver->createEmptyColouringQueue();
+    DataStructures::ColouringQueue newSolutions = createEmptyColouringQueue();
     for (DataStructures::MutableColouring* leftColouring : leftChildSolutions)
     {
         for (DataStructures::MutableColouring* rightColouring : rightChildSolutions)
         {
-            auto* newColouring = new DataStructures::MutableColouring{solver->colouring};
+            auto* newColouring = new DataStructures::MutableColouring{colouring};
 
-            for (DataStructures::VertexType vertex{0}; vertex < solver->graph->getNbVertices(); vertex++)
+            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
             {
-                if (solver->colouring->isColoured(vertex))
+                if (colouring->isColoured(vertex))
                     continue;
                 else if (leftColouring->isColoured(vertex) && !rightColouring->isColoured(vertex))
                     newColouring->setColour(vertex, leftColouring->getColour(vertex));
@@ -41,9 +41,9 @@ DataStructures::ColouringQueue Solvers::DynamicOrderJoinNodeHandler::handleJoinN
 
                 // TODO here can be done something smarter maybe?
                 newColouring->setColour(vertex, leftColouring->getColour(vertex));
-                int leftNbHappyVertices{solver->evaluator->evaluate(newColouring)};
+                int leftNbHappyVertices{evaluator->evaluate(graph, newColouring)};
                 newColouring->setColour(vertex, rightColouring->getColour(vertex));
-                int rightNbHappyVertices{solver->evaluator->evaluate(newColouring)};
+                int rightNbHappyVertices{evaluator->evaluate(graph, newColouring)};
 
                 if (leftNbHappyVertices > rightNbHappyVertices)
                 {
@@ -58,7 +58,7 @@ DataStructures::ColouringQueue Solvers::DynamicOrderJoinNodeHandler::handleJoinN
 
 int Solvers::DynamicOrderJoinNodeHandler::nbColouredNeighbours(DataStructures::VertexType vertex, DataStructures::MutableColouring *colouring) const
 {
-    const std::vector<DataStructures::VertexType>* neighbours{solver->graph->getNeighbours(vertex)};
+    const std::vector<DataStructures::VertexType>* neighbours{graph->getNeighbours(vertex)};
     return std::count_if(neighbours->begin(), neighbours->end(),
                          [colouring](auto neighbour){ return colouring->isColoured(neighbour); });
 }

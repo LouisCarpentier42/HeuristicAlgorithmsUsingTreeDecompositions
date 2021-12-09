@@ -15,11 +15,11 @@
 namespace ExperimentalAnalysis
 {
     void executeExperiment(IO::Reader& reader, Experiment& experiment);
-    void writeResults(size_t nbRepetitionsPerColouring,
-                      const std::string& solverName,
-                      const Solvers::SolverBase* solver,
-                      const DataStructures::ColouringEvaluator& evaluator);
-    DataStructures::Colouring generatePartialColouring(DataStructures::Graph& graph, int nbColours, double percentColouredVertices);
+//    void writeResults(size_t nbRepetitionsPerColouring,
+//                      const std::string& solverName,
+//                      const Solvers::SolverBase* solver,
+//                      const DataStructures::ColouringEvaluator& evaluator);
+    DataStructures::Colouring generatePartialColouring(DataStructures::Graph& graph, size_t nbColours, double percentColouredVertices);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXPERIMENTALANALYSIS_H
