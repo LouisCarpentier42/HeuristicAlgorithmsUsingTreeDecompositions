@@ -41,7 +41,7 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
             new Solvers::PassiveLeafNodeHandlers{},
             new Solvers::ColourAllIntroduceNodeHandler{},
             new Solvers::PassiveForgetNodeHandler{},
-            new Solvers::StaticOrderJoinNodeHandler{&graph}
+            new Solvers::StaticOrderJoinNodeHandler{}
         };
         solvers["my_solver_best_colour_introduce"] = new Solvers::HeuristicTreeDecompositionSolver{
             experiment.nbColouringsToKeep,
@@ -49,7 +49,7 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
             new Solvers::PassiveLeafNodeHandlers{},
             new Solvers::BestColourIntroduceNodeHandler{},
             new Solvers::PassiveForgetNodeHandler{},
-            new Solvers::StaticOrderJoinNodeHandler{&graph}
+            new Solvers::StaticOrderJoinNodeHandler{}
         };
 
         // Test the baselines

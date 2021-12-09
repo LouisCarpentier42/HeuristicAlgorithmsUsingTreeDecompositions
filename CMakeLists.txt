@@ -52,7 +52,6 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/DataStructures/Colouring/ColouringEvaluator.h
         src/DataStructures/Colouring/BasicMHVEvaluator.cpp
         src/DataStructures/Colouring/BasicMHVEvaluator.h
-        src/Solvers/MaximumHappyVertices/MaximumHappyVerticesSolver.cpp
         src/Solvers/MaximumHappyVertices/MaximumHappyVerticesSolver.h
         src/DataStructures/Colouring/AdvancedMHVEvaluator.cpp
         src/DataStructures/Colouring/AdvancedMHVEvaluator.h

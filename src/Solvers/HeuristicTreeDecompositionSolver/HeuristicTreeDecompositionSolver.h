@@ -28,15 +28,6 @@ namespace Solvers
     class HeuristicTreeDecompositionSolver
     {
     private:
-
-//        /** Variable referring to the number of solutions that should be kept at each node. **/
-//        const size_t nbSolutionsToKeep;
-//
-//        const DataStructures::ColouringEvaluator* evaluator;
-
-//        /** The nice tree decomposition to use during when solving the problem. **/
-//        const DataStructures::NiceTreeDecomposition* treeDecomposition;
-
         /** Objects that should handle the different types of nodes of the tree decomposition. **/
         LeafNodeHandler* leafNodeHandler;
         IntroduceNodeHandler* introduceNodeHandler;
@@ -52,24 +43,13 @@ namespace Solvers
             ForgetNodeHandler* forgetNodeHandler,
             JoinNodeHandler* joinNodeHandler
         );
-//        HeuristicTreeDecompositionSolver(const DataStructures::Graph* graph,
-//                                         const DataStructures::Colouring* partialColouring,
-//                                         const DataStructures::ColouringEvaluator* evaluator,
-//                                         size_t nbSolutionsToKeep,
-//                                         const DataStructures::NiceTreeDecomposition* treeDecomposition,
-//                                         LeafNodeHandler* leafNodeHandler,
-//                                         IntroduceNodeHandler* introduceNodeHandler,
-//                                         ForgetNodeHandler* forgetNodeHandler,
-//                                         JoinNodeHandler* joinNodeHandler);
 
         [[nodiscard]] DataStructures::MutableColouring* solve(
             const DataStructures::Graph* graph,
             const DataStructures::Colouring* colouring,
             const DataStructures::NiceTreeDecomposition* treeDecomposition
         ) const;
-//        [[nodiscard]] DataStructures::MutableColouring* solve() const override;
         [[nodiscard]] DataStructures::ColouringQueue solveAtNode(const DataStructures::NiceNode* node) const;
-//        [[nodiscard]] DataStructures::ColouringQueue createEmptyColouringQueue() const;
     };
 
     class NodeHandler
@@ -94,6 +74,11 @@ namespace Solvers
 
     protected:
         [[nodiscard]] DataStructures::ColouringQueue createEmptyColouringQueue() const;
+        virtual void setNbSolutionsToKeep(size_t newNbSolutionsToKeep);
+        virtual void setEvaluator(const DataStructures::ColouringEvaluator* newEvaluator);
+        virtual void setSolver(const HeuristicTreeDecompositionSolver* newSolver);
+        virtual void setGraph(const DataStructures::Graph* graphToSolve);
+        virtual void setColouring(const DataStructures::Colouring* colouringToSolve);
     };
 
     class LeafNodeHandler : public Solvers::NodeHandler

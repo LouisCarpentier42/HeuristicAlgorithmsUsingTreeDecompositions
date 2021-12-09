@@ -7,10 +7,16 @@
 #include <algorithm>
 #include <random>
 
-Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(DataStructures::Graph* graph, Solvers::StaticOrderJoinNodeHandler::Order order)
-: vertexOrder{std::vector<DataStructures::VertexType>(graph->getNbVertices())}
+Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(Solvers::StaticOrderJoinNodeHandler::Order order)
+    : order{order}
+{ }
+
+void Solvers::StaticOrderJoinNodeHandler::setGraph(const DataStructures::Graph* graphToSolve)
 {
+    NodeHandler::setGraph(graphToSolve);
+
     static std::mt19937 rng{std::random_device{}()};
+    vertexOrder = std::vector<DataStructures::VertexType>(graphToSolve->getNbVertices());
     std::iota(vertexOrder.begin(), vertexOrder.end(), 0);
     switch (order)
     {
@@ -18,11 +24,11 @@ Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(DataStructures::
             break;
         case Order::greatestDegreeFirst:
             std::sort(vertexOrder.begin(), vertexOrder.end(),
-                      [graph](auto v1, auto v2){ return graph->getDegree(v1) > graph->getDegree(v2); });
+                      [graphToSolve](auto v1, auto v2){ return graphToSolve->getDegree(v1) > graphToSolve->getDegree(v2); });
             break;
         case Order::smallestDegreeFirst:
             std::sort(vertexOrder.begin(), vertexOrder.end(),
-                      [graph](auto v1, auto v2){ return graph->getDegree(v1) < graph->getDegree(v2); });
+                      [graphToSolve](auto v1, auto v2){ return graphToSolve->getDegree(v1) < graphToSolve->getDegree(v2); });
             break;
         case Order::random:
             std::shuffle(vertexOrder.begin(), vertexOrder.end(), rng);

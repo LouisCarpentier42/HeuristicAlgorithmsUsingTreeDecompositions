@@ -8,12 +8,6 @@
 
 // TODO optimize the algorithm!
 
-//MaximumHappyVertices::GrowthMHV::GrowthMHV( // TODO comments
-//        const DataStructures::Graph* graph,
-//        const DataStructures::Colouring* colouring)
-//    : MaximumHappyVerticesSolver(graph, colouring)
-//{}
-
 DataStructures::MutableColouring* MaximumHappyVertices::GrowthMHV::solve(const DataStructures::Graph* graph, const DataStructures::Colouring* colouring) const
 {
     std::vector<VertexTypeMHV> types(graph->getNbVertices());

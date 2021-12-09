@@ -13,20 +13,12 @@ namespace DataStructures
 {
     class ColouringEvaluator
     // TODO separate dir and namespace for evaluators
-    // TODO comments
     {
-//    protected:
-//        /** The graph that is used for the comparison of colourings. **/
-//        const DataStructures::Graph* graph;
-
     public:
-
-        ColouringEvaluator() = default;
-//        explicit ColouringEvaluator(const DataStructures::Graph* graph);
-
         /**
          * Evaluate the given colouring.
          *
+         * @param graph The graph that's used as context for the colourings.
          * @param colouring The colouring to evaluate.
          *
          * @return A value indicating how well a given colouring is. A better colouring must receive
@@ -38,8 +30,9 @@ namespace DataStructures
         ) const = 0;
 
         /**
-         * Comparator function for two colourings. // TODO doc
+         * Comparator function for two colourings.
          *
+         * @param graph The graph that's used as context for the colourings.
          * @param c1 The first colouring to use in the comparison.
          * @param c2 The second colouring to use in the comparison.
          *

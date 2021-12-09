@@ -26,9 +26,11 @@ namespace Solvers
             random
         };
     private:
+        const Order order;
         std::vector<DataStructures::VertexType> vertexOrder;
     public:
-        explicit StaticOrderJoinNodeHandler(DataStructures::Graph* graph, Order order = Order::defaultOrder);
+        explicit StaticOrderJoinNodeHandler(Order order = Order::defaultOrder);
+        void setGraph(const DataStructures::Graph* graphToSolve) override;
         [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
     };
 

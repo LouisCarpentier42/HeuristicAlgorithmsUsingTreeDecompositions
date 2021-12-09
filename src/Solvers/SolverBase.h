@@ -12,18 +12,12 @@
 
 namespace Solvers
 {
-    class SolverBase // TODO SOLVER BASE COMMENTS
+    class SolverBase
     {
     public:
-//        const DataStructures::Colouring* colouring;
-//        const DataStructures::Graph* graph;
         const DataStructures::ColouringEvaluator* evaluator;
 
         explicit SolverBase(const DataStructures::ColouringEvaluator* evaluator) : evaluator{evaluator} {}
-//        SolverBase(const DataStructures::Graph* graph,
-//                   const DataStructures::Colouring* colouring,
-//                   const DataStructures::ColouringEvaluator* evaluator)
-//            : graph{graph}, colouring{colouring}, evaluator{evaluator} {}
 
         [[nodiscard]] virtual DataStructures::MutableColouring* solve(
             const DataStructures::Graph* graph,

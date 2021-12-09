@@ -19,21 +19,16 @@ namespace MaximumHappyVertices
         LF_vertex
     };
 
-    class GrowthMHV : public MaximumHappyVerticesSolver // TODO comments
+    class GrowthMHV : public MaximumHappyVerticesSolver
     {
     public:
         GrowthMHV() = default;
-//        GrowthMHV(const DataStructures::Graph* graph, const DataStructures::Colouring* colouring);
         [[nodiscard]] DataStructures::MutableColouring* solve(
             const DataStructures::Graph* graph,
             const DataStructures::Colouring* colouring
         ) const override;
 
     private:
-//        static void updateVertexTypes(
-//                DataStructures::MutableColouring* solution,
-//                std::vector<VertexTypeMHV>& types
-//        );
         static void updateVertexTypes(
             const DataStructures::Graph* graph,
             DataStructures::MutableColouring* solution,

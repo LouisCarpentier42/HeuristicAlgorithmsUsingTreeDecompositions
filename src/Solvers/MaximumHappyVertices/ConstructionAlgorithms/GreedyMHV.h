@@ -13,11 +13,10 @@
 
 namespace MaximumHappyVertices
 {
-    class GreedyMHV : public MaximumHappyVerticesSolver // TODO comments
+    class GreedyMHV : public MaximumHappyVerticesSolver
     {
     public:
         GreedyMHV() = default;
-//        GreedyMHV(const DataStructures::Graph* graph, const DataStructures::Colouring* colouring);
 
         [[nodiscard]] DataStructures::MutableColouring* solve(
             const DataStructures::Graph* graph,

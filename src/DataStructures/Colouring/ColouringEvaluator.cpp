@@ -2,11 +2,7 @@
 // Created by louis on 14/11/2021.
 //
 
-#include "ColouringEvaluator.h" // TODO remove if not needed
-
-//DataStructures::ColouringEvaluator::ColouringEvaluator(const DataStructures::Graph* graph)
-//    : graph{graph}
-//{}
+#include "ColouringEvaluator.h"
 
 bool DataStructures::ColouringEvaluator::compare(
         const DataStructures::Graph* graph,

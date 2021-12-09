@@ -7,7 +7,7 @@
 
 #include "ColouringEvaluator.h"
 
-namespace DataStructures // TODO comments
+namespace DataStructures
 {
     class AdvancedMHVEvaluator : public ColouringEvaluator
     {
@@ -17,13 +17,11 @@ namespace DataStructures // TODO comments
         const int unhappyVertexWeight;
 
     public:
-        AdvancedMHVEvaluator(int happyVertexWeight,
-                             int potentiallyHappyVertexWeight,
-                             int unhappyVertexWeight);
-//        AdvancedMHVEvaluator(const DataStructures::Graph* graph,
-//                             int happyVertexWeight,
-//                             int potentiallyHappyVertexWeight,
-//                             int unhappyVertexWeight);
+        AdvancedMHVEvaluator(
+            int happyVertexWeight,
+            int potentiallyHappyVertexWeight,
+            int unhappyVertexWeight
+        );
 
         [[nodiscard]] int evaluate(
             const DataStructures::Graph* graph,
