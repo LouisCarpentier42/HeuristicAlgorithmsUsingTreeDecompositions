@@ -5,14 +5,14 @@
 #include <chrono>
 #include <random>
 #include "experimentalAnalysis.h"
-#include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
-#include "Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.h"
-#include "DataStructures/Colouring/AdvancedMHVEvaluator.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/ConcreteLeafNodeHandlers.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/ConcreteIntroduceNodeHandlers.h"
-#include "Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/ConcreteJoinNodeHandlers.h"
+#include "../Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
+#include "../Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
+#include "../Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.h"
+#include "../DataStructures/Colouring/AdvancedMHVEvaluator.h"
+#include "../Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/ConcreteLeafNodeHandlers.h"
+#include "../Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h"
+#include "../Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/ConcreteIntroduceNodeHandlers.h"
+#include "../Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/ConcreteJoinNodeHandlers.h"
 
 void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& experiment)
 {
@@ -55,7 +55,6 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
         // Test the solvers
         for (auto const& [name, solver] : solvers)
             writeResults(experiment.nbRepetitionsPerColouring, name, solver, basicMhvEvaluator);
-
     }
 }
 

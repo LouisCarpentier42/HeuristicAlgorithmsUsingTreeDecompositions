@@ -8,19 +8,12 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "IO/Reader.h"
-#include "Solvers/SolverBase.h"
+#include "../IO/Reader.h"
+#include "../Solvers/SolverBase.h"
+#include "Experiment.h"
 
 namespace ExperimentalAnalysis
 {
-    struct Experiment {
-        std::string graphName{};
-        size_t nbColours{};
-        size_t nbColouringsToKeep{};
-        size_t nbRepetitionsPerColouring{};
-        size_t nbColouringsPerGraph{};
-    };
-
     void executeExperiment(IO::Reader& reader, Experiment& experiment);
     void writeResults(size_t nbRepetitionsPerColouring,
                       const std::string& solverName,
