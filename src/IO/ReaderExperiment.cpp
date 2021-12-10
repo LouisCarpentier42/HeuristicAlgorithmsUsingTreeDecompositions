@@ -99,6 +99,10 @@ Solvers::JoinNodeHandler* readJoinNodeHandler(std::string& str)
     {
         return new Solvers::DynamicOrderJoinNodeHandler{};
     }
+    else if (parameters[0] == "greedyColourBag")
+    {
+        return new Solvers::GreedyColourBagJoinNodeHandler{};
+    }
 
     throw std::runtime_error("Invalid join node handler identifier is given: " + str + "!");
 }

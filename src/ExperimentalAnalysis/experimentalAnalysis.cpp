@@ -56,44 +56,6 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
 }
 
 
-
-//    std::string graphFile{experiment.graphName + ".gr"};
-//    std::string niceTreeFile{experiment.graphName + "_nice.tw"};
-//
-//    DataStructures::Graph graph = reader.readGraph(graphFile);
-//    DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(niceTreeFile);
-//    DataStructures::BasicMHVEvaluator basicMhvEvaluator{};
-//
-//    for (int i{0}; i < experiment.nbColouringsPerGraph; i++)
-//    {
-//        DataStructures::Colouring colouring = generatePartialColouring(graph, experiment.nbColours, 0.01);
-
-//        std::map<std::string, Solvers::SolverBase*> baselines{};
-//        baselines["greedy_mhv"] = new MaximumHappyVertices::GreedyMHV{};
-//        baselines["growth_mhv"] = new MaximumHappyVertices::GrowthMHV{};
-
-        // The tree decomposition heuristics to test
-//        std::map<std::string, Solvers::HeuristicTreeDecompositionSolver*> solvers{};
-//        DataStructures::AdvancedMHVEvaluator evaluator{6, 2, -1};
-//        solvers["my_basic_solver"] = new Solvers::HeuristicTreeDecompositionSolver{
-//            experiment.nbColouringsToKeep,
-//            &evaluator,
-//            new Solvers::PassiveLeafNodeHandlers{},
-//            new Solvers::ColourAllIntroduceNodeHandler{},
-//            new Solvers::PassiveForgetNodeHandler{},
-//            new Solvers::StaticOrderJoinNodeHandler{}
-//        };
-//        solvers["my_solver_best_colour_introduce"] = new Solvers::HeuristicTreeDecompositionSolver{
-//            experiment.nbColouringsToKeep,
-//            &evaluator,
-//            new Solvers::PassiveLeafNodeHandlers{},
-//            new Solvers::BestColourIntroduceNodeHandler{},
-//            new Solvers::PassiveForgetNodeHandler{},
-//            new Solvers::StaticOrderJoinNodeHandler{}
-//        };
-
-
-
 DataStructures::Colouring ExperimentalAnalysis::generatePartialColouring(DataStructures::Graph& graph, size_t nbColours, double percentColouredVertices)
 {
     static std::mt19937 rng{std::random_device{}()};

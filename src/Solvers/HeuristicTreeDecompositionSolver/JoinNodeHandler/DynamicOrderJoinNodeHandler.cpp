@@ -28,7 +28,12 @@ DataStructures::ColouringQueue Solvers::DynamicOrderJoinNodeHandler::handleJoinN
                     newColouring->setColour(vertex, rightColouring->getColour(vertex));
             }
 
-            DataStructures::BagContent verticesToColour{node->getBagContent()};
+            DataStructures::BagContent verticesToColour(node->getBagSize());
+            for (DataStructures::VertexType vertex : node->getBagContent())
+            {
+                if (!colouring->isColoured(vertex))
+                    verticesToColour.push_back(vertex);
+            }
             while (!verticesToColour.empty())
             {
                 // Order: the vertex that is connected to the most coloured vertices is chosen first

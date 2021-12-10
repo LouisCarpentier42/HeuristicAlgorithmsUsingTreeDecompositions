@@ -24,4 +24,7 @@ baseline greedyMHV
 baseline growthMHV
 heuristicTD basicEvaluator 8 basicMHVEvaluator passive bestColour passive staticOrder(gdf)
 heuristicTD colouredEvaluator 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive staticOrder(gdf)
-heuristicTD uncolouredEvaluator 8 uncolouredMHVEvaluator(6,5,2,2,-1,-1) passive bestColour passive staticOrder(gdf)
+heuristicTD basicEvaluator_greedyJoin 8 basicMHVEvaluator passive bestColour passive greedyColourBag
+heuristicTD dynamicOrder 8 basicMHVEvaluator passive bestColour passive dynamicOrder
+heuristicTD colouredEvaluator_greedyJoin 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag
+c heuristicTD uncolouredEvaluator 8 uncolouredMHVEvaluator(6,5,2,2,-1,-1) passive bestColour passive staticOrder(gdf)

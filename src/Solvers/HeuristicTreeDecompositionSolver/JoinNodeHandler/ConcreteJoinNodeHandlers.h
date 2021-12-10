@@ -13,6 +13,7 @@
 //  - if left colour and right colour give equal evaluation, try to maintain both
 //  - order of vertices when they are coloured during merge
 //  - Use the n best colourings (attention for uncoloured vertices for only one child)
+//  - Maybe colour vertices of bag in a growth-MHV fashion
 
 namespace Solvers
 {
@@ -41,6 +42,12 @@ namespace Solvers
         [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
     private:
         [[nodiscard]] int nbColouredNeighbours(DataStructures::VertexType vertex, DataStructures::MutableColouring* colouring) const;
+    };
+
+    class GreedyColourBagJoinNodeHandler : public JoinNodeHandler
+    {
+    public:
+        [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
     };
 }
 
