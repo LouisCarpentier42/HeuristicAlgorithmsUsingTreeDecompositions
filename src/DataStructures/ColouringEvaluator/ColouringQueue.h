@@ -6,7 +6,7 @@
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_COLOURINGQUEUE_H
 
 #include "ColouringEvaluator.h"
-#include "MutableColouring.h"
+#include "../Colouring/MutableColouring.h"
 
 #include <vector>
 

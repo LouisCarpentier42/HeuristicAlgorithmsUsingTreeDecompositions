@@ -12,7 +12,7 @@
 #include "../../DataStructures/TreeDecomposition/JoinNode.h"
 #include "../../DataStructures/TreeDecomposition/LeafNode.h"
 #include "../../DataStructures/TreeDecomposition/NiceNode.h"
-#include "../../DataStructures/Colouring/ColouringQueue.h"
+#include "../../DataStructures/ColouringEvaluator/ColouringQueue.h"
 
 #include "../SolverBase.h"
 

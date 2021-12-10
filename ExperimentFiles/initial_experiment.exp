@@ -1,24 +1,6 @@
 c
 c Each line represents a 'command', with the first word the command and the next words the arguments
 c
-c Lines that start with a 'c' are comments and ignored
-c
-c The line that starts with 'problem' decides the problem that will be solved
-c There must be exactly 1 such line in the file
-c Note that no check is performed to see if the solvers are compatible with the problem
-c
-c Lines that start with baseline are the baseline solvers used for comparison
-c
-c Lines starting with heuristicTD represent settings for the heuristic solver using tree decompositions
-c The arguments are as follows:
-c - The name/identifier for the solver (must be unique)
-c - the number of colour functions that should be kept
-c - the evaluator to be used
-c - the handler for leaf nodes
-c - the handler for introduce nodes
-c - the handler for forget nodes
-c - the handler for join nodes
-c
 c Lines starting with experiment are the experiments that must be executed
 c The arguments are as follows:
 c - the name of the graph to use
@@ -28,9 +10,6 @@ c - the percent of nodes of the graph that must be coloured
 c - the number of colour functions that should be solved
 c - the number of times each colour function should be solved by the tree decomposition heuristics
 c
-problem MaximumHappyVertices
-baseline greedyMHV
-baseline growthMHV
-heuristicTD test1 8 basicMHVEvaluator passive bestColour passive staticOrder(gdf)
-heuristicTD test2 8 advancedMHVEvaluator(6,2,-1) passive bestColour passive staticOrder(gdf)
-experiment ex001.gr ex001_nice.tw 3 0.01 2 5
+experiment he001.gr he001_nice.tw 3 0.01 2 1
+experiment he002.gr he002_nice.tw 3 0.01 2 1
+c experiment ex001.gr ex001_nice.tw 3 0.01 2 5

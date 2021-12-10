@@ -6,7 +6,7 @@
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXPERIMENT_H
 
 #include "../Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.h"
-#include "../DataStructures/Colouring/BasicMHVEvaluator.h"
+#include "../DataStructures/ColouringEvaluator/BasicMHVEvaluator.h"
 
 #include <map>
 

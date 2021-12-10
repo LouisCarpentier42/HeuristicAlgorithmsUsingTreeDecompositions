@@ -9,7 +9,8 @@
 #include "../Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/ConcreteIntroduceNodeHandlers.h"
 #include "../Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h"
 #include "../Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/ConcreteJoinNodeHandlers.h"
-#include "../DataStructures/Colouring/AdvancedMHVEvaluator.h"
+#include "../DataStructures/ColouringEvaluator/PotentialHappyColouredMHVEvaluator.h"
+#include "../DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.h"
 
 std::vector<std::string> splitParameters(std::string& str)
 {
@@ -39,11 +40,20 @@ const DataStructures::ColouringEvaluator* readEvaluator(std::string& str)
     std::vector<std::string> parameters = splitParameters(str);
     if (parameters[0] == "basicMHVEvaluator")
         return new DataStructures::BasicMHVEvaluator{};
-    else if (parameters[0] == "advancedMHVEvaluator")
-        return new DataStructures::AdvancedMHVEvaluator{
+    else if (parameters[0] == "colouredMHVEvaluator")
+        return new DataStructures::PotentialHappyColouredMHVEvaluator{
             IO::Reader::convertToInt(parameters[1]),
             IO::Reader::convertToInt(parameters[2]),
             IO::Reader::convertToInt(parameters[3])
+        };
+    else if (parameters[0] == "uncolouredMHVEvaluator")
+        return new DataStructures::PotentialHappyUncolouredMHVEvaluator{
+            IO::Reader::convertToInt(parameters[1]),
+            IO::Reader::convertToInt(parameters[2]),
+            IO::Reader::convertToInt(parameters[3]),
+            IO::Reader::convertToInt(parameters[4]),
+            IO::Reader::convertToInt(parameters[5]),
+            IO::Reader::convertToInt(parameters[6])
         };
     throw std::runtime_error("Invalid evaluator identifier is given: " + str + "!");
 }
@@ -93,22 +103,27 @@ Solvers::JoinNodeHandler* readJoinNodeHandler(std::string& str)
     throw std::runtime_error("Invalid join node handler identifier is given: " + str + "!");
 }
 
-ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string &filename) const
+ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const
 {
-    std::ifstream file{experimentFilesDir + filename};
-    if (!file)
+    std::ifstream solverFile{experimentFilesDir + solversFilename};
+    if (!solverFile)
     {
-        throw std::runtime_error("Can't read graph in '" + filename + "' because the file can't be opened!");
+        throw std::runtime_error("Can't read '" + solversFilename + "' because the file can't be opened!");
+    }
+
+    std::ifstream experimentFile{experimentFilesDir + experimentsFilename};
+    if (!experimentFile)
+    {
+        throw std::runtime_error("Can't read '" + experimentsFilename + "' because the file can't be opened!");
     }
 
     DataStructures::ColouringEvaluator* evaluator{};
     std::map<std::string, Solvers::SolverBase*> baselines{};
     std::map<std::string, Solvers::HeuristicTreeDecompositionSolver*> treeDecompositionSolvers{};
-    std::vector<ExperimentalAnalysis::TestInstance> testInstances{};
-    while (file)
+    while (solverFile)
     {
         std::string line{};
-        std::getline(file, line);
+        std::getline(solverFile, line);
         std::vector<std::string> tokens = tokenize(line);
         if (tokens.empty() || tokens[0] == "c") continue;
         else if (tokens[0] == "problem")
@@ -138,6 +153,19 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string &f
                 readJoinNodeHandler(tokens[7]),
             };
         }
+        else
+        {
+            std::cout << "Invalid input format: ignoring line '" << line << "'\n";
+        }
+    }
+
+    std::vector<ExperimentalAnalysis::TestInstance> testInstances{};
+    while (experimentFile)
+    {
+        std::string line{};
+        std::getline(experimentFile, line);
+        std::vector<std::string> tokens = tokenize(line);
+        if (tokens.empty() || tokens[0] == "c") continue;
         else if (tokens[0] == "experiment")
         {
             testInstances.push_back(
@@ -153,7 +181,7 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string &f
         }
         else
         {
-            std::cout << "Invalid input format: ignoring '" << line << "'\n";
+            std::cout << "Invalid input format: ignoring line '" << line << "'\n";
         }
     }
 

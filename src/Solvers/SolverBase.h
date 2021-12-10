@@ -6,7 +6,7 @@
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_SOLVERBASE_H
 
 #include "../DataStructures/Colouring/Colouring.h"
-#include "../DataStructures/Colouring/ColouringEvaluator.h"
+#include "../DataStructures/ColouringEvaluator/ColouringEvaluator.h"
 #include "../DataStructures/Colouring/MutableColouring.h"
 #include "../DataStructures/Graph/Graph.h"
 

@@ -2,9 +2,11 @@
 // Created by louis on 18/11/2021.
 //
 
-#include "AdvancedMHVEvaluator.h"
+#include "PotentialHappyColouredMHVEvaluator.h"
+#include "PotentialHappyUncolouredMHVEvaluator.h"
 
-DataStructures::AdvancedMHVEvaluator::AdvancedMHVEvaluator(
+
+DataStructures::PotentialHappyColouredMHVEvaluator::PotentialHappyColouredMHVEvaluator(
         int happyVertexWeight,
         int potentiallyHappyVertexWeight,
         int unhappyVertexWeight)
@@ -13,12 +15,12 @@ DataStructures::AdvancedMHVEvaluator::AdvancedMHVEvaluator(
       unhappyVertexWeight{unhappyVertexWeight}
 {}
 
-int DataStructures::AdvancedMHVEvaluator::evaluate(const DataStructures::Graph* graph, const DataStructures::Colouring *colouring) const
+int DataStructures::PotentialHappyColouredMHVEvaluator::evaluate(const DataStructures::Graph* graph, const DataStructures::Colouring *colouring) const
 {
     int evaluation{0};
     for (DataStructures::VertexType vertex{0}; vertex < colouring->getNbVertices(); vertex++)
     {
-        if (!colouring->isColoured(vertex)) continue; // TODO also check uncoloured vertices
+        if (!colouring->isColoured(vertex)) continue;
 
         bool vertexIsUnhappy{false};
         bool hasUncolouredNeighbour{false};

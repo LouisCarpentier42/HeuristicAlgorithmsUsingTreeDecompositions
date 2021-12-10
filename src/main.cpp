@@ -18,8 +18,9 @@ int main(int argc, char** argv)
         experimentFilesDir
     };
 
+    std::string solverFile{"initial_solvers.sol"};
     std::string experimentFile{"initial_experiment.exp"};
-    ExperimentalAnalysis::Experiment experiment = reader.readExperiment(experimentFile);
+    ExperimentalAnalysis::Experiment experiment = reader.readExperiment(solverFile, experimentFile);
     ExperimentalAnalysis::executeExperiment(reader, experiment);
 
 

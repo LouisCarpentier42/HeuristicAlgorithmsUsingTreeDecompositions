@@ -42,7 +42,7 @@ namespace IO
         [[nodiscard]] DataStructures::Graph readGraph(const std::string& filename) const;
         [[nodiscard]] DataStructures::TreeDecomposition readTreeDecomposition(const std::string& filename) const;
         [[nodiscard]] DataStructures::NiceTreeDecomposition readNiceTreeDecomposition(const std::string& filename) const;
-        [[nodiscard]] ExperimentalAnalysis::Experiment readExperiment(const std::string& filename) const;
+        [[nodiscard]] ExperimentalAnalysis::Experiment readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const;
 
         static std::vector<std::string> tokenize(std::string& line);
         static int convertToInt(std::string& str);

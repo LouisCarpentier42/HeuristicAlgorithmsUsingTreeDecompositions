@@ -7,7 +7,7 @@
 
 #include "../../DataStructures/Graph/Graph.h"
 #include "../../DataStructures/Colouring/Colouring.h"
-#include "../../DataStructures/Colouring/BasicMHVEvaluator.h"
+#include "../../DataStructures/ColouringEvaluator/BasicMHVEvaluator.h"
 #include "../SolverBase.h"
 
 namespace MaximumHappyVertices

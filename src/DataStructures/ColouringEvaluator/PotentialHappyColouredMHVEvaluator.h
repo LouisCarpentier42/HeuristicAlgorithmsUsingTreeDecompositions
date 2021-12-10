@@ -2,14 +2,14 @@
 // Created by louis on 18/11/2021.
 //
 
-#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_ADVANCEDMHVEVALUATOR_H
-#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_ADVANCEDMHVEVALUATOR_H
+#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_POTENTIALHAPPYCOLOUREDMHVEVALUATOR_H
+#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_POTENTIALHAPPYCOLOUREDMHVEVALUATOR_H
 
 #include "ColouringEvaluator.h"
 
 namespace DataStructures
 {
-    class AdvancedMHVEvaluator : public ColouringEvaluator
+    class PotentialHappyColouredMHVEvaluator : public ColouringEvaluator
     {
     private:
         const int happyVertexWeight;
@@ -17,7 +17,7 @@ namespace DataStructures
         const int unhappyVertexWeight;
 
     public:
-        AdvancedMHVEvaluator(
+        PotentialHappyColouredMHVEvaluator(
             int happyVertexWeight,
             int potentiallyHappyVertexWeight,
             int unhappyVertexWeight
@@ -30,4 +30,4 @@ namespace DataStructures
     };
 }
 
-#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_ADVANCEDMHVEVALUATOR_H
+#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_POTENTIALHAPPYCOLOUREDMHVEVALUATOR_H

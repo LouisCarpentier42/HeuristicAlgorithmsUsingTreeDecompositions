@@ -46,15 +46,15 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/IO/ReaderTreeDecomposition.cpp
         src/IO/ReaderNiceTreeDecomposition.cpp
         src/DataStructures/DataStructuresAliases.h
-        src/DataStructures/Colouring/ColouringQueue.cpp
-        src/DataStructures/Colouring/ColouringQueue.h
-        src/DataStructures/Colouring/ColouringEvaluator.cpp
-        src/DataStructures/Colouring/ColouringEvaluator.h
-        src/DataStructures/Colouring/BasicMHVEvaluator.cpp
-        src/DataStructures/Colouring/BasicMHVEvaluator.h
+        src/DataStructures/ColouringEvaluator/ColouringQueue.cpp
+        src/DataStructures/ColouringEvaluator/ColouringQueue.h
+        src/DataStructures/ColouringEvaluator/ColouringEvaluator.cpp
+        src/DataStructures/ColouringEvaluator/ColouringEvaluator.h
+        src/DataStructures/ColouringEvaluator/BasicMHVEvaluator.cpp
+        src/DataStructures/ColouringEvaluator/BasicMHVEvaluator.h
         src/Solvers/MaximumHappyVertices/MaximumHappyVerticesSolver.h
-        src/DataStructures/Colouring/AdvancedMHVEvaluator.cpp
-        src/DataStructures/Colouring/AdvancedMHVEvaluator.h
+        src/DataStructures/ColouringEvaluator/PotentialHappyColouredMHVEvaluator.cpp
+        src/DataStructures/ColouringEvaluator/PotentialHappyColouredMHVEvaluator.h
         src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/PassiveForgetNodeHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h
         src/Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/PassiveLeafNodeHandlers.cpp
@@ -68,4 +68,4 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/BestColourIntroduceNodeHandler.cpp
         src/ExperimentalAnalysis/experimentalAnalysis.cpp
         src/ExperimentalAnalysis/experimentalAnalysis.h
-        src/ExperimentalAnalysis/Experiment.h src/IO/ReaderExperiment.cpp)
+        src/ExperimentalAnalysis/Experiment.h src/IO/ReaderExperiment.cpp src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.cpp src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.h)
