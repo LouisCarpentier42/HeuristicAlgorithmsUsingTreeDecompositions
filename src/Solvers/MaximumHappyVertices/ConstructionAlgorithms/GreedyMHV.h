@@ -18,7 +18,7 @@ namespace MaximumHappyVertices
     public:
         GreedyMHV() = default;
 
-        [[nodiscard]] DataStructures::MutableColouring* solve(
+        [[nodiscard]] DataStructures::Colouring* solve(
             const DataStructures::Graph* graph,
             const DataStructures::Colouring* colouring
         ) const override;

@@ -12,11 +12,11 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
     for (const TestInstance& testInstance : experiment.testInstances)
     {
         DataStructures::Graph graph = reader.readGraph(testInstance.graphName);
-        DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
 
         for (size_t colouringNb{0}; colouringNb < testInstance.nbColouringsPerGraph; colouringNb++)
         {
             DataStructures::Colouring colouring = generatePartialColouring(graph, testInstance.nbColours, testInstance.percentColouredVertices);
+            std::cout << colouring << '\n';
 
             // Test the baselines
             for (auto const& [name, baseline] : experiment.baselines)
@@ -29,27 +29,33 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
                 int evaluation{experiment.evaluator->evaluate(&graph, solution)};
                 std::chrono::microseconds duration{std::chrono::duration_cast<std::chrono::microseconds>(stop - start)};
 
+                std::cout << *solution << '\n';
                 std::cout << "Evaluation: " << evaluation << "\n";
                 std::cout << "Time (µs):  " << duration.count() << "\n\n";
             }
 
             // Test the solvers
-            for (auto const& [name, solver] : experiment.treeDecompositionSolvers)
+            if (!experiment.treeDecompositionSolvers.empty())
             {
-                std::cout << ">>> " << name << " <<<\n";
-                std::chrono::microseconds duration{0};
-                int evaluation{0};
-                for (int repetition{0}; repetition < testInstance.nbRepetitionsPerColouring; repetition++)
-                {
-                    auto start = std::chrono::high_resolution_clock::now();
-                    DataStructures::Colouring* solution = solver->solve(&graph, &colouring, &niceTreeDecomposition);
-                    auto stop = std::chrono::high_resolution_clock::now();
-                    duration += std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-                    evaluation += experiment.evaluator->evaluate(&graph, solution);
-                }
+                DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
 
-                std::cout << "Evaluation: " << evaluation/testInstance.nbRepetitionsPerColouring << "\n";
-                std::cout << "Time (µs):  " << duration.count()/testInstance.nbRepetitionsPerColouring << "\n\n";
+                for (auto const& [name, solver] : experiment.treeDecompositionSolvers)
+                {
+                    std::cout << ">>> " << name << " <<<\n";
+                    std::chrono::microseconds duration{0};
+                    int evaluation{0};
+                    for (int repetition{0}; repetition < testInstance.nbRepetitionsPerColouring; repetition++)
+                    {
+                        auto start = std::chrono::high_resolution_clock::now();
+                        DataStructures::Colouring* solution = solver->solve(&graph, &colouring, &niceTreeDecomposition);
+                        auto stop = std::chrono::high_resolution_clock::now();
+                        duration += std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+                        evaluation += experiment.evaluator->evaluate(&graph, solution);
+                    }
+
+                    std::cout << "Evaluation: " << evaluation/testInstance.nbRepetitionsPerColouring << "\n";
+                    std::cout << "Time (µs):  " << duration.count()/testInstance.nbRepetitionsPerColouring << "\n\n";
+                }
             }
         }
     }
@@ -58,7 +64,8 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
 
 DataStructures::Colouring ExperimentalAnalysis::generatePartialColouring(DataStructures::Graph& graph, size_t nbColours, double percentColouredVertices)
 {
-    static std::mt19937 rng{std::random_device{}()};
+    static std::mt19937 rng{0};
+//    static std::mt19937 rng{std::random_device{}()};
     std::uniform_int_distribution<DataStructures::ColourType> colourDistribution(1, nbColours);
 
     // Create a random shuffling of the vertices and colour them in this order

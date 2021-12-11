@@ -7,32 +7,45 @@
 
 #include "../MaximumHappyVerticesSolver.h"
 
+#include <deque>
+
 namespace MaximumHappyVertices
 {
-    enum class VertexTypeMHV {
-        H_vertex,
-        U_vertex,
-        P_vertex,
-        LH_vertex,
-        LU_vertex,
-        LP_vertex,
-        LF_vertex
-    };
-
     class GrowthMHV : public MaximumHappyVerticesSolver
     {
     public:
+        enum class GrowthType {
+            TEMP_INVALID_TYPE,
+            H_vertex,
+            U_vertex,
+            P_vertex,
+            LH_vertex,
+            LU_vertex,
+            LP_vertex,
+            LF_vertex
+        };
+
         GrowthMHV() = default;
-        [[nodiscard]] DataStructures::MutableColouring* solve(
+        [[nodiscard]] DataStructures::Colouring* solve(
             const DataStructures::Graph* graph,
             const DataStructures::Colouring* colouring
         ) const override;
 
-    private:
+    public: // TODO set private
+        static void setGrowthTypes(
+            std::deque<DataStructures::VertexType>& verticesToUpdate,
+            const DataStructures::Graph* graph,
+            const DataStructures::Colouring* colouring
+        );
         static void updateVertexTypes(
             const DataStructures::Graph* graph,
-            DataStructures::MutableColouring* solution,
-            std::vector<VertexTypeMHV>& types
+            const DataStructures::Colouring* colouring,
+            std::vector<GrowthType>& types
+        );
+        [[nodiscard]] static std::deque<DataStructures::VertexType> verticesAtDistance(
+            size_t distance,
+            DataStructures::VertexType vertex,
+            const DataStructures::Graph* graph
         );
     };
 }

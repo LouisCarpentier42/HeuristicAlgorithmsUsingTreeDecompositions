@@ -19,7 +19,7 @@ namespace Solvers
 
         explicit SolverBase(const DataStructures::ColouringEvaluator* evaluator) : evaluator{evaluator} {}
 
-        [[nodiscard]] virtual DataStructures::MutableColouring* solve(
+        [[nodiscard]] virtual DataStructures::Colouring* solve(
             const DataStructures::Graph* graph,
             const DataStructures::Colouring* colouring
         ) const = 0;

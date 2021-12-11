@@ -12,7 +12,6 @@
 namespace DataStructures
 {
     class ColouringEvaluator
-    // TODO separate dir and namespace for evaluators
     {
     public:
         /**

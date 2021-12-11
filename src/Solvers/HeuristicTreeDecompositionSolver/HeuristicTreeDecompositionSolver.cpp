@@ -21,7 +21,7 @@ Solvers::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositionSolver(
     this->joinNodeHandler->setSolverProperties(nbSolutionsToKeep, evaluator, this);
 }
 
-DataStructures::MutableColouring* Solvers::HeuristicTreeDecompositionSolver::solve(
+DataStructures::Colouring* Solvers::HeuristicTreeDecompositionSolver::solve(
         const DataStructures::Graph* graph,
         const DataStructures::Colouring* colouring,
         const DataStructures::NiceTreeDecomposition* treeDecomposition) const

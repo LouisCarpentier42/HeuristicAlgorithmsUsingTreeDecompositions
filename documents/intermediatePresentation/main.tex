@@ -247,7 +247,7 @@
         A rooted tree decomposition $\T=(T, \{X_t\}_{t \in V(T)})$ of graph $G$ is \textit{nice} if the following conditions hold:
         \begin{itemize}
             \item $X_r = \emptyset$ and $X_l = \emptyset$ for every leaf $l$ of $V(T)$.
-            \item Every non-leaf node of $T$ is one of the following types:
+            \item Every non-leaf node of $T$ is one of the following vertexTypes:
             \begin{enumerate}
                 \item Introduce node: a node $t$ with exactly 1 child $t'$ such that $X_t = X_{t'} \cap \{v\}$ for some vertex $v \not\in X_{t'}$.
                 \item Forget node: a node $t$ with exactly 1 child $t'$ such that $X_t = X_{t'} \setminus \{v\}$ for some vertex $v \in X_{t'}$.
@@ -750,7 +750,7 @@
     \only<1->{
         Algorithm improvement:
         \begin{itemize}
-            \item Implement more techniques to handle the different types of nodes
+            \item Implement more techniques to handle the different vertexTypes of nodes
             \item Apply kernelization on the input graph \cite{gao2018kernelization}
         \end{itemize}
     }

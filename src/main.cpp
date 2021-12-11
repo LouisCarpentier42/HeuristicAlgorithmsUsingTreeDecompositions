@@ -3,7 +3,6 @@
 #include "ExperimentalAnalysis/experimentalAnalysis.h"
 #include "IO/Reader.h"
 
-
 int main(int argc, char** argv)
 {
     (void)argc;
@@ -22,6 +21,8 @@ int main(int argc, char** argv)
     std::string experimentFile{"initial_experiment.exp"};
     ExperimentalAnalysis::Experiment experiment = reader.readExperiment(solverFile, experimentFile);
     ExperimentalAnalysis::executeExperiment(reader, experiment);
+
+
 
 
 //    TreeDecompositionSolverTimer timer{1.0, 4.0, 10000.0, 0.20};

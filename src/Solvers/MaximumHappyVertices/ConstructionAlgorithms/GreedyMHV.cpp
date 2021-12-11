@@ -4,7 +4,7 @@
 
 #include "GreedyMHV.h"
 
-DataStructures::MutableColouring* MaximumHappyVertices::GreedyMHV::solve(
+DataStructures::Colouring* MaximumHappyVertices::GreedyMHV::solve(
         const DataStructures::Graph* graph,
         const DataStructures::Colouring* colouring) const
 {

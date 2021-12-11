@@ -15,7 +15,7 @@ namespace MaximumHappyVertices
     class MaximumHappyVerticesSolver : public Solvers::SolverBase
     {
     public:
-        MaximumHappyVerticesSolver() : Solvers::SolverBase(new DataStructures::BasicMHVEvaluator()) {}
+        MaximumHappyVerticesSolver() : Solvers::SolverBase{new DataStructures::BasicMHVEvaluator()} {}
    };
 }
 

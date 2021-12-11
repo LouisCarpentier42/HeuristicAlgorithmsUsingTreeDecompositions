@@ -44,7 +44,7 @@ namespace Solvers
             JoinNodeHandler* joinNodeHandler
         );
 
-        [[nodiscard]] DataStructures::MutableColouring* solve(
+        [[nodiscard]] DataStructures::Colouring* solve(
             const DataStructures::Graph* graph,
             const DataStructures::Colouring* colouring,
             const DataStructures::NiceTreeDecomposition* treeDecomposition
