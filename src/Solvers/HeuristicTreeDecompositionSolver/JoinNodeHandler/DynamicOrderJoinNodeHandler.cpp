@@ -6,6 +6,27 @@
 
 #include <algorithm>
 
+// TODO optimize: cache the eval of vertices in bag + update in stead of recomputing each time
+
+Solvers::DynamicOrderJoinNodeHandler::DynamicOrderJoinNodeHandler(Solvers::DynamicOrderJoinNodeHandler::Order order)
+{
+    switch (order)
+    {
+        case Order::mostColouredNeighboursFirst:
+            vertexSelector = new MostColouredNeighboursSelector{};
+            break;
+        case Order::fewestColouredNeighboursFirst:
+            vertexSelector = new FewestColouredNeighboursSelector{};
+            break;
+        case Order::mostPotentialHappyNeighbours:
+            vertexSelector = new MostPotentialHappyNeighboursSelector{};
+            break;
+        case Order::mostPercentPotentialHappyNeighbours:
+            vertexSelector = new MostPercentPotentialHappyNeighboursSelector{};
+            break;
+    }
+}
+
 DataStructures::ColouringQueue Solvers::DynamicOrderJoinNodeHandler::handleJoinNode(const DataStructures::JoinNode *node) const
 {
     DataStructures::ColouringQueue leftChildSolutions = solver->solveAtNode(node->getLeftChild());
@@ -36,11 +57,7 @@ DataStructures::ColouringQueue Solvers::DynamicOrderJoinNodeHandler::handleJoinN
             }
             while (!verticesToColour.empty())
             {
-                // Order: the vertex that is connected to the most coloured vertices is chosen first
-                // TODO different order (eg less coloured neighbours is better
-                // TODO optimize
-                auto comparator = [this, newColouring](auto v1, auto v2){ return nbColouredNeighbours(v1, newColouring) < nbColouredNeighbours(v2, newColouring); };
-                auto it = std::max_element(verticesToColour.begin(), verticesToColour.end(), comparator);
+                auto it = vertexSelector->select(verticesToColour, graph, newColouring);
                 DataStructures::VertexType vertex{*it};
                 verticesToColour.erase(it);
 
@@ -61,9 +78,128 @@ DataStructures::ColouringQueue Solvers::DynamicOrderJoinNodeHandler::handleJoinN
     return newSolutions;
 }
 
-int Solvers::DynamicOrderJoinNodeHandler::nbColouredNeighbours(DataStructures::VertexType vertex, DataStructures::MutableColouring *colouring) const
+int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbColouredNeighbours(
+        DataStructures::VertexType vertex,
+        const DataStructures::Graph* graph,
+        const DataStructures::Colouring* colouring)
 {
     const std::vector<DataStructures::VertexType>* neighbours{graph->getNeighbours(vertex)};
-    return std::count_if(neighbours->begin(), neighbours->end(),
-                         [colouring](auto neighbour){ return colouring->isColoured(neighbour); });
+    return std::count_if(
+            neighbours->begin(),
+            neighbours->end(),
+            [colouring](auto neighbour){ return colouring->isColoured(neighbour); });
 }
+
+int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbPotentialHappyNeighbours(
+        DataStructures::VertexType vertex,
+        const DataStructures::Graph* graph,
+        const DataStructures::Colouring* colouring)
+{
+    int nbPotentialHappyNeighbours{0};
+    for (DataStructures::VertexType potentialHappyNeighbour : *graph->getNeighbours(vertex))
+    {
+        DataStructures::ColourType colourNeighbours{0};
+        bool canBeHappy{true};
+        for (DataStructures::VertexType neighbour : *graph->getNeighbours(potentialHappyNeighbour))
+        {
+            if (colouring->isColoured(neighbour))
+            {
+                if (colourNeighbours == 0)
+                {
+                    colourNeighbours = colouring->getColour(neighbour);
+                }
+                else if (colouring->getColour(neighbour) != colourNeighbours)
+                {
+                    canBeHappy = false;
+                    break;
+                }
+            }
+        }
+
+        if (canBeHappy) nbPotentialHappyNeighbours++;
+    }
+    return nbPotentialHappyNeighbours;
+}
+
+
+DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostColouredNeighboursSelector::select(
+        DataStructures::BagContent& bagContent,
+        const DataStructures::Graph* graph,
+        const DataStructures::Colouring* colouring) const
+{
+    auto bestIterator = bagContent.begin();
+    int bestNbColouredNeighbours{getNbColouredNeighbours(*bestIterator, graph, colouring)};
+    for (auto it = bagContent.begin()+1; it != bagContent.end(); ++it)
+    {
+        int nbColouredNeighbours{getNbColouredNeighbours(*it, graph, colouring)};
+        if (nbColouredNeighbours > bestNbColouredNeighbours)
+        {
+            bestIterator = it;
+            bestNbColouredNeighbours = nbColouredNeighbours;
+        }
+    }
+    return bestIterator;
+}
+
+DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::FewestColouredNeighboursSelector::select(
+        DataStructures::BagContent& bagContent,
+        const DataStructures::Graph* graph,
+        const DataStructures::Colouring* colouring) const
+{
+    auto bestIterator = bagContent.begin();
+    int bestNbColouredNeighbours{getNbColouredNeighbours(*bestIterator, graph, colouring)};
+    for (auto it = bagContent.begin()+1; it != bagContent.end(); ++it)
+    {
+        int nbColouredNeighbours{getNbColouredNeighbours(*it, graph, colouring)};
+        if (nbColouredNeighbours < bestNbColouredNeighbours)
+        {
+            bestIterator = it;
+            bestNbColouredNeighbours = nbColouredNeighbours;
+        }
+    }
+    return bestIterator;
+}
+
+DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostPotentialHappyNeighboursSelector::select(
+        DataStructures::BagContent& bagContent,
+        const DataStructures::Graph* graph,
+        const DataStructures::Colouring* colouring) const
+{
+    auto bestIterator = bagContent.begin();
+    int bestNbPotentialHappyNeighbours{getNbPotentialHappyNeighbours(*bestIterator, graph, colouring)};
+    for (auto it = bagContent.begin()+1; it != bagContent.end(); ++it)
+    {
+        int nbPotentialHappyNeighbours{getNbPotentialHappyNeighbours(*it, graph, colouring)};
+        if (nbPotentialHappyNeighbours < bestNbPotentialHappyNeighbours)
+        {
+            bestIterator = it;
+            bestNbPotentialHappyNeighbours = nbPotentialHappyNeighbours;
+        }
+    }
+    return bestIterator;
+}
+
+DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostPercentPotentialHappyNeighboursSelector::select(
+        DataStructures::BagContent& bagContent,
+        const DataStructures::Graph* graph,
+        const DataStructures::Colouring* colouring) const
+{
+    auto bestIterator = bagContent.begin();
+    double bestPercentPotentialHappyNeighbours{
+        (double)getNbPotentialHappyNeighbours(*bestIterator, graph, colouring) / (double)graph->getDegree(*bestIterator)
+    };
+    for (auto it = bagContent.begin()+1; it != bagContent.end(); ++it)
+    {
+        double percentPotentialHappyNeighbours{
+            (double)getNbPotentialHappyNeighbours(*it, graph, colouring) / (double)graph->getDegree(*it)
+        };
+        if (percentPotentialHappyNeighbours < bestPercentPotentialHappyNeighbours)
+        {
+            bestIterator = it;
+            bestPercentPotentialHappyNeighbours = percentPotentialHappyNeighbours;
+        }
+    }
+    return bestIterator;
+}
+
+

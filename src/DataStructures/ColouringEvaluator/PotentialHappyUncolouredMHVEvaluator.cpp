@@ -71,13 +71,13 @@ int DataStructures::PotentialHappyUncolouredMHVEvaluator::getWeightUncolouredVer
         {
             hasUncolouredNeighbour = true;
         }
-        else if (colourNeighbours != 0 && colouring->getColour(neighbour) != colourNeighbours)
-        {
-            return unhappyUncolouredVertexWeight;
-        }
-        else
+        else if (colourNeighbours == 0 && colouring->isColoured(neighbour))
         {
             colourNeighbours = colouring->getColour(neighbour);
+        }
+        else if (colourNeighbours != 0 && colouring->isColoured(neighbour) && colouring->getColour(neighbour) != colourNeighbours)
+        {
+            return unhappyUncolouredVertexWeight;
         }
     }
     if (hasUncolouredNeighbour)

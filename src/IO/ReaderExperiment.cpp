@@ -98,7 +98,14 @@ Solvers::JoinNodeHandler* readJoinNodeHandler(std::string& str)
     }
     else if (parameters[0] == "dynamicOrder")
     {
-        return new Solvers::DynamicOrderJoinNodeHandler{};
+        if (parameters[1] == "mostColouredNeighbours")
+            return new Solvers::DynamicOrderJoinNodeHandler{Solvers::DynamicOrderJoinNodeHandler::Order::mostColouredNeighboursFirst};
+        else if (parameters[1] == "DynamicOrderJoinNodeHandler")
+            return new Solvers::DynamicOrderJoinNodeHandler{Solvers::DynamicOrderJoinNodeHandler::Order::fewestColouredNeighboursFirst};
+        else if (parameters[1] == "mostPotentialHappyNeighbours")
+            return new Solvers::DynamicOrderJoinNodeHandler{Solvers::DynamicOrderJoinNodeHandler::Order::mostPotentialHappyNeighbours};
+        else if (parameters[1] == "mostPercentPotentialHappyNeighbours")
+            return new Solvers::DynamicOrderJoinNodeHandler{Solvers::DynamicOrderJoinNodeHandler::Order::mostPercentPotentialHappyNeighbours};
     }
     else if (parameters[0] == "greedyColourBag")
     {

@@ -3,8 +3,6 @@
 //
 
 #include "PotentialHappyColouredMHVEvaluator.h"
-#include "PotentialHappyUncolouredMHVEvaluator.h"
-
 
 DataStructures::PotentialHappyColouredMHVEvaluator::PotentialHappyColouredMHVEvaluator(
         int happyVertexWeight,
