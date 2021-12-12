@@ -4,7 +4,7 @@
 
 #include "Reader.h"
 
-DataStructures::Graph IO::Reader::readGraph(const std::string &filename) const
+DataStructures::Graph* IO::Reader::readGraph(const std::string &filename) const
 {
     std::ifstream file{graphFilesDir + filename};
     if (!file)
@@ -39,5 +39,5 @@ DataStructures::Graph IO::Reader::readGraph(const std::string &filename) const
         tokens = tokenize(line);
     }
 
-    return DataStructures::Graph{static_cast<size_t>(nbVertices), adjacencyList};
+    return new DataStructures::Graph{static_cast<size_t>(nbVertices), adjacencyList};
 }

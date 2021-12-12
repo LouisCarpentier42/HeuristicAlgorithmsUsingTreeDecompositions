@@ -31,16 +31,11 @@ namespace MaximumHappyVertices
             const DataStructures::Colouring* colouring
         ) const override;
 
-    public: // TODO set private
+    private:
         static void setGrowthTypes(
             std::deque<DataStructures::VertexType>& verticesToUpdate,
             const DataStructures::Graph* graph,
             const DataStructures::Colouring* colouring
-        );
-        static void updateVertexTypes(
-            const DataStructures::Graph* graph,
-            const DataStructures::Colouring* colouring,
-            std::vector<GrowthType>& types
         );
         [[nodiscard]] static std::deque<DataStructures::VertexType> verticesAtDistance(
             size_t distance,

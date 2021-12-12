@@ -14,12 +14,10 @@ namespace ExperimentalAnalysis
 {
     struct TestInstance
     {
-        const std::string graphName{};
-        const std::string treeDecompositionName{};
-        const size_t nbColours{};
-        const double percentColouredVertices{};
-        const size_t nbColouringsPerGraph{};
-        const size_t nbRepetitionsPerColouring{};
+        const DataStructures::Graph* graph;
+        const std::string treeDecompositionName;
+        const std::vector<DataStructures::Colouring*> colourings;
+        const size_t nbRepetitions;
     };
 
     struct Experiment

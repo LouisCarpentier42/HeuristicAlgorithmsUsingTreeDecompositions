@@ -39,7 +39,7 @@ namespace IO
             std::string experimentFilesDir
         );
 
-        [[nodiscard]] DataStructures::Graph readGraph(const std::string& filename) const;
+        [[nodiscard]] DataStructures::Graph* readGraph(const std::string& filename) const;
         [[nodiscard]] DataStructures::TreeDecomposition readTreeDecomposition(const std::string& filename) const;
         [[nodiscard]] DataStructures::NiceTreeDecomposition readNiceTreeDecomposition(const std::string& filename) const;
         [[nodiscard]] ExperimentalAnalysis::Experiment readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const;

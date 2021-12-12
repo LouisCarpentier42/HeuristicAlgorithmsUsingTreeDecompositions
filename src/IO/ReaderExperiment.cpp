@@ -2,6 +2,7 @@
 // Created by louis on 09/12/2021.
 //
 
+#include <random>
 #include "Reader.h"
 #include "../Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
 #include "../Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
@@ -107,6 +108,41 @@ Solvers::JoinNodeHandler* readJoinNodeHandler(std::string& str)
     throw std::runtime_error("Invalid join node handler identifier is given: " + str + "!");
 }
 
+std::vector<DataStructures::Colouring*> readColouringString(std::string& str, DataStructures::Graph* graph)
+{
+    std::vector<std::string> parameters = splitParameters(str);
+    if (parameters[0] == "random")
+    {
+        int nbColours{IO::Reader::convertToInt(parameters[1])};
+        double percentColouredVertices{std::stod(parameters[2])};
+        int nbColourings{IO::Reader::convertToInt(parameters[3])};
+        std::vector<DataStructures::Colouring*> colourings{};
+        for (int j{0}; j < nbColourings; j++)
+        {
+            static std::mt19937 rng{std::random_device{}()};
+            std::uniform_int_distribution<DataStructures::ColourType> colourDistribution(1, nbColours);
+
+            // Create a random shuffling of the vertices and colour them in this order
+            std::vector<DataStructures::VertexType> allVertices(graph->getNbVertices());
+            std::iota(allVertices.begin(), allVertices.end(), 0);
+            std::shuffle(allVertices.begin(), allVertices.end(), rng);
+
+            // Colour the first nbColours vertices in each colour before randomly colour the remaining vertices
+            std::vector<DataStructures::ColourType> colourVector(graph->getNbVertices());
+            for (int i{0}; i < nbColours; i++)
+                colourVector[allVertices[i]] = i+1;
+            size_t nbVerticesToColour{static_cast<size_t>(percentColouredVertices * static_cast<double>(graph->getNbVertices()))};
+            for (int i{nbColours}; i < nbVerticesToColour; i++)
+                colourVector[allVertices[i]] = colourDistribution(rng);
+
+            colourings.push_back(new DataStructures::Colouring{colourVector});
+        }
+        return colourings;
+    }
+
+    throw std::runtime_error("Invalid colouring identifier is given: " + str + "!");
+}
+
 ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const
 {
     std::ifstream solverFile{experimentFilesDir + solversFilename};
@@ -172,14 +208,13 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
         if (tokens.empty() || tokens[0] == "c") continue;
         else if (tokens[0] == "experiment")
         {
+            DataStructures::Graph* graph = readGraph(tokens[1]);
             testInstances.push_back(
                 ExperimentalAnalysis::TestInstance{
-                    tokens[1],
+                    graph,
                     tokens[2],
-                    static_cast<size_t>(convertToInt(tokens[3])),
-                    std::stod(tokens[4]),
-                    static_cast<size_t>(convertToInt(tokens[5])),
-                    static_cast<size_t>(convertToInt(tokens[6])),
+                    readColouringString(tokens[3], graph),
+                    static_cast<size_t>(convertToInt(tokens[4])),
                 }
             );
         }
