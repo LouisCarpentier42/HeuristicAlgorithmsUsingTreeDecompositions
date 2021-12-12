@@ -122,6 +122,18 @@ namespace Solvers
     public:
         [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
     };
+
+    class GrowthColourBagJoinNodeHandler : public JoinNodeHandler
+    {
+    public:
+        [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
+    };
+
+    class UseChildColoursJoinNodeHandler : public JoinNodeHandler
+    {
+    public:
+        [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
+    };
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_CONCRETEJOINNODEHANDLERS_H

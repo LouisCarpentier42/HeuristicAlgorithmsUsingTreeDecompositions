@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 #include <numeric>
+#include <random>
 
 static std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> vertexTypes{};
 static std::set<DataStructures::VertexType> H_vertices{};
@@ -92,8 +93,11 @@ DataStructures::Colouring* MaximumHappyVertices::GrowthMHV::solve(
         {
             // Only LF vertices remain to be coloured, which means they form (a) disconnected
             // component(s) and can all receive an arbitrary colour such that all of them are happy
+            static std::mt19937 rng{std::random_device{}()};
+            std::uniform_int_distribution<> distribution(0, colouring->getNbColours());
+            DataStructures::ColourType colour = distribution(rng);
             for (DataStructures::VertexType lfVertex : LF_vertices)
-                solution->setColour(lfVertex, 1);
+                solution->setColour(lfVertex, colour);
             break;
         }
 
@@ -101,7 +105,6 @@ DataStructures::Colouring* MaximumHappyVertices::GrowthMHV::solve(
         {
             switch (vertexTypes[vertex])
             {
-
                 case GrowthType::H_vertex: H_vertices.erase(vertex); break;
                 case GrowthType::U_vertex: U_vertices.erase(vertex); break;
                 case GrowthType::P_vertex: P_vertices.erase(vertex);break;

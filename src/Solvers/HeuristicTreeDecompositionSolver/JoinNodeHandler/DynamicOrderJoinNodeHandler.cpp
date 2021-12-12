@@ -6,8 +6,6 @@
 
 #include <algorithm>
 
-// TODO optimize: cache the eval of vertices in bag + update in stead of recomputing each time
-
 Solvers::DynamicOrderJoinNodeHandler::DynamicOrderJoinNodeHandler(Solvers::DynamicOrderJoinNodeHandler::Order order)
 {
     switch (order)

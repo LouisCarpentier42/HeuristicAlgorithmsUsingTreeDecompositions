@@ -68,4 +68,4 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/BestColourIntroduceNodeHandler.cpp
         src/ExperimentalAnalysis/experimentalAnalysis.cpp
         src/ExperimentalAnalysis/experimentalAnalysis.h
-        src/ExperimentalAnalysis/Experiment.h src/IO/ReaderExperiment.cpp src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.cpp src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.h src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/GreedyColourBagJoinNodeHandler.cpp)
+        src/ExperimentalAnalysis/Experiment.h src/IO/ReaderExperiment.cpp src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.cpp src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.h src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/GreedyColourBagJoinNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/GrowthColourBagJoinNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/UseChildColoursJoinNodeHandler.cpp)

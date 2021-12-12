@@ -111,6 +111,14 @@ Solvers::JoinNodeHandler* readJoinNodeHandler(std::string& str)
     {
         return new Solvers::GreedyColourBagJoinNodeHandler{};
     }
+    else if (parameters[0] == "growthColourBag")
+    {
+        return new Solvers::GrowthColourBagJoinNodeHandler{};
+    }
+    else if (parameters[0] == "useChildColours")
+    {
+        return new Solvers::UseChildColoursJoinNodeHandler{};
+    }
 
     throw std::runtime_error("Invalid join node handler identifier is given: " + str + "!");
 }
