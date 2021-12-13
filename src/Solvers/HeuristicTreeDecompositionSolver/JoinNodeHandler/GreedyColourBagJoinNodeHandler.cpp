@@ -29,21 +29,24 @@ DataStructures::ColouringQueue Solvers::GreedyColourBagJoinNodeHandler::handleJo
             }
 
             DataStructures::BagContent verticesToColour(node->getBagSize());
-            std::set<DataStructures::ColourType> coloursToUse{};
+            std::vector<bool> useColour(colouring->getNbColours());
+//            std::set<DataStructures::ColourType> coloursToUse{};
             for (DataStructures::VertexType vertex : node->getBagContent())
             {
                 if (!colouring->isColoured(vertex))
                 {
                     verticesToColour.push_back(vertex);
                 }
-                coloursToUse.insert(leftColouring->getColour(vertex));
-                coloursToUse.insert(rightColouring->getColour(vertex));
+                useColour[leftColouring->getColour(vertex)] = true;
+                useColour[rightColouring->getColour(vertex)] = true;
             }
 
-            DataStructures::ColourType bestColour{*coloursToUse.begin()};
-            int bestEval{0};
-            for (DataStructures::ColourType colour : coloursToUse)
+            DataStructures::ColourType bestColour{0};
+            int bestEval{-1};
+//            for (DataStructures::ColourType colour : coloursToUse)
+            for (DataStructures::ColourType colour{1}; colour <= colouring->getNbColours(); colour++)
             {
+                if (!useColour[colour]) continue;
                 for (DataStructures::VertexType vertex : verticesToColour)
                     newColouring->setColour(vertex, colour);
                 int eval{evaluator->evaluate(graph, newColouring)};

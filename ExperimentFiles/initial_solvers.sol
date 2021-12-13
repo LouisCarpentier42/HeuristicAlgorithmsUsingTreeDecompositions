@@ -22,8 +22,8 @@ c
 problem MaximumHappyVertices
 baseline greedyMHV
 baseline growthMHV
-heuristicTD useChildCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive useChildColours
-heuristicTD mostCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostColouredNeighbours)
-heuristicTD fewestCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(DynamicOrderJoinNodeHandler)
-heuristicTD mostHappy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostPotentialHappyNeighbours)
-heuristicTD most%Happy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostPercentPotentialHappyNeighbours)
+heuristicTD useChildCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag
+c heuristicTD mostCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostColouredNeighbours)
+c heuristicTD fewestCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(DynamicOrderJoinNodeHandler)
+c heuristicTD mostHappy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostPotentialHappyNeighbours)
+c heuristicTD most%Happy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostPercentPotentialHappyNeighbours)
