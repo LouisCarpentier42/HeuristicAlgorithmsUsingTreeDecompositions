@@ -10,5 +10,4 @@ c - the percent of nodes of the graph that must be coloured
 c - the number of colour functions that should be solved
 c - the number of times each colour function should be solved by the tree decomposition heuristics
 c
-experiment ex061.gr ex061_nice.tw random(5,0.01,1) 1
-experiment ex100.gr ex100_nice.tw random(5,0.01,1) 1
+experiment he005.gr he005.tw random(5,0.01,1) 1

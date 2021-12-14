@@ -8,16 +8,30 @@
 #include <set>
 #include <numeric>
 #include <random>
+#include <functional>
 
+
+struct Comparator
+{
+public:
+    static const DataStructures::Graph* graph;
+
+    bool operator() (const DataStructures::VertexType& v1, const DataStructures::VertexType& v2) const
+    {
+        return graph->getDegree(v1) == graph->getDegree(v2) ? v1 < v2 : graph->getDegree(v1) > graph->getDegree(v2);
+    }
+};
+
+
+const DataStructures::Graph* Comparator::graph = nullptr;
 static std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> vertexTypes{};
-static std::set<DataStructures::VertexType> H_vertices{};
-static std::set<DataStructures::VertexType> U_vertices{};
-static std::set<DataStructures::VertexType> P_vertices{};
-static std::set<DataStructures::VertexType> LP_vertices{};
-static std::set<DataStructures::VertexType> LH_vertices{};
-static std::set<DataStructures::VertexType> LU_vertices{};
-static std::set<DataStructures::VertexType> LF_vertices{};
-
+static std::set<DataStructures::VertexType, Comparator> H_vertices(Comparator{});
+static std::set<DataStructures::VertexType, Comparator> U_vertices(Comparator{});
+static std::set<DataStructures::VertexType, Comparator> P_vertices(Comparator{});
+static std::set<DataStructures::VertexType, Comparator> LP_vertices(Comparator{});
+static std::set<DataStructures::VertexType, Comparator> LH_vertices(Comparator{});
+static std::set<DataStructures::VertexType, Comparator> LU_vertices(Comparator{});
+static std::set<DataStructures::VertexType, Comparator> LF_vertices(Comparator{});
 
 
 DataStructures::Colouring* MaximumHappyVertices::GrowthMHV::solve(
@@ -26,6 +40,7 @@ DataStructures::Colouring* MaximumHappyVertices::GrowthMHV::solve(
 {
     vertexTypes.clear();
     vertexTypes.resize(graph->getNbVertices());
+    Comparator::graph = graph;
     H_vertices.clear();
     U_vertices.clear();
     P_vertices.clear();
