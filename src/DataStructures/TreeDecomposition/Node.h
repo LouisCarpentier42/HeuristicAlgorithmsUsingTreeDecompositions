@@ -12,9 +12,7 @@
 
 namespace DataStructures
 {
-    class Node;
     using BagContent = std::vector<DataStructures::VertexType>;
-    using ChildVector = std::vector<Node*>;
 
     class Node
     {
@@ -26,9 +24,8 @@ namespace DataStructures
         const DataStructures::BagContent bagContent;
         Node* parent{nullptr};
 
-
     protected:
-        Node(int id, size_t size, DataStructures::BagContent bagContent, ChildVector childVector);
+        Node(int id, size_t size, DataStructures::BagContent bagContent, std::vector<Node*> childVector);
 
     public:
         [[nodiscard]] int getId() const;

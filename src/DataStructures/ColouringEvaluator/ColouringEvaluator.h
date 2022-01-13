@@ -5,9 +5,8 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_COLOURINGEVALUATOR_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_COLOURINGEVALUATOR_H
 
-
 #include "../Graph/Graph.h"
-#include "../Colouring/Colouring.h"
+#include "../DynamicProgramming/TableEntry.h"
 
 namespace DataStructures
 {
@@ -15,33 +14,38 @@ namespace DataStructures
     {
     public:
         /**
-         * Evaluate the given colouring.
+         * Evaluate the colours of the given graph.
          *
+         * @param graph The graph to evaluate the colours of.
+         *
+         * @return An evalatuion value for the vertices in the graph.
+         */
+        [[nodiscard]] virtual int evaluate(const DataStructures::Graph* graph) const = 0;
+
+        /**
+         * Evaluate the given colour assignment.
+         *
+         * @param recolouredVertices The vertices that have been recoloured and thus could influence the evaluation.
+         * @param colourAssignments The colour assignments of all vertices.
          * @param graph The graph that's used as context for the colourings.
-         * @param colouring The colouring to evaluate.
+         * @param startEvaluation The evaluation value to start from.
          *
-         * @return A value indicating how well a given colouring is. A better colouring must receive
+         * @return A value indicating how well a given colour map is. A better colouring must receive
          *         a higher evaluation value.
          */
         [[nodiscard]] virtual int evaluate(
+            const std::vector<DataStructures::VertexType>& recolouredVertices,
+            const DataStructures::TableEntry::ColourAssignments& colourAssignments,
             const DataStructures::Graph* graph,
-            const DataStructures::Colouring* colouring
+            int startEvaluation
         ) const = 0;
 
-        /**
-         * Comparator function for two colourings.
-         *
-         * @param graph The graph that's used as context for the colourings.
-         * @param c1 The first colouring to use in the comparison.
-         * @param c2 The second colouring to use in the comparison.
-         *
-         * @return True if and only if c2 has a better evaluation than c1.
-         */
-        bool compare(
+        [[nodiscard]] int evaluate(
+            const DataStructures::VertexType& recolouredVertex,
+            const DataStructures::TableEntry::ColourAssignments& colourAssignments,
             const DataStructures::Graph* graph,
-            const DataStructures::Colouring* c1,
-            const DataStructures::Colouring* c2
-        ) const;
+            int startEvaluation) const
+        { return evaluate(std::vector<VertexType>{recolouredVertex}, colourAssignments, graph, startEvaluation); }
     };
 }
 

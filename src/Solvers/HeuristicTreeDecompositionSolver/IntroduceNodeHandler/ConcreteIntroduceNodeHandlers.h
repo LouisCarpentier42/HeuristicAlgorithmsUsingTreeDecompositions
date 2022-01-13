@@ -12,13 +12,13 @@ namespace Solvers
     class GreedyIntroduceNodeHandler : public IntroduceNodeHandler
     {
     public:
-        [[nodiscard]] DataStructures::ColouringQueue handleIntroduceNode(const DataStructures::IntroduceNode* node) const override;
+        void handleIntroduceNode(DataStructures::IntroduceNode* node) const override;
     };
 
     class BestColourIntroduceNodeHandler : public IntroduceNodeHandler
     {
     public:
-        [[nodiscard]] DataStructures::ColouringQueue handleIntroduceNode(const DataStructures::IntroduceNode* node) const override;
+        void handleIntroduceNode(DataStructures::IntroduceNode* node) const override;
     };
 }
 

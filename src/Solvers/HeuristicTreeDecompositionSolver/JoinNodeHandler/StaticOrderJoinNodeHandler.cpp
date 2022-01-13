@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <random>
 
-Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(Solvers::StaticOrderJoinNodeHandler::Order order)
-    : order{order}
+Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(
+        Solvers::EvaluationMerger* evaluationMerger,
+        Solvers::StaticOrderJoinNodeHandler::Order order)
+    : JoinNodeHandler{evaluationMerger}, order{order}
 { }
 
 void Solvers::StaticOrderJoinNodeHandler::setGraph(const DataStructures::Graph* graphToSolve)
@@ -16,63 +18,92 @@ void Solvers::StaticOrderJoinNodeHandler::setGraph(const DataStructures::Graph* 
     NodeHandler::setGraph(graphToSolve);
 
     static std::mt19937 rng{std::random_device{}()};
-    vertexOrder = std::vector<DataStructures::VertexType>(graphToSolve->getNbVertices());
-    std::iota(vertexOrder.begin(), vertexOrder.end(), 0);
+    std::vector<DataStructures::VertexType> orderToColourVertices(graphToSolve->getNbVertices());
+    std::iota(orderToColourVertices.begin(), orderToColourVertices.end(), 0);
     switch (order)
     {
         case Order::defaultOrder:
             break;
         case Order::greatestDegreeFirst:
-            std::sort(vertexOrder.begin(), vertexOrder.end(),
+            std::sort(orderToColourVertices.begin(), orderToColourVertices.end(),
                       [graphToSolve](auto v1, auto v2){ return graphToSolve->getDegree(v1) > graphToSolve->getDegree(v2); });
             break;
         case Order::smallestDegreeFirst:
-            std::sort(vertexOrder.begin(), vertexOrder.end(),
+            std::sort(orderToColourVertices.begin(), orderToColourVertices.end(),
                       [graphToSolve](auto v1, auto v2){ return graphToSolve->getDegree(v1) < graphToSolve->getDegree(v2); });
             break;
         case Order::random:
-            std::shuffle(vertexOrder.begin(), vertexOrder.end(), rng);
+            std::shuffle(orderToColourVertices.begin(), orderToColourVertices.end(), rng);
             break;
     }
+    // Save the vertices that are not precoloured, because those are the ones that should be coloured
+    std::copy_if(
+            orderToColourVertices.begin(), orderToColourVertices.end(),
+        std::back_inserter(vertexOrder),
+        [graphToSolve](DataStructures::VertexType vertex){return !graphToSolve->isPrecoloured(vertex);}
+    );
 }
 
-DataStructures::ColouringQueue Solvers::StaticOrderJoinNodeHandler::handleJoinNode(const DataStructures::JoinNode *node) const
-{
-    DataStructures::ColouringQueue leftChildSolutions = solver->solveAtNode(node->getLeftChild());
-    DataStructures::ColouringQueue rightChildSolutions = solver->solveAtNode(node->getRightChild());
 
-    DataStructures::ColouringQueue newSolutions = createEmptyColouringQueue();
-    for (DataStructures::MutableColouring* leftColouring : leftChildSolutions)
+void Solvers::StaticOrderJoinNodeHandler::handleJoinNode(DataStructures::JoinNode* node) const
+{
+    solver->solveAtNode(node->getLeftChild());
+    solver->solveAtNode(node->getRightChild());
+
+    for (DataStructures::TableEntry* leftEntry : *node->getLeftChild()->getTable())
     {
-        for (DataStructures::MutableColouring* rightColouring : rightChildSolutions)
+        for (DataStructures::TableEntry* rightEntry : *node->getRightChild()->getTable())
         {
-            auto* newColouring = new DataStructures::MutableColouring{colouring};
+            // Create a colour assignment
+            DataStructures::TableEntry::ColourAssignments assignments
+            {
+                leftEntry->getColourAssignments(),
+                rightEntry->getColourAssignments()
+            };
+            // Colour the vertices in the predefined order
+            int initialMergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
+            int previousEvaluation{initialMergedEvaluation};
             for (DataStructures::VertexType vertex : vertexOrder)
             {
-                if (colouring->isColoured(vertex)) continue; // Skip precoloured vertices
-                if (leftColouring->isColoured(vertex) && rightColouring->isColoured(vertex))
+                // If the vertex is coloured in both entries, then the best colour is used
+                if (leftEntry->getColourAssignments().isColoured(vertex) && leftEntry->getColourAssignments().isColoured(vertex))
                 {
-                    newColouring->setColour(vertex, leftColouring->getColour(vertex));
-                    int leftNbHappyVertices{evaluator->evaluate(graph, newColouring)};
-                    newColouring->setColour(vertex, rightColouring->getColour(vertex));
-                    int rightNbHappyVertices{evaluator->evaluate(graph, newColouring)};
+                    int mergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
+                    assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
+                    int leftEvaluation{evaluator->evaluate(vertex, assignments, graph, mergedEvaluation)};
+                    assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
+                    int rightEvaluation{evaluator->evaluate(vertex, assignments, graph, mergedEvaluation)};
 
-                    if (leftNbHappyVertices > rightNbHappyVertices)
+                    if (leftEvaluation > rightEvaluation)
                     {
-                        newColouring->setColour(vertex, leftColouring->getColour(vertex));
+                        assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
+                        previousEvaluation = leftEvaluation;
+                    }
+                    else
+                    {
+                        // The colour of the vertex is already set to the colour in the right entry
+                        previousEvaluation = rightEvaluation;
                     }
                 }
-                else if (leftColouring->isColoured(vertex))
+                // If the vertex is coloured in only one entry, then that colour is copied
+                else if (leftEntry->getColourAssignments().isColoured(vertex))
                 {
-                    newColouring->setColour(vertex, leftColouring->getColour(vertex));
+                    assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
                 }
-                else if (rightColouring->isColoured(vertex))
+                else if (rightEntry->getColourAssignments().isColoured(vertex))
                 {
-                    newColouring->setColour(vertex, rightColouring->getColour(vertex));
+                    assignments.assignColour(vertex, rightEntry->getColourAssignments().getColour(vertex));
                 }
             }
-            newSolutions.push(newColouring);
+
+            // Add a new entry to the table
+            node->getTable()->push(
+                new DataStructures::TableEntry{
+                    evaluator->evaluate(node->getBagContent(), assignments, graph, initialMergedEvaluation),
+                    DataStructures::TableEntry::NextEntries{leftEntry, rightEntry},
+                    assignments
+                }
+            );
         }
     }
-    return newSolutions;
 }

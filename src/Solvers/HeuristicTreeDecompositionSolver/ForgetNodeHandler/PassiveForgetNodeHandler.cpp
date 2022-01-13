@@ -4,7 +4,8 @@
 
 #include "ConcreteForgetNodeHandlers.h"
 
-DataStructures::ColouringQueue Solvers::PassiveForgetNodeHandler::handleForgetVertexBag(const DataStructures::ForgetNode* node) const
+void Solvers::PassiveForgetNodeHandler::handleForgetVertexBag(DataStructures::ForgetNode* node) const
 {
-    return solver->solveAtNode(node->getChild());
+    solver->solveAtNode(node->getChild());
+    node->getTable()->referenceTable(node->getChild()->getTable());
 }

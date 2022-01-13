@@ -14,13 +14,13 @@ namespace DataStructures
     protected:
         const DataStructures::VertexType specialVertex;
     private:
-        const NiceNode* child{nullptr};
+        NiceNode* child{nullptr};
 
     protected:
         IntroduceForgetNodeBase(int id, size_t size, BagContent bagContent, NiceNode* child, NodeType , VertexType specialVertex);
 
     public:
-        [[nodiscard]] const NiceNode* getChild() const;
+        [[nodiscard]] NiceNode* getChild();
     };
 }
 

@@ -9,10 +9,13 @@
 
 namespace Solvers
 {
+    // TODO maybe some kind of local search?
+    //      -> randomly generate vertex-colour pairs and check if that assignment is better
+    //      Base on existing local search algorithms for MHV
     class PassiveForgetNodeHandler : public ForgetNodeHandler
     {
     public:
-        [[nodiscard]] DataStructures::ColouringQueue handleForgetVertexBag(const DataStructures::ForgetNode* node) const override;
+        void handleForgetVertexBag(DataStructures::ForgetNode* node) const override;
     };
 }
 

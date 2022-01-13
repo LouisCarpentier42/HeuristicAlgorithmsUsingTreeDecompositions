@@ -22,7 +22,9 @@ DataStructures::Graph* IO::Reader::readGraph(const std::string &filename) const
     int nbVertices{convertToInt(tokens[2])};
     int nbEdges{convertToInt(tokens[3])};
 
-    std::vector<std::vector<DataStructures::VertexType>> adjacencyList(nbVertices);
+    std::vector<DataStructures::Vertex> vertices;
+    for (DataStructures::VertexType vertexType{0}; vertexType < nbVertices; vertexType++)
+        vertices.emplace_back(DataStructures::Vertex{vertexType});
 
     std::getline(file, line);
     tokens = tokenize(line);
@@ -32,12 +34,16 @@ DataStructures::Graph* IO::Reader::readGraph(const std::string &filename) const
         {
             int vertex1{convertToInt(tokens[0])-1};
             int vertex2{convertToInt(tokens[1])-1};
-            adjacencyList[vertex1].push_back(vertex2);
-            adjacencyList[vertex2].push_back(vertex1);
+
+            vertices[vertex1].degree++;
+            vertices[vertex1].neighbours.push_back(vertex2);
+
+            vertices[vertex2].degree++;
+            vertices[vertex2].neighbours.push_back(vertex1);
         }
         std::getline(file, line);
         tokens = tokenize(line);
     }
 
-    return new DataStructures::Graph{static_cast<size_t>(nbVertices), adjacencyList};
+    return new DataStructures::Graph{vertices};
 }

@@ -5,6 +5,7 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXPERIMENT_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXPERIMENT_H
 
+#include "../Solvers/SolverBase.h"
 #include "../Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.h"
 #include "../DataStructures/ColouringEvaluator/BasicMHVEvaluator.h"
 
@@ -14,9 +15,9 @@ namespace ExperimentalAnalysis
 {
     struct TestInstance
     {
-        const DataStructures::Graph* graph;
+        DataStructures::Graph* graph;
         const std::string treeDecompositionName;
-        const std::vector<DataStructures::Colouring*> colourings;
+        const std::vector<std::vector<DataStructures::ColourType>> colourings;
         const size_t nbRepetitions;
     };
 

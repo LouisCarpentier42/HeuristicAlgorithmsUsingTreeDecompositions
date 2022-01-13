@@ -4,7 +4,7 @@
 
 #include "Node.h"
 
-DataStructures::Node::Node(int id, size_t size, BagContent bagContent, ChildVector childVector)
+DataStructures::Node::Node(int id, size_t size, BagContent bagContent, std::vector<Node*> childVector)
     : id{id}, bagSize{size}, bagContent{std::move(bagContent)}, childVector{std::move(childVector)}
 {
     for (Node* child : this->childVector)
@@ -60,8 +60,6 @@ std::vector<DataStructures::Node*>::const_iterator DataStructures::Node::endChil
 {
     return childVector.end();
 }
-
-
 
 
 std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures::Node& node)

@@ -6,13 +6,13 @@
 
 DataStructures::IntroduceForgetNodeBase::IntroduceForgetNodeBase(
         int id, size_t size, BagContent bagContent, NiceNode* child, NodeType bagType, VertexType specialVertex)
-    : NiceNode(id, size, std::move(bagContent), ChildVector{child}, bagType),
+    : NiceNode(id, size, std::move(bagContent), std::vector<Node*>{child}, bagType),
       child{child}, specialVertex{specialVertex}
 {
     if (!child) throw std::invalid_argument("An introduce and forget vertex bag must have an existing child!");
 }
 
-const DataStructures::NiceNode* DataStructures::IntroduceForgetNodeBase::getChild() const
+DataStructures::NiceNode* DataStructures::IntroduceForgetNodeBase::getChild()
 {
     return child;
 }

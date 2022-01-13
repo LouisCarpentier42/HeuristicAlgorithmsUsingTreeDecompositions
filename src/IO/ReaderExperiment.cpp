@@ -82,48 +82,60 @@ Solvers::ForgetNodeHandler* readForgetNodeHandler(std::string& str)
     throw std::runtime_error("Invalid forget node handler identifier is given: " + str + "!");
 }
 
+Solvers::EvaluationMerger* getEvaluationMerger(std::string& str)
+{
+    if (str == "avg")
+        return new Solvers::AverageEvaluationMerger{};
+    else if (str == "max")
+        return new Solvers::MaximumEvaluationMerger{};
+    else if (str == "min")
+        return new Solvers::MinimumEvaluationMerger{};
+
+    throw std::runtime_error("Invalid evaluation merger identifier is given: " + str + "!");
+}
+
 Solvers::JoinNodeHandler* readJoinNodeHandler(std::string& str)
 {
     std::vector<std::string> parameters = splitParameters(str);
     if (parameters[0] == "staticOrder")
     {
         if (parameters[1] == "default")
-            return new Solvers::StaticOrderJoinNodeHandler{Solvers::StaticOrderJoinNodeHandler::Order::defaultOrder};
+            return new Solvers::StaticOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::StaticOrderJoinNodeHandler::Order::defaultOrder};
         else if (parameters[1] == "gdf")
-            return new Solvers::StaticOrderJoinNodeHandler{Solvers::StaticOrderJoinNodeHandler::Order::greatestDegreeFirst};
+            return new Solvers::StaticOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::StaticOrderJoinNodeHandler::Order::greatestDegreeFirst};
         else if (parameters[1] == "sdf")
-            return new Solvers::StaticOrderJoinNodeHandler{Solvers::StaticOrderJoinNodeHandler::Order::smallestDegreeFirst};
+            return new Solvers::StaticOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::StaticOrderJoinNodeHandler::Order::smallestDegreeFirst};
         else if (parameters[1] == "random")
-            return new Solvers::StaticOrderJoinNodeHandler{Solvers::StaticOrderJoinNodeHandler::Order::random};
+            return new Solvers::StaticOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::StaticOrderJoinNodeHandler::Order::random};
     }
-    else if (parameters[0] == "dynamicOrder")
-    {
-        if (parameters[1] == "mostColouredNeighbours")
-            return new Solvers::DynamicOrderJoinNodeHandler{Solvers::DynamicOrderJoinNodeHandler::Order::mostColouredNeighboursFirst};
-        else if (parameters[1] == "DynamicOrderJoinNodeHandler")
-            return new Solvers::DynamicOrderJoinNodeHandler{Solvers::DynamicOrderJoinNodeHandler::Order::fewestColouredNeighboursFirst};
-        else if (parameters[1] == "mostPotentialHappyNeighbours")
-            return new Solvers::DynamicOrderJoinNodeHandler{Solvers::DynamicOrderJoinNodeHandler::Order::mostPotentialHappyNeighbours};
-        else if (parameters[1] == "mostPercentPotentialHappyNeighbours")
-            return new Solvers::DynamicOrderJoinNodeHandler{Solvers::DynamicOrderJoinNodeHandler::Order::mostPercentPotentialHappyNeighbours};
-    }
+//    else if (parameters[0] == "dynamicOrder") // TODO
+//    {
+//        if (parameters[1] == "mostColouredNeighbours")
+//            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::mostColouredNeighboursFirst};
+//        else if (parameters[1] == "DynamicOrderJoinNodeHandler")
+//            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::fewestColouredNeighboursFirst};
+//        else if (parameters[1] == "mostPotentialHappyNeighbours")
+//            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::mostPotentialHappyNeighbours};
+//        else if (parameters[1] == "mostPercentPotentialHappyNeighbours")
+//            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::mostPercentPotentialHappyNeighbours};
+//    }
     else if (parameters[0] == "greedyColourBag")
     {
-        return new Solvers::GreedyColourBagJoinNodeHandler{};
+        return new Solvers::GreedyColourBagJoinNodeHandler{getEvaluationMerger(parameters[1])};
     }
     else if (parameters[0] == "growthColourBag")
     {
-        return new Solvers::GrowthColourBagJoinNodeHandler{};
+        return new Solvers::GrowthColourBagJoinNodeHandler{getEvaluationMerger(parameters[1])};
     }
     else if (parameters[0] == "useChildColours")
     {
-        return new Solvers::UseChildColoursJoinNodeHandler{};
+        return new Solvers::UseChildColoursJoinNodeHandler{getEvaluationMerger(parameters[1])};
     }
 
     throw std::runtime_error("Invalid join node handler identifier is given: " + str + "!");
 }
 
-std::vector<DataStructures::Colouring*> readColouringString(std::string& str, DataStructures::Graph* graph)
+std::vector<std::vector<DataStructures::ColourType>> readColouringString(std::string& str, DataStructures::Graph* graph)
 {
     std::vector<std::string> parameters = splitParameters(str);
     if (parameters[0] == "random")
@@ -131,7 +143,7 @@ std::vector<DataStructures::Colouring*> readColouringString(std::string& str, Da
         int nbColours{IO::Reader::convertToInt(parameters[1])};
         double percentColouredVertices{std::stod(parameters[2])};
         int nbColourings{IO::Reader::convertToInt(parameters[3])};
-        std::vector<DataStructures::Colouring*> colourings{};
+        std::vector<std::vector<DataStructures::ColourType>> colourings{};
         for (int j{0}; j < nbColourings; j++)
         {
             static std::mt19937 rng{std::random_device{}()};
@@ -150,7 +162,7 @@ std::vector<DataStructures::Colouring*> readColouringString(std::string& str, Da
             for (int i{nbColours}; i < nbVerticesToColour; i++)
                 colourVector[allVertices[i]] = colourDistribution(rng);
 
-            colourings.push_back(new DataStructures::Colouring{colourVector});
+            colourings.push_back(colourVector);
         }
         return colourings;
     }

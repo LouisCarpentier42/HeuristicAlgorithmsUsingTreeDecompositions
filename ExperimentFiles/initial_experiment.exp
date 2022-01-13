@@ -4,10 +4,10 @@ c
 c Lines starting with experiment are the experiments that must be executed
 c The arguments are as follows:
 c - the name of the graph to use
-c - the name of the tree decomposition to use
+c - the name of the (nice) tree decomposition to use
 c - the number of colours that are available
 c - the percent of nodes of the graph that must be coloured
 c - the number of colour functions that should be solved
 c - the number of times each colour function should be solved by the tree decomposition heuristics
 c
-experiment he005.gr he005.tw random(5,0.01,1) 1
+experiment he005.gr he005_nice.tw random(3,0.01,1) 1

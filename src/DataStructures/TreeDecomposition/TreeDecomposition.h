@@ -19,16 +19,16 @@ namespace DataStructures
     {
     private:
         const int treeWidth;
-        const T* root;
+        T* root;
 
     public:
         TreeDecompositionTemplate(int treeWidth, T* root) : treeWidth{treeWidth}, root{root} {}
         [[nodiscard]] int getTreeWidth() const { return treeWidth; }
-        [[nodiscard]] const T* getRoot() const { return root; }
+        [[nodiscard]] T* getRoot() { return root; }
     };
 
     template <typename T>
-    std::ostream& operator<<(std::ostream& out, const TreeDecompositionTemplate<T>& treeDecomposition)
+    std::ostream& operator<<(std::ostream& out, TreeDecompositionTemplate<T>& treeDecomposition)
     {
         return out << *treeDecomposition.getRoot();
     }

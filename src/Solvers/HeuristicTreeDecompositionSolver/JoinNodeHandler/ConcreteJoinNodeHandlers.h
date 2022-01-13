@@ -30,109 +30,113 @@ namespace Solvers
         const Order order;
         std::vector<DataStructures::VertexType> vertexOrder;
     public:
-        explicit StaticOrderJoinNodeHandler(Order order);
+        StaticOrderJoinNodeHandler(EvaluationMerger* evaluationMerger, Order order);
         void setGraph(const DataStructures::Graph* graphToSolve) override;
-        [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
+        void handleJoinNode(DataStructures::JoinNode* node) const override;
     };
 
 
-
-    class DynamicOrderJoinNodeHandler : public JoinNodeHandler
-    {
-    public:
-        enum class Order {
-            mostColouredNeighboursFirst,
-            fewestColouredNeighboursFirst,
-            mostPotentialHappyNeighbours,
-            mostPercentPotentialHappyNeighbours
-        };
-
-    private:
-        class VertexSelector
-        {
-        public:
-            [[nodiscard]] virtual DataStructures::BagContent::iterator select(
-                DataStructures::BagContent& bagContent,
-                const DataStructures::Graph* graph,
-                const DataStructures::Colouring* colouring
-            ) const = 0;
-        protected:
-            [[nodiscard]] static int getNbColouredNeighbours(
-                DataStructures::VertexType vertex,
-                const DataStructures::Graph* graph,
-                const DataStructures::Colouring* colouring
-            );
-            [[nodiscard]] static int getNbPotentialHappyNeighbours(
-                DataStructures::VertexType vertex,
-                const DataStructures::Graph* graph,
-                const DataStructures::Colouring* colouring
-            );
-        };
-        const VertexSelector* vertexSelector;
-
-    public:
-        explicit DynamicOrderJoinNodeHandler(Order order);
-        [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
-
-    private:
-        class MostColouredNeighboursSelector : public VertexSelector
-        {
-        public:
-            [[nodiscard]] DataStructures::BagContent::iterator select(
-                DataStructures::BagContent& bagContent,
-                const DataStructures::Graph* graph,
-                const DataStructures::Colouring* colouring
-            ) const override;
-        };
-
-        class FewestColouredNeighboursSelector : public VertexSelector
-        {
-        public:
-            [[nodiscard]] DataStructures::BagContent::iterator select(
-                DataStructures::BagContent& bagContent,
-                const DataStructures::Graph* graph,
-                const DataStructures::Colouring* colouring
-            ) const override;
-        };
-
-        class MostPotentialHappyNeighboursSelector : public VertexSelector
-        {
-        public:
-            [[nodiscard]] DataStructures::BagContent::iterator select(
-                DataStructures::BagContent& bagContent,
-                const DataStructures::Graph* graph,
-                const DataStructures::Colouring* colouring
-            ) const override;
-        };
-
-        class MostPercentPotentialHappyNeighboursSelector : public VertexSelector
-        {
-        public:
-            [[nodiscard]] DataStructures::BagContent::iterator select(
-                DataStructures::BagContent& bagContent,
-                const DataStructures::Graph* graph,
-                const DataStructures::Colouring* colouring
-            ) const override;
-        };
-    };
-
+// TODO dynamic join node handler (Good luck future Louis ...)
+//
+//    class DynamicOrderJoinNodeHandler : public JoinNodeHandler
+//    {
+//    public:
+//        enum class Order {
+//            mostColouredNeighboursFirst,
+//            fewestColouredNeighboursFirst,
+//            mostPotentialHappyNeighbours,
+//            mostPercentPotentialHappyNeighbours
+//        };
+//
+//    private:
+//        class VertexSelector
+//        {
+//        public:
+//            [[nodiscard]] virtual DataStructures::BagContent::iterator select(
+//                DataStructures::BagContent& bagContent,
+//                const DataStructures::Graph* graph,
+//                const DataStructures::Colouring* colouring
+//            ) const = 0;
+//        protected:
+//            [[nodiscard]] static int getNbColouredNeighbours(
+//                DataStructures::VertexType vertex,
+//                const DataStructures::Graph* graph,
+//                const DataStructures::Colouring* colouring
+//            );
+//            [[nodiscard]] static int getNbPotentialHappyNeighbours(
+//                DataStructures::VertexType vertex,
+//                const DataStructures::Graph* graph,
+//                const DataStructures::Colouring* colouring
+//            );
+//        };
+//        const VertexSelector* vertexSelector;
+//
+//    public:
+//        explicit DynamicOrderJoinNodeHandler(Order order);
+//        void handleJoinNode(DataStructures::JoinNode* node) const override;
+//
+//    private:
+//        class MostColouredNeighboursSelector : public VertexSelector
+//        {
+//        public:
+//            [[nodiscard]] DataStructures::BagContent::iterator select(
+//                DataStructures::BagContent& bagContent,
+//                const DataStructures::Graph* graph,
+//                const DataStructures::Colouring* colouring
+//            ) const override;
+//        };
+//
+//        class FewestColouredNeighboursSelector : public VertexSelector
+//        {
+//        public:
+//            [[nodiscard]] DataStructures::BagContent::iterator select(
+//                DataStructures::BagContent& bagContent,
+//                const DataStructures::Graph* graph,
+//                const DataStructures::Colouring* colouring
+//            ) const override;
+//        };
+//
+//        class MostPotentialHappyNeighboursSelector : public VertexSelector
+//        {
+//        public:
+//            [[nodiscard]] DataStructures::BagContent::iterator select(
+//                DataStructures::BagContent& bagContent,
+//                const DataStructures::Graph* graph,
+//                const DataStructures::Colouring* colouring
+//            ) const override;
+//        };
+//
+//        class MostPercentPotentialHappyNeighboursSelector : public VertexSelector
+//        {
+//        public:
+//            [[nodiscard]] DataStructures::BagContent::iterator select(
+//                DataStructures::BagContent& bagContent,
+//                const DataStructures::Graph* graph,
+//                const DataStructures::Colouring* colouring
+//            ) const override;
+//        };
+//    };
+//
 
     class GreedyColourBagJoinNodeHandler : public JoinNodeHandler
     {
     public:
-        [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
+        explicit GreedyColourBagJoinNodeHandler(const EvaluationMerger* evaluationMerger) : JoinNodeHandler{evaluationMerger} {};
+        void handleJoinNode(DataStructures::JoinNode* node) const override;
     };
 
     class GrowthColourBagJoinNodeHandler : public JoinNodeHandler
     {
     public:
-        [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
+        explicit GrowthColourBagJoinNodeHandler(const EvaluationMerger* evaluationMerger) : JoinNodeHandler{evaluationMerger} {};
+        void handleJoinNode(DataStructures::JoinNode* node) const override;
     };
 
     class UseChildColoursJoinNodeHandler : public JoinNodeHandler
     {
     public:
-        [[nodiscard]] DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const override;
+        explicit UseChildColoursJoinNodeHandler(const EvaluationMerger* evaluationMerger) : JoinNodeHandler{evaluationMerger} {};
+        void handleJoinNode(DataStructures::JoinNode* node) const override;
     };
 }
 

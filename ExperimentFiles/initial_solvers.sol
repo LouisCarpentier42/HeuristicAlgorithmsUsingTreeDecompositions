@@ -20,10 +20,10 @@ c - the handler for forget nodes (potentially with its parameters)
 c - the handler for join nodes (potentially with its parameters)
 c
 problem MaximumHappyVertices
-c baseline greedyMHV
+baseline greedyMHV
 baseline growthMHV
-c heuristicTD useChildCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag
-c heuristicTD mostCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostColouredNeighbours)
-c heuristicTD fewestCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(DynamicOrderJoinNodeHandler)
-c heuristicTD mostHappy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostPotentialHappyNeighbours)
-c heuristicTD most%Happy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostPercentPotentialHappyNeighbours)
+heuristicTD useChildCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(min)
+c heuristicTD mostCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostColouredNeighbours,avg)
+c heuristicTD fewestCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(DynamicOrderJoinNodeHandler,avg)
+c heuristicTD mostHappy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostPotentialHappyNeighbours,avg)
+c heuristicTD most%Happy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostPercentPotentialHappyNeighbours,avg)

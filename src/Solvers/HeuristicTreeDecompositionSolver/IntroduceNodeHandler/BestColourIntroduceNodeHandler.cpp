@@ -4,32 +4,41 @@
 
 #include "ConcreteIntroduceNodeHandlers.h"
 
-DataStructures::ColouringQueue Solvers::BestColourIntroduceNodeHandler::handleIntroduceNode(const DataStructures::IntroduceNode *node) const
+void Solvers::BestColourIntroduceNodeHandler::handleIntroduceNode(DataStructures::IntroduceNode *node) const
 {
-    DataStructures::ColouringQueue childColourings = solver->solveAtNode(node->getChild());
-    DataStructures::VertexType introducedVertex{node->getIntroducedVertex()};
+    solver->solveAtNode(node->getChild());
 
-    // Precoloured vertices may not receive a new colour
-    if (colouring->isColoured(introducedVertex)) return childColourings;
-
-    DataStructures::ColouringQueue bestColourings = createEmptyColouringQueue();
-    DataStructures::ColouringQueue allColourings = createEmptyColouringQueue();
-    for (DataStructures::MutableColouring* childColouring : childColourings)
+    // Nothing needs to happen for precoloured vertices
+    if (graph->isPrecoloured(node->getIntroducedVertex()))
     {
-        DataStructures::ColouringQueue newColourings = createEmptyColouringQueue();
-        for (DataStructures::ColourType colour{1}; colour <= colouring->getNbColours(); colour++)
-        {
-            auto* newColouring = new DataStructures::MutableColouring{*childColouring};
-            newColouring->setColour(introducedVertex, colour);
-            newColourings.push(newColouring);
-            allColourings.push(newColouring);
-        }
-        bestColourings.push(newColourings.popBestColouring());
+        node->getTable()->referenceTable(node->getChild()->getTable());
     }
+    // Otherwise, the introduced vertex must be coloured
+    else
+    {
+        // Create a table for all entries to fill up the table in the end
+        DataStructures::DynamicProgrammingTable allEntries{node->getTable()->getCapacity()};
+        for (DataStructures::TableEntry* entry : *node->getChild()->getTable())
+        {
+            // Give the introduced vertex all possible colours and keep the best of those colours
+            DataStructures::DynamicProgrammingTable table{graph->getNbColours()};
+            for (DataStructures::ColourType colour{1}; colour <= graph->getNbColours(); colour++)
+            {
+                DataStructures::TableEntry::ColourAssignments assignments = entry->getColourAssignments();
+                assignments.assignColour(node->getIntroducedVertex(), colour);
+                auto* newEntry = new DataStructures::TableEntry{
+                    evaluator->evaluate(node->getIntroducedVertex(), assignments, graph, entry->getEvaluation()),
+                    DataStructures::TableEntry::NextEntries{entry},
+                    assignments
+                };
+                table.push(newEntry);
+                allEntries.push(newEntry);
+            }
+            node->getTable()->push(table.getBestEntry());
+        }
 
-    // Fill the best colourings queue with extra colourings
-    while (!bestColourings.reachedCapacity() && !allColourings.isEmpty())
-        bestColourings.push(allColourings.popBestColouring());
-
-    return bestColourings;
+        // Fill the best colourings queue with extra colourings
+        while (!node->getTable()->hasReachedCapacity() && !allEntries.empty())
+            node->getTable()->push(allEntries.popBestEntry());
+    }
 }

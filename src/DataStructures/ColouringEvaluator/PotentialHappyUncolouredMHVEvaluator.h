@@ -29,21 +29,23 @@ namespace DataStructures
             int unhappyUncolouredVertexWeight
         );
 
+        [[nodiscard]] int evaluate(const DataStructures::Graph* graph) const override;
+
         [[nodiscard]] int evaluate(
+            const std::vector<DataStructures::VertexType>& recolouredVertices,
+            const DataStructures::TableEntry::ColourAssignments& colourAssignments,
             const DataStructures::Graph* graph,
-            const DataStructures::Colouring* colouring
+            int startEvaluation
         ) const override;
 
     private:
         [[nodiscard]] int getWeightColouredVertex(
-            const VertexType colouredVertex,
-            const DataStructures::Graph* graph,
-            const DataStructures::Colouring* colouring
+            DataStructures::VertexType colouredVertex,
+            const DataStructures::Graph* graph
         ) const;
         [[nodiscard]] int getWeightUncolouredVertex(
-            const VertexType uncolouredVertex,
-            const DataStructures::Graph* graph,
-            const DataStructures::Colouring* colouring
+            DataStructures::VertexType uncolouredVertex,
+            const DataStructures::Graph* graph
         ) const;
     };
 }

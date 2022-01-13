@@ -11,19 +11,25 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
 {
     for (const TestInstance& testInstance : experiment.testInstances)
     {
-        for (DataStructures::Colouring* colouring : testInstance.colourings)
+        for (std::vector<DataStructures::ColourType> colouring : testInstance.colourings)
         {
+            testInstance.graph->removeInitialColours();
+            testInstance.graph->setInitialColours(colouring);
+
             // Test the baselines
             for (auto const& [name, baseline] : experiment.baselines)
             {
+                testInstance.graph->removeColours();
+
                 std::cout << ">>> " << name << " <<<\n";
 
                 auto start = std::chrono::high_resolution_clock::now();
-                DataStructures::Colouring* solution = baseline->solve(testInstance.graph, colouring);
+                baseline->solve(testInstance.graph);
                 auto stop = std::chrono::high_resolution_clock::now();
-                int evaluation{experiment.evaluator->evaluate(testInstance.graph, solution)};
+                int evaluation{experiment.evaluator->evaluate(testInstance.graph)};
                 std::chrono::microseconds duration{std::chrono::duration_cast<std::chrono::microseconds>(stop - start)};
 
+                std::cout << testInstance.graph->getColourString() << "\n";
                 std::cout << "Evaluation: " << evaluation << "\n";
                 std::cout << "Time (µs):  " << duration.count() << "\n\n";
             }
@@ -40,13 +46,14 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
                     int evaluation{0};
                     for (int repetition{0}; repetition < testInstance.nbRepetitions; repetition++)
                     {
+                        testInstance.graph->removeColours();
                         auto start = std::chrono::high_resolution_clock::now();
-                        DataStructures::Colouring* solution = solver->solve(testInstance.graph, colouring, &niceTreeDecomposition);
+                        solver->solve(testInstance.graph, &niceTreeDecomposition);
                         auto stop = std::chrono::high_resolution_clock::now();
                         duration += std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-                        evaluation += experiment.evaluator->evaluate(testInstance.graph, solution);
+                        evaluation += experiment.evaluator->evaluate(testInstance.graph);
                     }
-
+                    std::cout << testInstance.graph->getColourString() << "\n";
                     std::cout << "Evaluation: " << evaluation/testInstance.nbRepetitions << "\n";
                     std::cout << "Time (µs):  " << duration.count()/testInstance.nbRepetitions << "\n\n";
                 }
@@ -54,5 +61,3 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
         }
     }
 }
-
-

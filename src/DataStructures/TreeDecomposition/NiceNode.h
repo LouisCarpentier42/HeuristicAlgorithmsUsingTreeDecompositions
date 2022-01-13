@@ -6,6 +6,7 @@
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_NICENODE_H
 
 #include "Node.h"
+#include "../DynamicProgramming/DynamicProgrammingTable.h"
 
 namespace DataStructures
 {
@@ -19,13 +20,15 @@ namespace DataStructures
     class NiceNode : public Node
     {
     private:
+        DynamicProgrammingTable table{0};
         const NodeType bagType;
 
     protected:
-        NiceNode(int id, size_t size, BagContent bagContent, ChildVector childVector, NodeType bagType);
+        NiceNode(int id, size_t size, BagContent bagContent, std::vector<Node*> childVector, NodeType bagType);
 
     public:
         [[nodiscard]] NodeType getNodeType() const;
+        [[nodiscard]] DynamicProgrammingTable* getTable();
     };
 }
 

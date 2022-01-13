@@ -15,7 +15,7 @@
 namespace ExperimentalAnalysis
 {
     void executeExperiment(IO::Reader& reader, Experiment& experiment);
-    DataStructures::Colouring generatePartialColouring(DataStructures::Graph& graph, size_t nbColours, double percentColouredVertices);
+    void precolourGraph(DataStructures::Graph& graph, size_t nbColours, double percentColouredVertices);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXPERIMENTALANALYSIS_H

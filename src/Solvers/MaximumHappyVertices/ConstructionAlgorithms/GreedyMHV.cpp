@@ -4,40 +4,34 @@
 
 #include "GreedyMHV.h"
 
-DataStructures::Colouring* MaximumHappyVertices::GreedyMHV::solve(
-        const DataStructures::Graph* graph,
-        const DataStructures::Colouring* colouring) const
+void MaximumHappyVertices::GreedyMHV::solve(DataStructures::Graph* graph) const
 {
-    auto* colouringToColour = new DataStructures::MutableColouring{colouring};
-    colourAllVertices(graph, colouring, colouringToColour, 1);
+    colourAllVertices(graph, 1);
     DataStructures::ColourType bestColour{1};
-    int bestNbHappyVertices{evaluator->evaluate(graph, colouringToColour)};
+    int bestNbHappyVertices{evaluator->evaluate(graph)};
 
-    for (DataStructures::ColourType colour{2}; colour <= colouring->getNbColours(); colour++)
+    for (DataStructures::ColourType colour{2}; colour <= graph->getNbColours(); colour++)
     {
-        colourAllVertices(graph, colouring, colouringToColour, colour);
-        int nbHappyVertices{evaluator->evaluate(graph, colouringToColour)};
+        colourAllVertices(graph, colour);
+        int nbHappyVertices{evaluator->evaluate(graph)};
         if (nbHappyVertices > bestNbHappyVertices)
         {
             bestColour = colour;
             bestNbHappyVertices = nbHappyVertices;
         }
     }
-    colourAllVertices(graph, colouring, colouringToColour, bestColour);
-    return colouringToColour;
+    colourAllVertices(graph, bestColour);
 }
 
 void MaximumHappyVertices::GreedyMHV::colourAllVertices(
-        const DataStructures::Graph* graph,
-        const DataStructures::Colouring* initialColouring,
-        DataStructures::MutableColouring* colouringToColour,
+        DataStructures::Graph* graph,
         DataStructures::ColourType colour)
 {
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
-        if (!initialColouring->isColoured(vertex))
+        if (!graph->isPrecoloured(vertex))
         {
-            colouringToColour->setColour(vertex, colour);
+            graph->setColour(vertex, colour);
         }
     }
 }

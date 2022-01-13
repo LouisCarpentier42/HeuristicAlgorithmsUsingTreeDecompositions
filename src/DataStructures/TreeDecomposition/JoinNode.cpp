@@ -6,18 +6,18 @@
 
 DataStructures::JoinNode::JoinNode(
         int id, size_t size, BagContent bagContent, NiceNode* leftChild, DataStructures::NiceNode* rightChild)
-    : NiceNode(id, size, std::move(bagContent), ChildVector{leftChild, rightChild}, NodeType::JoinNode),
+    : NiceNode(id, size, std::move(bagContent), std::vector<Node*>{leftChild, rightChild}, NodeType::JoinNode),
       leftChild{leftChild}, rightChild{rightChild}
 {
     if (!leftChild || !rightChild) throw std::invalid_argument("A join vertex must have two existing children!");
 }
 
-const DataStructures::NiceNode *DataStructures::JoinNode::getLeftChild() const
+DataStructures::NiceNode *DataStructures::JoinNode::getLeftChild()
 {
     return leftChild;
 }
 
-const DataStructures::NiceNode *DataStructures::JoinNode::getRightChild() const
+DataStructures::NiceNode *DataStructures::JoinNode::getRightChild()
 {
     return rightChild;
 }

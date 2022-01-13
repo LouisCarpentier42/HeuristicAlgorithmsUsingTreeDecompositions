@@ -5,7 +5,7 @@
 #include "LeafNode.h"
 
 DataStructures::LeafNode::LeafNode(int id)
-    : NiceNode(id, 0, BagContent{}, ChildVector{}, NodeType::LeafNode)
+    : NiceNode(id, 0, BagContent{}, std::vector<Node*>{}, NodeType::LeafNode)
 {}
 
 std::string DataStructures::LeafNode::getTypeString() const

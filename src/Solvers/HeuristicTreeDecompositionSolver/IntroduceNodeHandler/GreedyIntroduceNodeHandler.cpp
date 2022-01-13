@@ -4,23 +4,33 @@
 
 #include "ConcreteIntroduceNodeHandlers.h"
 
-DataStructures::ColouringQueue Solvers::GreedyIntroduceNodeHandler::handleIntroduceNode(const DataStructures::IntroduceNode *node) const
+void Solvers::GreedyIntroduceNodeHandler::handleIntroduceNode(DataStructures::IntroduceNode* node) const
 {
-    DataStructures::ColouringQueue childColourings = solver->solveAtNode(node->getChild());
-    DataStructures::VertexType introducedVertex{node->getIntroducedVertex()};
+    solver->solveAtNode(node->getChild());
 
-    // Precoloured vertices may not receive a new colour
-    if (colouring->isColoured(introducedVertex)) return childColourings;
-
-    DataStructures::ColouringQueue newColourings = createEmptyColouringQueue();
-    for (DataStructures::MutableColouring* childColouring : childColourings)
+    // Nothing needs to happen for precoloured vertices
+    if (graph->isPrecoloured(node->getIntroducedVertex()))
     {
-        for (DataStructures::ColourType colour{1}; colour <= colouring->getNbColours(); colour++)
+        node->getTable()->referenceTable(node->getChild()->getTable());
+    }
+    // Otherwise, the introduced vertex must be coloured
+    else
+    {
+        // Try all possible colours for the introduced vertex in all entries and keep the best entries
+        for (DataStructures::TableEntry* entry : *node->getChild()->getTable())
         {
-            auto* newColouring = new DataStructures::MutableColouring{*childColouring};
-            newColouring->setColour(introducedVertex, colour);
-            newColourings.push(newColouring);
+            for (DataStructures::ColourType colour{1}; colour <= graph->getNbColours(); colour++)
+            {
+                DataStructures::TableEntry::ColourAssignments assignments = entry->getColourAssignments();
+                assignments.assignColour(node->getIntroducedVertex(), colour);
+                node->getTable()->push(
+                    new DataStructures::TableEntry{
+                        evaluator->evaluate(node->getIntroducedVertex(), assignments, graph, entry->getEvaluation()),
+                        DataStructures::TableEntry::NextEntries{entry},
+                        assignments
+                    }
+                );
+            }
         }
     }
-    return newColourings;
 }

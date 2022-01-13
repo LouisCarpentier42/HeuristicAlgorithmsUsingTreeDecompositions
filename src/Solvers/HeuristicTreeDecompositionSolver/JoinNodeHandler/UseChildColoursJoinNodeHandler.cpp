@@ -5,34 +5,46 @@
 #include "ConcreteJoinNodeHandlers.h"
 
 
-DataStructures::ColouringQueue Solvers::UseChildColoursJoinNodeHandler::handleJoinNode(const DataStructures::JoinNode *node) const
+void Solvers::UseChildColoursJoinNodeHandler::handleJoinNode(DataStructures::JoinNode *node) const
 {
-    DataStructures::ColouringQueue leftChildSolutions = solver->solveAtNode(node->getLeftChild());
-    DataStructures::ColouringQueue rightChildSolutions = solver->solveAtNode(node->getRightChild());
+    solver->solveAtNode(node->getLeftChild());
+    solver->solveAtNode(node->getRightChild());
 
-    DataStructures::ColouringQueue newSolutions = createEmptyColouringQueue();
-    for (DataStructures::MutableColouring* leftColouring : leftChildSolutions)
+    for (DataStructures::TableEntry* leftEntry : *node->getLeftChild()->getTable())
     {
-        for (DataStructures::MutableColouring* rightColouring : rightChildSolutions)
+        for (DataStructures::TableEntry* rightEntry : *node->getRightChild()->getTable())
         {
-            auto* leftColouringExtended = new DataStructures::MutableColouring{leftColouring};
-            auto* rightColouringExtended = new DataStructures::MutableColouring{rightColouring};
+            // Merge the evaluation functions
+            int mergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
 
-            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+            // Insert the colour assignment in which the bag is coloured following the left entry
+            DataStructures::TableEntry::ColourAssignments leftExtendedAssignments
             {
-                if (!leftColouring->isColoured(vertex) && rightColouring->isColoured(vertex))
-                {
-                    leftColouringExtended->setColour(vertex, rightColouring->getColour(vertex));
+                leftEntry->getColourAssignments(),
+                rightEntry->getColourAssignments()
+            };
+            node->getTable()->push(
+                new DataStructures::TableEntry{
+                    evaluator->evaluate(node->getBagContent(), leftExtendedAssignments, graph, mergedEvaluation),
+                    DataStructures::TableEntry::NextEntries{leftEntry, rightEntry},
+                    leftExtendedAssignments
                 }
-                else if (leftColouring->isColoured(vertex) && !rightColouring->isColoured(vertex))
-                {
-                    rightColouringExtended->setColour(vertex, leftColouring->getColour(vertex));
+            );
+
+            // Insert the colour assignment in which the bag is coloured following the right entry
+            DataStructures::TableEntry::ColourAssignments rightExtendedAssignments
+            {
+                rightEntry->getColourAssignments(),
+                leftEntry->getColourAssignments()
+            };
+            node->getTable()->push(
+                new DataStructures::TableEntry{
+                    evaluator->evaluate(node->getBagContent(), rightExtendedAssignments, graph, mergedEvaluation),
+                    DataStructures::TableEntry::NextEntries{leftEntry, rightEntry},
+                    rightExtendedAssignments
                 }
-            }
-            newSolutions.push(leftColouringExtended);
-            newSolutions.push(rightColouringExtended);
+            );
         }
     }
-    return newSolutions;
 }
 

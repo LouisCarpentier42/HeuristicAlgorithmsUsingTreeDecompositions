@@ -6,7 +6,6 @@
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_MAXIMUMHAPPYVERTICESSOLVER_H
 
 #include "../../DataStructures/Graph/Graph.h"
-#include "../../DataStructures/Colouring/Colouring.h"
 #include "../../DataStructures/ColouringEvaluator/BasicMHVEvaluator.h"
 #include "../SolverBase.h"
 
@@ -16,7 +15,7 @@ namespace MaximumHappyVertices
     {
     public:
         MaximumHappyVerticesSolver() : Solvers::SolverBase{new DataStructures::BasicMHVEvaluator()} {}
-   };
+    };
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_MAXIMUMHAPPYVERTICESSOLVER_H

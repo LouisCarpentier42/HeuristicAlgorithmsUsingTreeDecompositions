@@ -19,34 +19,41 @@ DataStructures::PotentialHappyUncolouredMHVEvaluator::PotentialHappyUncolouredMH
       unhappyUncolouredVertexWeight{unhappyUncolouredVertexWeight}
 { }
 
-int DataStructures::PotentialHappyUncolouredMHVEvaluator::evaluate(
-        const DataStructures::Graph *graph,
-        const DataStructures::Colouring *colouring) const
+int DataStructures::PotentialHappyUncolouredMHVEvaluator::evaluate(const DataStructures::Graph *graph) const
 {
     int evaluation{0};
-    for (DataStructures::VertexType vertex{0}; vertex < colouring->getNbVertices(); vertex++)
+    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
-        if (colouring->isColoured(vertex))
-            evaluation += getWeightColouredVertex(vertex, graph, colouring);
+        if (graph->isColoured(vertex))
+            evaluation += getWeightColouredVertex(vertex, graph);
         else
-            evaluation += getWeightUncolouredVertex(vertex, graph, colouring);
+            evaluation += getWeightUncolouredVertex(vertex, graph);
     }
     return evaluation;
 }
 
+int DataStructures::PotentialHappyUncolouredMHVEvaluator::evaluate(
+        const std::vector<DataStructures::VertexType>& recolouredVertices,
+        const DataStructures::TableEntry::ColourAssignments& colourAssignments,
+        const DataStructures::Graph *graph,
+        int startEvaluation) const
+{
+    // TODO
+    return 0;
+}
+
 int DataStructures::PotentialHappyUncolouredMHVEvaluator::getWeightColouredVertex(
         const DataStructures::VertexType colouredVertex,
-        const DataStructures::Graph* graph,
-        const DataStructures::Colouring* colouring) const
+        const DataStructures::Graph* graph) const
 {
     bool hasUncolouredNeighbour{false};
-    for (DataStructures::VertexType neighbour : *graph->getNeighbours(colouredVertex))
+    for (DataStructures::VertexType neighbour : graph->getNeighbours(colouredVertex))
     {
-        if (!colouring->isColoured(neighbour))
+        if (!graph->isColoured(neighbour))
         {
             hasUncolouredNeighbour = true;
         }
-        else if (colouring->getColour(neighbour) != colouring->getColour(colouredVertex))
+        else if (graph->getColour(neighbour) != graph->getColour(colouredVertex))
         {
             return unhappyColouredVertexWeight;
         }
@@ -60,22 +67,21 @@ int DataStructures::PotentialHappyUncolouredMHVEvaluator::getWeightColouredVerte
 
 int DataStructures::PotentialHappyUncolouredMHVEvaluator::getWeightUncolouredVertex(
         const DataStructures::VertexType uncolouredVertex,
-        const DataStructures::Graph* graph,
-        const DataStructures::Colouring* colouring) const
+        const DataStructures::Graph* graph) const
 {
     ColourType colourNeighbours{0};
     bool hasUncolouredNeighbour{false};
-    for (DataStructures::VertexType neighbour : *graph->getNeighbours(uncolouredVertex))
+    for (DataStructures::VertexType neighbour : graph->getNeighbours(uncolouredVertex))
     {
-        if (!colouring->isColoured(neighbour))
+        if (!graph->isColoured(neighbour))
         {
             hasUncolouredNeighbour = true;
         }
-        else if (colourNeighbours == 0 && colouring->isColoured(neighbour))
+        else if (colourNeighbours == 0 && graph->isColoured(neighbour))
         {
-            colourNeighbours = colouring->getColour(neighbour);
+            colourNeighbours = graph->getColour(neighbour);
         }
-        else if (colourNeighbours != 0 && colouring->isColoured(neighbour) && colouring->getColour(neighbour) != colourNeighbours)
+        else if (colourNeighbours != 0 && graph->isColoured(neighbour) && graph->getColour(neighbour) != colourNeighbours)
         {
             return unhappyUncolouredVertexWeight;
         }

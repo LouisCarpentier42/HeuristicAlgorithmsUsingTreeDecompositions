@@ -5,9 +5,7 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_SOLVERBASE_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_SOLVERBASE_H
 
-#include "../DataStructures/Colouring/Colouring.h"
 #include "../DataStructures/ColouringEvaluator/ColouringEvaluator.h"
-#include "../DataStructures/Colouring/MutableColouring.h"
 #include "../DataStructures/Graph/Graph.h"
 
 namespace Solvers
@@ -19,10 +17,7 @@ namespace Solvers
 
         explicit SolverBase(const DataStructures::ColouringEvaluator* evaluator) : evaluator{evaluator} {}
 
-        [[nodiscard]] virtual DataStructures::Colouring* solve(
-            const DataStructures::Graph* graph,
-            const DataStructures::Colouring* colouring
-        ) const = 0;
+        virtual void solve(DataStructures::Graph* graph) const = 0;
     };
 }
 

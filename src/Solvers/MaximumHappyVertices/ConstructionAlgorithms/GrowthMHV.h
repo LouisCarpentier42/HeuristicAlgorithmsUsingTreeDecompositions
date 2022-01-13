@@ -26,16 +26,12 @@ namespace MaximumHappyVertices
         };
 
         GrowthMHV() = default;
-        [[nodiscard]] DataStructures::Colouring* solve(
-            const DataStructures::Graph* graph,
-            const DataStructures::Colouring* colouring
-        ) const override;
+        void solve(DataStructures::Graph* graph) const override;
 
     private:
         static void setGrowthTypes(
             std::deque<DataStructures::VertexType>& verticesToUpdate,
-            const DataStructures::Graph* graph,
-            const DataStructures::Colouring* colouring
+            const DataStructures::Graph* graph
         );
         [[nodiscard]] static std::deque<DataStructures::VertexType> verticesAtDistance(
             size_t distance,

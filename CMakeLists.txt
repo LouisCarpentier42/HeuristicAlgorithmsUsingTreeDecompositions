@@ -4,7 +4,8 @@ project(HeuristicAlgorithmsUsingTreeDecompositions)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(HeuristicAlgorithmsUsingTreeDecompositions
-        src/main.cpp src/ConstructingTreeDecompositions/FlowCutter/FlowCutterAdapter.cpp
+        src/main.cpp
+        src/ConstructingTreeDecompositions/FlowCutter/FlowCutterAdapter.cpp
         src/ConstructingTreeDecompositions/FlowCutter/FlowCutterAdapter.h
         src/DataStructures/TreeDecomposition/Node.cpp
         src/DataStructures/TreeDecomposition/Node.h
@@ -17,13 +18,9 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/ConstructingTreeDecompositions/TreeDecompositionSolverTimer.h
         src/DataStructures/Graph/Graph.cpp
         src/DataStructures/Graph/Graph.h
-        src/DataStructures/Colouring/Colouring.cpp
-        src/DataStructures/Colouring/Colouring.h
         src/Solvers/SolverBase.h
         src/Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.cpp
         src/Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h
-        src/DataStructures/Colouring/MutableColouring.cpp
-        src/DataStructures/Colouring/MutableColouring.h
         src/Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.cpp
         src/Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h
         src/Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.cpp
@@ -46,9 +43,6 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/IO/ReaderTreeDecomposition.cpp
         src/IO/ReaderNiceTreeDecomposition.cpp
         src/DataStructures/DataStructuresAliases.h
-        src/DataStructures/ColouringEvaluator/ColouringQueue.cpp
-        src/DataStructures/ColouringEvaluator/ColouringQueue.h
-        src/DataStructures/ColouringEvaluator/ColouringEvaluator.cpp
         src/DataStructures/ColouringEvaluator/ColouringEvaluator.h
         src/DataStructures/ColouringEvaluator/BasicMHVEvaluator.cpp
         src/DataStructures/ColouringEvaluator/BasicMHVEvaluator.h
@@ -57,7 +51,7 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/DataStructures/ColouringEvaluator/PotentialHappyColouredMHVEvaluator.h
         src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/PassiveForgetNodeHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h
-        src/Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/PassiveLeafNodeHandlers.cpp
+        src/Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/PassiveLeafNodeHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/ConcreteLeafNodeHandlers.h
         src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/StaticOrderJoinNodeHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/ConcreteJoinNodeHandlers.h
@@ -68,4 +62,12 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/BestColourIntroduceNodeHandler.cpp
         src/ExperimentalAnalysis/experimentalAnalysis.cpp
         src/ExperimentalAnalysis/experimentalAnalysis.h
-        src/ExperimentalAnalysis/Experiment.h src/IO/ReaderExperiment.cpp src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.cpp src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.h src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/GreedyColourBagJoinNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/GrowthColourBagJoinNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/UseChildColoursJoinNodeHandler.cpp)
+        src/ExperimentalAnalysis/Experiment.h
+        src/IO/ReaderExperiment.cpp
+        src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.cpp
+        src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.h
+        src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/GreedyColourBagJoinNodeHandler.cpp
+        src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/GrowthColourBagJoinNodeHandler.cpp
+        src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/UseChildColoursJoinNodeHandler.cpp
+        src/DataStructures/DynamicProgramming/DynamicProgrammingTable.cpp
+        src/DataStructures/DynamicProgramming/DynamicProgrammingTable.h src/DataStructures/DynamicProgramming/TableEntry.cpp src/DataStructures/DynamicProgramming/TableEntry.h src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/EvaluationMerger.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/EvaluationMerger.h)

@@ -4,17 +4,16 @@
 
 #include "BasicMHVEvaluator.h"
 
-
-int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* graph, const DataStructures::Colouring* colouring) const
+int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* graph) const
 {
     int nbHappyVertices{0};
-    for (DataStructures::VertexType vertex{0}; vertex < colouring->getNbVertices(); vertex++)
+    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
-        if (!colouring->isColoured(vertex)) continue;
+        if (!graph->isColoured(vertex)) continue;
         bool vertexIsHappy{true};
-        for (DataStructures::VertexType neighbour : *graph->getNeighbours(vertex))
+        for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
         {
-            if (colouring->getColour(neighbour) != colouring->getColour(vertex))
+            if (graph->getColour(neighbour) != graph->getColour(vertex))
             {
                 vertexIsHappy = false;
                 break;
@@ -26,4 +25,22 @@ int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* gra
         }
     }
     return nbHappyVertices;
+}
+
+int DataStructures::BasicMHVEvaluator::evaluate(
+        const std::vector<DataStructures::VertexType>& recolouredVertices,
+        const DataStructures::TableEntry::ColourAssignments& colourAssignments,
+        const DataStructures::Graph *graph,
+        int startEvaluation) const
+{
+//    int nbHappyVertices{startEvaluation};
+//    for (DataStructures::VertexType vertex : recolouredVertices)
+//    {
+//        for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
+//        {
+//
+//        }
+//    }
+//    return nbHappyVertices;
+    return 0; // TODO
 }

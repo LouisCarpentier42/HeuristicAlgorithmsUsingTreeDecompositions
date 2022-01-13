@@ -12,11 +12,10 @@
 #include "../../DataStructures/TreeDecomposition/JoinNode.h"
 #include "../../DataStructures/TreeDecomposition/LeafNode.h"
 #include "../../DataStructures/TreeDecomposition/NiceNode.h"
-#include "../../DataStructures/ColouringEvaluator/ColouringQueue.h"
 
-#include "../SolverBase.h"
+#include "../../DataStructures/ColouringEvaluator/ColouringEvaluator.h"
 
-#include <queue>
+#include "JoinNodeHandler/EvaluationMerger.h"
 
 namespace Solvers
 {
@@ -28,7 +27,7 @@ namespace Solvers
     class HeuristicTreeDecompositionSolver
     {
     private:
-        /** Objects that should handle the different types of nodes of the tree decomposition. **/
+        size_t nbSolutionsToKeep;
         LeafNodeHandler* leafNodeHandler;
         IntroduceNodeHandler* introduceNodeHandler;
         ForgetNodeHandler* forgetNodeHandler;
@@ -44,65 +43,61 @@ namespace Solvers
             JoinNodeHandler* joinNodeHandler
         );
 
-        [[nodiscard]] DataStructures::Colouring* solve(
-            const DataStructures::Graph* graph,
-            const DataStructures::Colouring* colouring,
-            const DataStructures::NiceTreeDecomposition* treeDecomposition
+        void solve(
+            DataStructures::Graph* graph,
+            DataStructures::NiceTreeDecomposition* treeDecomposition
         ) const;
-        [[nodiscard]] DataStructures::ColouringQueue solveAtNode(const DataStructures::NiceNode* node) const;
+        void solveAtNode(DataStructures::NiceNode* node) const;
     };
 
     class NodeHandler
     {
     protected:
-        size_t nbSolutionsToKeep{};
         const DataStructures::ColouringEvaluator* evaluator{nullptr};
         const HeuristicTreeDecompositionSolver* solver{nullptr};
         const DataStructures::Graph* graph{nullptr};
-        const DataStructures::Colouring* colouring{nullptr};
 
     public:
         void setSolverProperties(
-            size_t newNbSolutionsToKeep,
             const DataStructures::ColouringEvaluator* newEvaluator,
             const HeuristicTreeDecompositionSolver* newSolver
         );
         void setInputInstanceProperties(
-            const DataStructures::Graph* graphToSolve,
-            const DataStructures::Colouring* colouringToSolve
+            const DataStructures::Graph* graphToSolve
         );
 
     protected:
-        [[nodiscard]] DataStructures::ColouringQueue createEmptyColouringQueue() const;
-        virtual void setNbSolutionsToKeep(size_t newNbSolutionsToKeep);
         virtual void setEvaluator(const DataStructures::ColouringEvaluator* newEvaluator);
         virtual void setSolver(const HeuristicTreeDecompositionSolver* newSolver);
         virtual void setGraph(const DataStructures::Graph* graphToSolve);
-        virtual void setColouring(const DataStructures::Colouring* colouringToSolve);
     };
 
     class LeafNodeHandler : public Solvers::NodeHandler
     {
     public:
-        [[nodiscard]] virtual DataStructures::ColouringQueue handleLeafNode(const DataStructures::LeafNode* node) const = 0;
+        virtual void handleLeafNode(DataStructures::LeafNode* node) const = 0;
     };
 
     class IntroduceNodeHandler : public Solvers::NodeHandler
     {
     public:
-        [[nodiscard]] virtual DataStructures::ColouringQueue handleIntroduceNode(const DataStructures::IntroduceNode* node) const = 0;
+        virtual void handleIntroduceNode(DataStructures::IntroduceNode* node) const = 0;
     };
 
     class ForgetNodeHandler : public Solvers::NodeHandler
     {
     public:
-        [[nodiscard]] virtual DataStructures::ColouringQueue handleForgetVertexBag(const DataStructures::ForgetNode* node) const = 0;
+        virtual void handleForgetVertexBag(DataStructures::ForgetNode* node) const = 0;
     };
 
     class JoinNodeHandler : public Solvers::NodeHandler
     {
+    protected:
+        const EvaluationMerger* evaluationMerger;
+
     public:
-        [[nodiscard]] virtual DataStructures::ColouringQueue handleJoinNode(const DataStructures::JoinNode* node) const = 0;
+        explicit JoinNodeHandler(const EvaluationMerger* evaluationMerger) : evaluationMerger{evaluationMerger} {};
+        virtual void handleJoinNode(DataStructures::JoinNode* node) const = 0;
     };
 }
 

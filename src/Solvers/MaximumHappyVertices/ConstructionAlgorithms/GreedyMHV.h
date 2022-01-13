@@ -7,8 +7,6 @@
 
 #include "../../../DataStructures/DataStructuresAliases.h"
 #include "../../../DataStructures/Graph/Graph.h"
-#include "../../../DataStructures/Colouring/Colouring.h"
-#include "../../../DataStructures/Colouring/MutableColouring.h"
 #include "../MaximumHappyVerticesSolver.h"
 
 namespace MaximumHappyVertices
@@ -17,17 +15,11 @@ namespace MaximumHappyVertices
     {
     public:
         GreedyMHV() = default;
-
-        [[nodiscard]] DataStructures::Colouring* solve(
-            const DataStructures::Graph* graph,
-            const DataStructures::Colouring* colouring
-        ) const override;
+        void solve(DataStructures::Graph* graph) const override;
 
     private:
         static void colourAllVertices(
-            const DataStructures::Graph* graph,
-            const DataStructures::Colouring* initialColouring,
-            DataStructures::MutableColouring* colouringToColour,
+            DataStructures::Graph* graph,
             DataStructures::ColourType colour
         ) ;
     };

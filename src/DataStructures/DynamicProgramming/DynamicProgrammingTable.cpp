@@ -6,34 +6,10 @@
 
 #include <algorithm>
 
-Solvers::TableEntry::TableEntry(
-        int evaluation,
-        std::vector<TableEntry*> nextEntries,
-        std::map<DataStructures::VertexType, DataStructures::ColourType> colourMap)
-    : evaluation{evaluation}, nextEntries{std::move(nextEntries)}, colourMap{std::move(colourMap)} {}
+DataStructures::DynamicProgrammingTable::DynamicProgrammingTable(size_t capacity)
+    : capacity{capacity} {}
 
-int Solvers::TableEntry::getEvaluation() const
-{
-    return evaluation;
-}
-
-void Solvers::TableEntry::colourGraph(DataStructures::Graph* graph) const
-{
-    for (const auto& [vertex, colour] : colourMap)
-    {
-        if (!graph->isColoured(vertex))
-        {
-            graph->setColour(vertex, colour);
-        }
-    }
-
-    for (TableEntry* nextEntry : nextEntries)
-    {
-        nextEntry->colourGraph(graph);
-    }
-}
-
-const Solvers::TableEntry* Solvers::DynamicProgrammingTable::getBestEntry() const
+DataStructures::TableEntry* DataStructures::DynamicProgrammingTable::getBestEntry() const
 {
     return *std::max_element(
         entries.begin(),
@@ -41,3 +17,136 @@ const Solvers::TableEntry* Solvers::DynamicProgrammingTable::getBestEntry() cons
         [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() > entry2->getEvaluation();}
     );
 }
+
+DataStructures::TableEntry* DataStructures::DynamicProgrammingTable::popBestEntry()
+{
+    std::sort(
+        entries.begin(),
+        entries.end(),
+        [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() > entry2->getEvaluation();}
+    );
+    DataStructures::TableEntry* bestEntry = entries.back();
+    entries.pop_back();
+    return bestEntry;
+}
+
+bool DataStructures::DynamicProgrammingTable::empty() const
+{
+    return entries.empty();
+}
+
+bool DataStructures::DynamicProgrammingTable::hasReachedCapacity() const
+{
+    return entries.size() >= capacity;
+}
+
+size_t DataStructures::DynamicProgrammingTable::getCapacity() const
+{
+    return capacity;
+}
+
+void DataStructures::DynamicProgrammingTable::setCapacity(size_t capacity)
+{
+    this->capacity = capacity;
+    entries.resize(capacity);
+    clear();
+}
+
+void DataStructures::DynamicProgrammingTable::clear()
+{
+    entries.clear();
+}
+
+void DataStructures::DynamicProgrammingTable::push(DataStructures::TableEntry* entry)
+{
+    entries.push_back(entry);
+
+    if (entries.size() > capacity)
+    {
+        auto worstEntryIt = std::min_element(
+            entries.begin(),
+            entries.end(),
+            [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() > entry2->getEvaluation();}
+        );
+        entries.erase(worstEntryIt);
+    }
+
+//    // TODO OLD VERSION IN COLOURINGQUEUE
+//    // If the colouring is already in the queue, then don't add it
+//    if (std::any_of(queue.begin(), queue.end(), [colouring](auto* c){return *colouring==*c;}))
+//        return;
+//
+//    // Add the colouring to the queue
+//    queue.push_back(colouring);
+//
+//    // Prune the queue if it has too many elements
+//    if (queue.size() > nbColourings)
+//    {
+//        // Find the worst element in the queue
+//        auto it = std::min_element(queue.begin(), queue.end(),
+//                                   [this](auto* c1, auto* c2){return evaluator->compare(graph, c1, c2);});
+//
+//        // Remove all the elements in the queue that have the worst evaluation
+//        int worstEvaluation{evaluator->evaluate(graph, *it)};
+//        std::vector<DataStructures::MutableColouring*>allColourings{queue};
+//        queue.clear();
+//        std::copy_if(
+//                allColourings.begin(),
+//                allColourings.end(),
+//                std::back_inserter(queue),
+//                [this,worstEvaluation](auto* c){return evaluator->evaluate(graph, c)>worstEvaluation;}
+//                );
+//
+//        // If the queue is not full, then add random colourings with the worst evaluation to fill it
+//        if (queue.size() < nbColourings)
+//        {
+//            std::vector<DataStructures::MutableColouring*>fillUpColourings{};
+//            std::copy_if(
+//                    allColourings.begin(),
+//                    allColourings.end(),
+//                    std::back_inserter(fillUpColourings),
+//                    [this,worstEvaluation](auto* c){return evaluator->evaluate(graph, c)==worstEvaluation;}
+//                    );
+//            std::sample(
+//                    fillUpColourings.begin(),
+//                    fillUpColourings.end(),
+//                    std::back_inserter(queue),
+//                    nbColourings - queue.size(),
+//                    std::mt19937{std::random_device{}()}
+//                    );
+//        }
+//
+//        if (queue.empty())
+//        {
+//            queue = allColourings;
+//
+//            //            // If all colouring have the same (worst) evaluation, then sample some randomly
+//            //            std::sample(
+//            //                allColourings.begin(),
+//            //                allColourings.end(),
+//            //                std::back_inserter(queue),
+//            //                nbColourings,
+//            //                std::mt19937{std::random_device{}()}
+//            //            );
+//        }
+//    }
+}
+
+void DataStructures::DynamicProgrammingTable::referenceTable(DataStructures::DynamicProgrammingTable* other)
+{
+    for (TableEntry* entry : other->entries)
+        push(entry);
+}
+
+std::vector<DataStructures::TableEntry *>::const_iterator DataStructures::DynamicProgrammingTable::begin()
+{
+    return entries.begin();
+}
+
+std::vector<DataStructures::TableEntry *>::const_iterator DataStructures::DynamicProgrammingTable::end()
+{
+    return entries.end();
+}
+
+
+

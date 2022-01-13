@@ -10,75 +10,67 @@ Solvers::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositionSolver(
         Solvers::IntroduceNodeHandler* introduceNodeHandler,
         Solvers::ForgetNodeHandler* forgetNodeHandler,
         Solvers::JoinNodeHandler* joinNodeHandler)
-    : leafNodeHandler{leafNodeHandler},
+    : nbSolutionsToKeep{nbSolutionsToKeep},
+      leafNodeHandler{leafNodeHandler},
       introduceNodeHandler{introduceNodeHandler},
       forgetNodeHandler{forgetNodeHandler},
       joinNodeHandler{joinNodeHandler}
 {
-    this->leafNodeHandler->setSolverProperties(nbSolutionsToKeep, evaluator, this);
-    this->introduceNodeHandler->setSolverProperties(nbSolutionsToKeep, evaluator, this);
-    this->forgetNodeHandler->setSolverProperties(nbSolutionsToKeep, evaluator, this);
-    this->joinNodeHandler->setSolverProperties(nbSolutionsToKeep, evaluator, this);
+    this->leafNodeHandler->setSolverProperties(evaluator, this);
+    this->introduceNodeHandler->setSolverProperties(evaluator, this);
+    this->forgetNodeHandler->setSolverProperties(evaluator, this);
+    this->joinNodeHandler->setSolverProperties(evaluator, this);
 }
 
-DataStructures::Colouring* Solvers::HeuristicTreeDecompositionSolver::solve(
-        const DataStructures::Graph* graph,
-        const DataStructures::Colouring* colouring,
-        const DataStructures::NiceTreeDecomposition* treeDecomposition) const
+void Solvers::HeuristicTreeDecompositionSolver::solve(
+        DataStructures::Graph* graph,
+        DataStructures::NiceTreeDecomposition* treeDecomposition) const
 {
-    leafNodeHandler->setInputInstanceProperties(graph, colouring);
-    introduceNodeHandler->setInputInstanceProperties(graph, colouring);
-    forgetNodeHandler->setInputInstanceProperties(graph, colouring);
-    joinNodeHandler->setInputInstanceProperties(graph, colouring);
-    DataStructures::ColouringQueue rootColourings = solveAtNode(treeDecomposition->getRoot());
-    return rootColourings.retrieveBestColouring();
+    leafNodeHandler->setInputInstanceProperties(graph);
+    introduceNodeHandler->setInputInstanceProperties(graph);
+    forgetNodeHandler->setInputInstanceProperties(graph);
+    joinNodeHandler->setInputInstanceProperties(graph);
+
+    solveAtNode(treeDecomposition->getRoot());
+
+    treeDecomposition->getRoot()->getTable()->getBestEntry()->colourGraph(graph);
 }
 
-DataStructures::ColouringQueue Solvers::HeuristicTreeDecompositionSolver::solveAtNode(const DataStructures::NiceNode* node) const
+void Solvers::HeuristicTreeDecompositionSolver::solveAtNode(DataStructures::NiceNode* node) const
 {
+    node->getTable()->setCapacity(nbSolutionsToKeep);
     switch(node->getNodeType())
     {
         case DataStructures::NodeType::LeafNode:
-            return leafNodeHandler->handleLeafNode(dynamic_cast<const DataStructures::LeafNode*>(node));
+            leafNodeHandler->handleLeafNode(dynamic_cast<DataStructures::LeafNode*>(node));
+            break;
         case DataStructures::NodeType::IntroduceNode:
-            return introduceNodeHandler->handleIntroduceNode(dynamic_cast<const DataStructures::IntroduceNode*>(node));
+            introduceNodeHandler->handleIntroduceNode(dynamic_cast<DataStructures::IntroduceNode*>(node));
+            break;
         case DataStructures::NodeType::ForgetNode:
-            return forgetNodeHandler->handleForgetVertexBag(dynamic_cast<const DataStructures::ForgetNode*>(node));
+            forgetNodeHandler->handleForgetVertexBag(dynamic_cast<DataStructures::ForgetNode*>(node));
+            break;
         case DataStructures::NodeType::JoinNode:
-            return joinNodeHandler->handleJoinNode(dynamic_cast<const DataStructures::JoinNode*>(node));
+            joinNodeHandler->handleJoinNode(dynamic_cast<DataStructures::JoinNode*>(node));
+            break;
     }
 }
 
 
 void Solvers::NodeHandler::setSolverProperties(
-        size_t newNbSolutionsToKeep,
         const DataStructures::ColouringEvaluator* newEvaluator,
         const Solvers::HeuristicTreeDecompositionSolver* newSolver)
 {
     if (this->evaluator == nullptr || this->solver == nullptr)
     {
-        setNbSolutionsToKeep(newNbSolutionsToKeep);
         setEvaluator(newEvaluator);
         setSolver(newSolver);
     }
 }
 
-void Solvers::NodeHandler::setInputInstanceProperties(
-        const DataStructures::Graph* graphToSolve,
-        const DataStructures::Colouring* colouringToSolve)
+void Solvers::NodeHandler::setInputInstanceProperties(const DataStructures::Graph* graphToSolve)
 {
     setGraph(graphToSolve);
-    setColouring(colouringToSolve);
-}
-
-DataStructures::ColouringQueue Solvers::NodeHandler::createEmptyColouringQueue() const
-{
-    return DataStructures::ColouringQueue{nbSolutionsToKeep, evaluator, graph};
-}
-
-void Solvers::NodeHandler::setNbSolutionsToKeep(size_t newNbSolutionsToKeep)
-{
-    this->nbSolutionsToKeep = newNbSolutionsToKeep;
 }
 
 void Solvers::NodeHandler::setEvaluator(const DataStructures::ColouringEvaluator* newEvaluator)
@@ -96,8 +88,4 @@ void Solvers::NodeHandler::setGraph(const DataStructures::Graph* graphToSolve)
     this->graph = graphToSolve;
 }
 
-void Solvers::NodeHandler::setColouring(const DataStructures::Colouring* colouringToSolve)
-{
-    this->colouring = colouringToSolve;
-}
 

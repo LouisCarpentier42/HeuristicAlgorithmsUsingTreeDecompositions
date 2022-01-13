@@ -5,7 +5,7 @@
 #include "StandardNode.h"
 
 DataStructures::StandardNode::StandardNode(int id, size_t size, DataStructures::BagContent bagContent)
-    : Node(id, size, std::move(bagContent), ChildVector())
+    : Node(id, size, std::move(bagContent), std::vector<Node*>())
 {}
 
 void DataStructures::StandardNode::addChild(StandardNode* child)

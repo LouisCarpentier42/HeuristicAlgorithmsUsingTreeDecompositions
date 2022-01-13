@@ -8,4 +8,4 @@ This could make implementing easier
 > EXACT TREE DECOMPOSITION SOLVER
 
 > DYNAMIC ORDER JOIN HANDLER
-cache the eval of vertices in bag + update in stead of recomputing each time
+cache the eval of vertices in bag + update instead of recomputing each time

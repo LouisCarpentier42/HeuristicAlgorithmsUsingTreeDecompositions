@@ -8,22 +8,35 @@
 #include "../DataStructuresAliases.h"
 
 #include <vector>
+#include <string>
 
 namespace DataStructures
 {
     class Graph
     {
     private:
+        size_t nbColours{0};
         const size_t nbVertices;
-        const std::vector<std::vector<DataStructures::VertexType>> adjacencyList;
+        std::vector<Vertex> vertices;
 
     public:
-        Graph(size_t nbVertices, std::vector<std::vector<VertexType>> adjacencyList);
+        explicit Graph(std::vector<Vertex> vertices);
 
+        [[nodiscard]] size_t getNbColours() const;
         [[nodiscard]] size_t getNbVertices() const;
-        [[nodiscard]] bool areNeighbours(DataStructures::VertexType vertex1, DataStructures::VertexType vertex2) const;
-        [[nodiscard]] size_t getDegree(DataStructures::VertexType vertex) const;
-        [[nodiscard]] const std::vector<DataStructures::VertexType>* getNeighbours(DataStructures::VertexType vertex) const;
+        [[nodiscard]] ColourType getColour(VertexType vertexType) const;
+        [[nodiscard]] bool isPrecoloured(VertexType vertexType) const;
+        [[nodiscard]] bool isColoured(VertexType vertexType) const;
+        [[nodiscard]] size_t getDegree(VertexType vertexType) const;
+        [[nodiscard]] const std::vector<VertexType>& getNeighbours(VertexType vertexType) const;
+
+        void setColour(VertexType vertexType, ColourType colour);
+        void setInitialColours(std::vector<DataStructures::ColourType>& colours);
+        void setInitialColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
+        void removeColours();
+        void removeInitialColours();
+
+        [[nodiscard]] std::string getColourString() const;
     };
 }
 
