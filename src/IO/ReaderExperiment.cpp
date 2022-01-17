@@ -108,17 +108,17 @@ Solvers::JoinNodeHandler* readJoinNodeHandler(std::string& str)
         else if (parameters[1] == "random")
             return new Solvers::StaticOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::StaticOrderJoinNodeHandler::Order::random};
     }
-//    else if (parameters[0] == "dynamicOrder") // TODO
-//    {
-//        if (parameters[1] == "mostColouredNeighbours")
-//            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::mostColouredNeighboursFirst};
-//        else if (parameters[1] == "DynamicOrderJoinNodeHandler")
-//            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::fewestColouredNeighboursFirst};
-//        else if (parameters[1] == "mostPotentialHappyNeighbours")
-//            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::mostPotentialHappyNeighbours};
-//        else if (parameters[1] == "mostPercentPotentialHappyNeighbours")
-//            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::mostPercentPotentialHappyNeighbours};
-//    }
+    else if (parameters[0] == "dynamicOrder")
+    {
+        if (parameters[1] == "mostColouredNeighbours")
+            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::mostColouredNeighboursFirst};
+        else if (parameters[1] == "DynamicOrderJoinNodeHandler")
+            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::fewestColouredNeighboursFirst};
+        else if (parameters[1] == "mostPotentialHappyNeighbours")
+            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::mostPotentialHappyNeighbours};
+        else if (parameters[1] == "mostPercentPotentialHappyNeighbours")
+            return new Solvers::DynamicOrderJoinNodeHandler{getEvaluationMerger(parameters[2]), Solvers::DynamicOrderJoinNodeHandler::Order::mostPercentPotentialHappyNeighbours};
+    }
     else if (parameters[0] == "greedyColourBag")
     {
         return new Solvers::GreedyColourBagJoinNodeHandler{getEvaluationMerger(parameters[1])};

@@ -8,7 +8,7 @@
 #include <random>
 
 Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(
-        Solvers::EvaluationMerger* evaluationMerger,
+        const Solvers::EvaluationMerger* evaluationMerger,
         Solvers::StaticOrderJoinNodeHandler::Order order)
     : JoinNodeHandler{evaluationMerger}, order{order}
 { }
@@ -68,11 +68,10 @@ void Solvers::StaticOrderJoinNodeHandler::handleJoinNode(DataStructures::JoinNod
                 // If the vertex is coloured in both entries, then the best colour is used
                 if (leftEntry->getColourAssignments().isColoured(vertex) && leftEntry->getColourAssignments().isColoured(vertex))
                 {
-                    int mergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
                     assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
-                    int leftEvaluation{evaluator->evaluate(vertex, assignments, graph, mergedEvaluation)};
+                    int leftEvaluation{evaluator->evaluate(vertex, assignments, graph, previousEvaluation)};
                     assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
-                    int rightEvaluation{evaluator->evaluate(vertex, assignments, graph, mergedEvaluation)};
+                    int rightEvaluation{evaluator->evaluate(vertex, assignments, graph, previousEvaluation)};
 
                     if (leftEvaluation > rightEvaluation)
                     {
