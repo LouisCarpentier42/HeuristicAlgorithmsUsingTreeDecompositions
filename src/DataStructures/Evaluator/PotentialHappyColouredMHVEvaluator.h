@@ -5,11 +5,11 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_POTENTIALHAPPYCOLOUREDMHVEVALUATOR_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_POTENTIALHAPPYCOLOUREDMHVEVALUATOR_H
 
-#include "ColouringEvaluator.h"
+#include "Evaluator.h"
 
 namespace DataStructures
 {
-    class PotentialHappyColouredMHVEvaluator : public ColouringEvaluator
+    class PotentialHappyColouredMHVEvaluator : public Evaluator
     {
     private:
         const int happyVertexWeight;

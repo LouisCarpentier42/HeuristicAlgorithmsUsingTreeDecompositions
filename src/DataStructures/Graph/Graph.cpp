@@ -47,7 +47,7 @@ const std::vector<DataStructures::VertexType>& DataStructures::Graph::getNeighbo
 
 void DataStructures::Graph::setColour(DataStructures::VertexType vertexType, DataStructures::ColourType colour)
 {
-    if (!vertices[vertexType].isPrecoloured)
+    if (!vertices[vertexType].isPrecoloured && colour != 0)
     {
         vertices[vertexType].colour = colour;
         vertices[vertexType].isColoured = true;

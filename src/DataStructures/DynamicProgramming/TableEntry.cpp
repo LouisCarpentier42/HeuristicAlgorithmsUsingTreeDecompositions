@@ -58,4 +58,19 @@ void DataStructures::TableEntry::ColourAssignments::assignColour(DataStructures:
     assignments[vertex] = colour;
 }
 
+bool DataStructures::operator==(const DataStructures::TableEntry::ColourAssignments& c1, const DataStructures::TableEntry::ColourAssignments& c2)
+{
+    return c1.assignments == c2.assignments;
+//    return false;
+}
+
+std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures::TableEntry::ColourAssignments& assignments)
+{
+    out << "[" << assignments.getColour(0);
+    for (int i{1}; i < assignments.assignments.size(); i++)
+        out << ", " << assignments.getColour(i);
+    return out << "]";
+}
+
+
 

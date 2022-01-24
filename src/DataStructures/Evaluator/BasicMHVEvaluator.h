@@ -5,11 +5,11 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BASICMHVEVALUATOR_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BASICMHVEVALUATOR_H
 
-#include "ColouringEvaluator.h"
+#include "Evaluator.h"
 
 namespace DataStructures
 {
-    class BasicMHVEvaluator : public ColouringEvaluator
+    class BasicMHVEvaluator : public Evaluator
     {
     public:
 

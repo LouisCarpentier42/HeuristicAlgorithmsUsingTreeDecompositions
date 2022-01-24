@@ -10,6 +10,7 @@
 
 #include <map>
 #include <vector>
+#include <ostream>
 
 namespace DataStructures
 {
@@ -30,11 +31,14 @@ namespace DataStructures
             [[nodiscard]] DataStructures::VertexType getColour(DataStructures::VertexType vertex) const;
             [[nodiscard]] bool isColoured(DataStructures::VertexType vertex) const;
             void assignColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
+
+            friend bool operator==(const TableEntry::ColourAssignments& c1, const TableEntry::ColourAssignments& c2);
+            friend std::ostream& operator<<(std::ostream& out, const TableEntry::ColourAssignments& assignments);
         };
 
     private:
         const int evaluation;
-        NextEntries nextEntries;
+        NextEntries nextEntries; // TODO needed?
         ColourAssignments colourAssignments;
 
     public:
@@ -49,6 +53,9 @@ namespace DataStructures
 
         void colourGraph(DataStructures::Graph* graph) const;
     };
+
+    bool operator==(const TableEntry::ColourAssignments& c1, const TableEntry::ColourAssignments& c2);
+    std::ostream& operator<<(std::ostream& out, const TableEntry::ColourAssignments& assignments);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TABLEENTRY_H

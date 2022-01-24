@@ -2,10 +2,13 @@
 // Created by louis on 10/11/2021.
 //
 #include "HeuristicTreeDecompositionSolver.h"
+#include "../../DataStructures/Evaluator/BasicMHVEvaluator.h" // TODO remove
+
+#include <iostream>
 
 Solvers::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositionSolver(
         size_t nbSolutionsToKeep,
-        const DataStructures::ColouringEvaluator* evaluator,
+        const DataStructures::Evaluator* evaluator,
         Solvers::LeafNodeHandler* leafNodeHandler,
         Solvers::IntroduceNodeHandler* introduceNodeHandler,
         Solvers::ForgetNodeHandler* forgetNodeHandler,
@@ -26,6 +29,7 @@ void Solvers::HeuristicTreeDecompositionSolver::solve(
         DataStructures::Graph* graph,
         DataStructures::NiceTreeDecomposition* treeDecomposition) const
 {
+    std::cout << *treeDecomposition << "\n";
     leafNodeHandler->setInputInstanceProperties(graph);
     introduceNodeHandler->setInputInstanceProperties(graph);
     forgetNodeHandler->setInputInstanceProperties(graph);
@@ -54,11 +58,22 @@ void Solvers::HeuristicTreeDecompositionSolver::solveAtNode(DataStructures::Nice
             joinNodeHandler->handleJoinNode(dynamic_cast<DataStructures::JoinNode*>(node));
             break;
     }
+
+    std::cout << "--- " << node->getId() << " ---\n";
+    int count{1};
+    DataStructures::BasicMHVEvaluator e{};
+    for (DataStructures::TableEntry* entry : *node->getTable())
+    {
+        entry->colourGraph(leafNodeHandler->graph);
+        std::cout << "E(" << count++ << "): " << entry->getEvaluation() << " " << e.evaluate(leafNodeHandler->graph) << " " << entry->getColourAssignments() << "\n";
+        leafNodeHandler->graph->removeColours();
+    }
+    std::cout << "\n";
 }
 
 
 void Solvers::NodeHandler::setSolverProperties(
-        const DataStructures::ColouringEvaluator* newEvaluator,
+        const DataStructures::Evaluator* newEvaluator,
         const Solvers::HeuristicTreeDecompositionSolver* newSolver)
 {
     if (this->evaluator == nullptr || this->solver == nullptr)
@@ -68,12 +83,12 @@ void Solvers::NodeHandler::setSolverProperties(
     }
 }
 
-void Solvers::NodeHandler::setInputInstanceProperties(const DataStructures::Graph* graphToSolve)
+void Solvers::NodeHandler::setInputInstanceProperties(DataStructures::Graph* graphToSolve) // TODO set param const
 {
     setGraph(graphToSolve);
 }
 
-void Solvers::NodeHandler::setEvaluator(const DataStructures::ColouringEvaluator* newEvaluator)
+void Solvers::NodeHandler::setEvaluator(const DataStructures::Evaluator* newEvaluator)
 {
     this->evaluator = newEvaluator;
 }
@@ -83,7 +98,7 @@ void Solvers::NodeHandler::setSolver(const Solvers::HeuristicTreeDecompositionSo
     this->solver = newSolver;
 }
 
-void Solvers::NodeHandler::setGraph(const DataStructures::Graph* graphToSolve)
+void Solvers::NodeHandler::setGraph(DataStructures::Graph* graphToSolve) // TODO set param const
 {
     this->graph = graphToSolve;
 }

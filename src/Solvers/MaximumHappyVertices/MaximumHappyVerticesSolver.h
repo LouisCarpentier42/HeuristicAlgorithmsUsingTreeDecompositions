@@ -6,7 +6,7 @@
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_MAXIMUMHAPPYVERTICESSOLVER_H
 
 #include "../../DataStructures/Graph/Graph.h"
-#include "../../DataStructures/ColouringEvaluator/BasicMHVEvaluator.h"
+#include "../../DataStructures/Evaluator/BasicMHVEvaluator.h"
 #include "../SolverBase.h"
 
 namespace MaximumHappyVertices

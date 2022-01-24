@@ -5,7 +5,7 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_SOLVERBASE_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_SOLVERBASE_H
 
-#include "../DataStructures/ColouringEvaluator/ColouringEvaluator.h"
+#include "../DataStructures/Evaluator/Evaluator.h"
 #include "../DataStructures/Graph/Graph.h"
 
 namespace Solvers
@@ -13,9 +13,9 @@ namespace Solvers
     class SolverBase
     {
     public:
-        const DataStructures::ColouringEvaluator* evaluator;
+        const DataStructures::Evaluator* evaluator;
 
-        explicit SolverBase(const DataStructures::ColouringEvaluator* evaluator) : evaluator{evaluator} {}
+        explicit SolverBase(const DataStructures::Evaluator* evaluator) : evaluator{evaluator} {}
 
         virtual void solve(DataStructures::Graph* graph) const = 0;
     };

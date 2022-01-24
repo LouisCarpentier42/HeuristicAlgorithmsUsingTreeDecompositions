@@ -14,7 +14,7 @@ DataStructures::TableEntry* DataStructures::DynamicProgrammingTable::getBestEntr
     return *std::max_element(
         entries.begin(),
         entries.end(),
-        [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() > entry2->getEvaluation();}
+        [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() < entry2->getEvaluation();}
     );
 }
 
@@ -23,7 +23,7 @@ DataStructures::TableEntry* DataStructures::DynamicProgrammingTable::popBestEntr
     std::sort(
         entries.begin(),
         entries.end(),
-        [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() > entry2->getEvaluation();}
+        [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() < entry2->getEvaluation();}
     );
     DataStructures::TableEntry* bestEntry = entries.back();
     entries.pop_back();
@@ -59,6 +59,20 @@ void DataStructures::DynamicProgrammingTable::clear()
 
 void DataStructures::DynamicProgrammingTable::push(DataStructures::TableEntry* entry)
 {
+    // There can't be two entries with identical colour assignment
+    for (int i{0}; i < entries.size(); i++)
+    {
+        if (entry->getColourAssignments() == entries[i]->getColourAssignments())
+        {
+            if (entry->getEvaluation() > entries[i]->getEvaluation()) // TODO maybe check if ever a different eval
+            {
+                delete entries[i]; // TODO not sure if needed?
+                entries[i] = entry;
+            }
+            return;
+        }
+    }
+
     entries.push_back(entry);
 
     if (entries.size() > capacity)
@@ -66,18 +80,12 @@ void DataStructures::DynamicProgrammingTable::push(DataStructures::TableEntry* e
         auto worstEntryIt = std::min_element(
             entries.begin(),
             entries.end(),
-            [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() > entry2->getEvaluation();}
+            [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() < entry2->getEvaluation();}
         );
         entries.erase(worstEntryIt);
     }
 
 //    // TODO OLD VERSION IN COLOURINGQUEUE
-//    // If the colouring is already in the queue, then don't add it
-//    if (std::any_of(queue.begin(), queue.end(), [colouring](auto* c){return *colouring==*c;}))
-//        return;
-//
-//    // Add the colouring to the queue
-//    queue.push_back(colouring);
 //
 //    // Prune the queue if it has too many elements
 //    if (queue.size() > nbColourings)
@@ -146,6 +154,16 @@ std::vector<DataStructures::TableEntry *>::const_iterator DataStructures::Dynami
 std::vector<DataStructures::TableEntry *>::const_iterator DataStructures::DynamicProgrammingTable::end()
 {
     return entries.end();
+}
+
+std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures::DynamicProgrammingTable& table)
+{
+    int count{1};
+    for (DataStructures::TableEntry* entry : table.entries)
+    {
+        out << "E(" << count++ << "): " << entry->getEvaluation() << " " << entry->getColourAssignments() << "\n";
+    }
+    return out;
 }
 
 

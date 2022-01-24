@@ -10,8 +10,8 @@
 #include "../Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/ConcreteIntroduceNodeHandlers.h"
 #include "../Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h"
 #include "../Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/ConcreteJoinNodeHandlers.h"
-#include "../DataStructures/ColouringEvaluator/PotentialHappyColouredMHVEvaluator.h"
-#include "../DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.h"
+#include "../DataStructures/Evaluator/PotentialHappyColouredMHVEvaluator.h"
+#include "../DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.h"
 
 std::vector<std::string> splitParameters(std::string& str)
 {
@@ -36,7 +36,7 @@ std::vector<std::string> splitParameters(std::string& str)
     return allParameters;
 }
 
-const DataStructures::ColouringEvaluator* readEvaluator(std::string& str)
+const DataStructures::Evaluator* readEvaluator(std::string& str)
 {
     std::vector<std::string> parameters = splitParameters(str);
     if (parameters[0] == "basicMHVEvaluator")
@@ -146,7 +146,8 @@ std::vector<std::vector<DataStructures::ColourType>> readColouringString(std::st
         std::vector<std::vector<DataStructures::ColourType>> colourings{};
         for (int j{0}; j < nbColourings; j++)
         {
-            static std::mt19937 rng{std::random_device{}()};
+            static std::mt19937 rng{0};
+//            static std::mt19937 rng{std::random_device{}()}; // TODO not random
             std::uniform_int_distribution<DataStructures::ColourType> colourDistribution(1, nbColours);
 
             // Create a random shuffling of the vertices and colour them in this order
@@ -184,7 +185,7 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
         throw std::runtime_error("Can't read '" + experimentsFilename + "' because the file can't be opened!");
     }
 
-    DataStructures::ColouringEvaluator* evaluator{};
+    DataStructures::Evaluator* evaluator{};
     std::map<std::string, Solvers::SolverBase*> baselines{};
     std::map<std::string, Solvers::HeuristicTreeDecompositionSolver*> treeDecompositionSolvers{};
     while (solverFile)

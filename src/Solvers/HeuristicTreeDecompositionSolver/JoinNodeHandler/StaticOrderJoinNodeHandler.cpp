@@ -13,7 +13,7 @@ Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(
     : JoinNodeHandler{evaluationMerger}, order{order}
 { }
 
-void Solvers::StaticOrderJoinNodeHandler::setGraph(const DataStructures::Graph* graphToSolve)
+void Solvers::StaticOrderJoinNodeHandler::setGraph(DataStructures::Graph* graphToSolve) // TODO set param const
 {
     NodeHandler::setGraph(graphToSolve);
 

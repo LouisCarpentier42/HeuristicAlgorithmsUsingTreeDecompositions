@@ -43,12 +43,12 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/IO/ReaderTreeDecomposition.cpp
         src/IO/ReaderNiceTreeDecomposition.cpp
         src/DataStructures/DataStructuresAliases.h
-        src/DataStructures/ColouringEvaluator/ColouringEvaluator.h
-        src/DataStructures/ColouringEvaluator/BasicMHVEvaluator.cpp
-        src/DataStructures/ColouringEvaluator/BasicMHVEvaluator.h
+        src/DataStructures/Evaluator/Evaluator.h
+        src/DataStructures/Evaluator/BasicMHVEvaluator.cpp
+        src/DataStructures/Evaluator/BasicMHVEvaluator.h
         src/Solvers/MaximumHappyVertices/MaximumHappyVerticesSolver.h
-        src/DataStructures/ColouringEvaluator/PotentialHappyColouredMHVEvaluator.cpp
-        src/DataStructures/ColouringEvaluator/PotentialHappyColouredMHVEvaluator.h
+        src/DataStructures/Evaluator/PotentialHappyColouredMHVEvaluator.cpp
+        src/DataStructures/Evaluator/PotentialHappyColouredMHVEvaluator.h
         src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/PassiveForgetNodeHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h
         src/Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/PassiveLeafNodeHandler.cpp
@@ -64,8 +64,8 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/ExperimentalAnalysis/experimentalAnalysis.h
         src/ExperimentalAnalysis/Experiment.h
         src/IO/ReaderExperiment.cpp
-        src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.cpp
-        src/DataStructures/ColouringEvaluator/PotentialHappyUncolouredMHVEvaluator.h
+        src/DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.cpp
+        src/DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.h
         src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/GreedyColourBagJoinNodeHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/GrowthColourBagJoinNodeHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/UseChildColoursJoinNodeHandler.cpp

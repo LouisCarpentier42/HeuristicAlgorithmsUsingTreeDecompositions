@@ -31,7 +31,7 @@ namespace Solvers
         std::vector<DataStructures::VertexType> vertexOrder;
     public:
         StaticOrderJoinNodeHandler(const EvaluationMerger* evaluationMerger, Order order);
-        void setGraph(const DataStructures::Graph* graphToSolve) override;
+        void setGraph(DataStructures::Graph* graphToSolve) override; // TODO set param const
         void handleJoinNode(DataStructures::JoinNode* node) const override;
     };
 

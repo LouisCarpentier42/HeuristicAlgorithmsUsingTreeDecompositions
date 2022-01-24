@@ -13,7 +13,7 @@
 #include "../../DataStructures/TreeDecomposition/LeafNode.h"
 #include "../../DataStructures/TreeDecomposition/NiceNode.h"
 
-#include "../../DataStructures/ColouringEvaluator/ColouringEvaluator.h"
+#include "../../DataStructures/Evaluator/Evaluator.h"
 
 #include "JoinNodeHandler/EvaluationMerger.h"
 
@@ -36,7 +36,7 @@ namespace Solvers
     public:
         HeuristicTreeDecompositionSolver(
             size_t nbSolutionsToKeep,
-            const DataStructures::ColouringEvaluator* evaluator,
+            const DataStructures::Evaluator* evaluator,
             LeafNodeHandler* leafNodeHandler,
             IntroduceNodeHandler* introduceNodeHandler,
             ForgetNodeHandler* forgetNodeHandler,
@@ -52,24 +52,24 @@ namespace Solvers
 
     class NodeHandler
     {
-    protected:
-        const DataStructures::ColouringEvaluator* evaluator{nullptr};
+    public: // TODO set protected
+        const DataStructures::Evaluator* evaluator{nullptr};
         const HeuristicTreeDecompositionSolver* solver{nullptr};
-        const DataStructures::Graph* graph{nullptr};
+        DataStructures::Graph* graph{nullptr}; // TODO set constant
 
     public:
         void setSolverProperties(
-            const DataStructures::ColouringEvaluator* newEvaluator,
+            const DataStructures::Evaluator* newEvaluator,
             const HeuristicTreeDecompositionSolver* newSolver
         );
-        void setInputInstanceProperties(
-            const DataStructures::Graph* graphToSolve
+        void setInputInstanceProperties( // TODO set param const
+            DataStructures::Graph* graphToSolve
         );
 
     protected:
-        virtual void setEvaluator(const DataStructures::ColouringEvaluator* newEvaluator);
+        virtual void setEvaluator(const DataStructures::Evaluator* newEvaluator);
         virtual void setSolver(const HeuristicTreeDecompositionSolver* newSolver);
-        virtual void setGraph(const DataStructures::Graph* graphToSolve);
+        virtual void setGraph(DataStructures::Graph* graphToSolve); // TODO set param const
     };
 
     class LeafNodeHandler : public Solvers::NodeHandler

@@ -7,7 +7,7 @@
 
 #include "../Solvers/SolverBase.h"
 #include "../Solvers/HeuristicTreeDecompositionSolver/HeuristicTreeDecompositionSolver.h"
-#include "../DataStructures/ColouringEvaluator/BasicMHVEvaluator.h"
+#include "../DataStructures/Evaluator/BasicMHVEvaluator.h"
 
 #include <map>
 
@@ -23,7 +23,7 @@ namespace ExperimentalAnalysis
 
     struct Experiment
     {
-        const DataStructures::ColouringEvaluator* evaluator{};
+        const DataStructures::Evaluator* evaluator{};
         const std::map<std::string, Solvers::SolverBase*> baselines{};
         const std::map<std::string, Solvers::HeuristicTreeDecompositionSolver*> treeDecompositionSolvers{};
         const std::vector<TestInstance> testInstances{};

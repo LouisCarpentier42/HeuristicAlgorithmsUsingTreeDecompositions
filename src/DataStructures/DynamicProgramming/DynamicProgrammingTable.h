@@ -10,6 +10,7 @@
 #include "../Graph/Graph.h"
 
 #include <vector>
+#include <ostream>
 
 // TODO optimize (eg with std::set)
 
@@ -37,7 +38,11 @@ namespace DataStructures
 
         std::vector<TableEntry*>::const_iterator begin();
         std::vector<TableEntry*>::const_iterator end();
+
+        friend std::ostream& operator<<(std::ostream& out, const DynamicProgrammingTable& table);
     };
+
+    std::ostream& operator<<(std::ostream& out, const DynamicProgrammingTable& table);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_DYNAMICPROGRAMMINGTABLE_H
