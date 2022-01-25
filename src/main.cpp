@@ -38,14 +38,6 @@ int main(int argc, char** argv)
 //    int evaluation{0};
 //    DataStructures::TableEntry::ColourAssignments assignments{g};
 //
-//    assignments.assignColour(10, 1);
-//    evaluation = evaluator.evaluate({10}, assignments, g, evaluation);
-//    std::cout << "10:" << evaluation << "\n";
-//
-//    assignments.assignColour(0, 1);
-//    evaluation = evaluator.evaluate({0}, assignments, g, evaluation);
-//    std::cout << "0:" << evaluation << "\n";
-//
 //    assignments.assignColour(2, 1);
 //    evaluation = evaluator.evaluate({2}, assignments, g, evaluation);
 //    std::cout << "2:" << evaluation << "\n";
@@ -57,6 +49,10 @@ int main(int argc, char** argv)
 //    assignments.assignColour(11, 1);
 //    evaluation = evaluator.evaluate({11}, assignments, g, evaluation);
 //    std::cout << "11:" << evaluation << "\n";
+//
+//    assignments.assignColour(0, 1);
+//    evaluation = evaluator.evaluate({0}, assignments, g, evaluation);
+//    std::cout << "0:" << evaluation << "\n";
 //
 //    assignments.assignColour(3, 1);
 //    evaluation = evaluator.evaluate({3}, assignments, g, evaluation);

@@ -3,7 +3,8 @@
 //
 
 #include "BasicMHVEvaluator.h"
-#include <iostream> // TODO remove
+
+#include <set>
 
 int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* graph) const
 {
@@ -28,13 +29,16 @@ int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* gra
     return nbHappyVertices;
 }
 
+
 int DataStructures::BasicMHVEvaluator::evaluate(
         const std::vector<DataStructures::VertexType>& recolouredVertices,
         const DataStructures::TableEntry::ColourAssignments& colourAssignments,
         const DataStructures::Graph *graph,
         int startEvaluation) const
-{ // TODO counts double when handling multiple recoloured vertices
-    int nbHappyVertices{startEvaluation};
+{
+    std::set<DataStructures::VertexType> newlyHappyVertices{};
+    std::set<DataStructures::VertexType> checkedNeighbours{};
+
     for (DataStructures::VertexType vertex : recolouredVertices)
     {
         if (graph->isPrecoloured(vertex)) continue;
@@ -47,19 +51,23 @@ int DataStructures::BasicMHVEvaluator::evaluate(
                 continue;
             }
 
-            bool neighbourIsHappy{true};
-            for (DataStructures::VertexType neighbourOfNeighbour : graph->getNeighbours(neighbour))
+            if (checkedNeighbours.find(neighbour) == checkedNeighbours.end())
             {
-                if (!colourAssignments.isColoured(neighbourOfNeighbour)
-                    || colourAssignments.getColour(neighbourOfNeighbour) != colourAssignments.getColour(neighbour))
+                bool neighbourIsHappy{true};
+                for (DataStructures::VertexType neighbourOfNeighbour : graph->getNeighbours(neighbour))
                 {
-                    neighbourIsHappy = false;
-                    break;
+                    if (!colourAssignments.isColoured(neighbourOfNeighbour)
+                        || colourAssignments.getColour(neighbourOfNeighbour) != colourAssignments.getColour(neighbour))
+                    {
+                        neighbourIsHappy = false;
+                        break;
+                    }
                 }
-            }
-            if (neighbourIsHappy)
-            {
-                nbHappyVertices++;
+                if (neighbourIsHappy)
+                {
+                    newlyHappyVertices.insert(neighbour);
+                }
+                checkedNeighbours.insert(neighbour);
             }
 
             if (colourAssignments.getColour(neighbour) != colourAssignments.getColour(vertex))
@@ -70,8 +78,9 @@ int DataStructures::BasicMHVEvaluator::evaluate(
 
         if (vertexIsHappy)
         {
-            nbHappyVertices++;
+            newlyHappyVertices.insert(vertex);
         }
     }
-    return nbHappyVertices;
+
+    return startEvaluation + newlyHappyVertices.size();
 }

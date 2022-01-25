@@ -146,7 +146,7 @@ std::vector<std::vector<DataStructures::ColourType>> readColouringString(std::st
         std::vector<std::vector<DataStructures::ColourType>> colourings{};
         for (int j{0}; j < nbColourings; j++)
         {
-            static std::mt19937 rng{0};
+            static std::mt19937 rng{1};
 //            static std::mt19937 rng{std::random_device{}()}; // TODO not random
             std::uniform_int_distribution<DataStructures::ColourType> colourDistribution(1, nbColours);
 

@@ -29,13 +29,23 @@ void Solvers::HeuristicTreeDecompositionSolver::solve(
         DataStructures::Graph* graph,
         DataStructures::NiceTreeDecomposition* treeDecomposition) const
 {
-    std::cout << *treeDecomposition << "\n";
     leafNodeHandler->setInputInstanceProperties(graph);
     introduceNodeHandler->setInputInstanceProperties(graph);
     forgetNodeHandler->setInputInstanceProperties(graph);
     joinNodeHandler->setInputInstanceProperties(graph);
 
     solveAtNode(treeDecomposition->getRoot());
+
+    std::cout << "--- " << treeDecomposition->getRoot()->getId() << " ---\n";
+    int count{1};
+    DataStructures::BasicMHVEvaluator e{};
+    for (DataStructures::TableEntry* entry : *treeDecomposition->getRoot()->getTable())
+    {
+        entry->colourGraph(graph);
+        std::cout << "E(" << count++ << "): " << entry->getEvaluation() << " " << e.evaluate(graph) << " " << entry->getColourAssignments() << "\n";
+        graph->removeColours();
+    }
+    std::cout << "\n";
 
     treeDecomposition->getRoot()->getTable()->getBestEntry()->colourGraph(graph);
 }
@@ -58,17 +68,6 @@ void Solvers::HeuristicTreeDecompositionSolver::solveAtNode(DataStructures::Nice
             joinNodeHandler->handleJoinNode(dynamic_cast<DataStructures::JoinNode*>(node));
             break;
     }
-
-    std::cout << "--- " << node->getId() << " ---\n";
-    int count{1};
-    DataStructures::BasicMHVEvaluator e{};
-    for (DataStructures::TableEntry* entry : *node->getTable())
-    {
-        entry->colourGraph(leafNodeHandler->graph);
-        std::cout << "E(" << count++ << "): " << entry->getEvaluation() << " " << e.evaluate(leafNodeHandler->graph) << " " << entry->getColourAssignments() << "\n";
-        leafNodeHandler->graph->removeColours();
-    }
-    std::cout << "\n";
 }
 
 
@@ -83,7 +82,7 @@ void Solvers::NodeHandler::setSolverProperties(
     }
 }
 
-void Solvers::NodeHandler::setInputInstanceProperties(DataStructures::Graph* graphToSolve) // TODO set param const
+void Solvers::NodeHandler::setInputInstanceProperties(const DataStructures::Graph* graphToSolve)
 {
     setGraph(graphToSolve);
 }
@@ -98,7 +97,7 @@ void Solvers::NodeHandler::setSolver(const Solvers::HeuristicTreeDecompositionSo
     this->solver = newSolver;
 }
 
-void Solvers::NodeHandler::setGraph(DataStructures::Graph* graphToSolve) // TODO set param const
+void Solvers::NodeHandler::setGraph(const DataStructures::Graph* graphToSolve)
 {
     this->graph = graphToSolve;
 }

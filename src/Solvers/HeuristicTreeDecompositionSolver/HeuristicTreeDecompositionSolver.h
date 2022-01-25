@@ -52,24 +52,24 @@ namespace Solvers
 
     class NodeHandler
     {
-    public: // TODO set protected
+    protected:
         const DataStructures::Evaluator* evaluator{nullptr};
         const HeuristicTreeDecompositionSolver* solver{nullptr};
-        DataStructures::Graph* graph{nullptr}; // TODO set constant
+        const DataStructures::Graph* graph{nullptr};
 
     public:
         void setSolverProperties(
             const DataStructures::Evaluator* newEvaluator,
             const HeuristicTreeDecompositionSolver* newSolver
         );
-        void setInputInstanceProperties( // TODO set param const
-            DataStructures::Graph* graphToSolve
+        void setInputInstanceProperties(
+            const DataStructures::Graph* graphToSolve
         );
 
     protected:
         virtual void setEvaluator(const DataStructures::Evaluator* newEvaluator);
         virtual void setSolver(const HeuristicTreeDecompositionSolver* newSolver);
-        virtual void setGraph(DataStructures::Graph* graphToSolve); // TODO set param const
+        virtual void setGraph(const DataStructures::Graph* graphToSolve);
     };
 
     class LeafNodeHandler : public Solvers::NodeHandler
