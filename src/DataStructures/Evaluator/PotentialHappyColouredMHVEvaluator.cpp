@@ -61,8 +61,6 @@ int DataStructures::PotentialHappyColouredMHVEvaluator::evaluate(
 
     for (DataStructures::VertexType vertex : recolouredVertices)
     {
-        if (graph->isPrecoloured(vertex)) continue;
-
         bool vertexIsUnhappy{false};
         bool hasUncolouredNeighbour{false};
         for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
@@ -78,7 +76,7 @@ int DataStructures::PotentialHappyColouredMHVEvaluator::evaluate(
 
             if (colourAssignments.isColoured(neighbour) && checkedNeighbours.find(neighbour) == checkedNeighbours.end())
             {
-                bool neighbourIsUnhappy{false}; // TODO figure out logic for adjusting weight of neighbours
+                bool neighbourIsUnhappy{false};
                 bool neighbourHasUncolouredNeighbour{false};
                 for (DataStructures::VertexType neighbourOfNeighbour : graph->getNeighbours(neighbour))
                 {
@@ -107,13 +105,18 @@ int DataStructures::PotentialHappyColouredMHVEvaluator::evaluate(
                         notPotentiallyHappyAnymoreVertices.insert(neighbour);
                         newlyUnhappyVertices.insert(neighbour);
                     }
-                    // If the vertex is not unhappy and still has uncoloured
-                    // vertices, then it already was potentially happy
                 }
                 else
                 {
                     notPotentiallyHappyAnymoreVertices.insert(neighbour);
-                    newlyHappyVertices.insert(neighbour);
+                    if (colourAssignments.getColour(neighbour) == colourAssignments.getColour(vertex))
+                    {
+                        newlyHappyVertices.insert(neighbour);
+                    }
+                    else
+                    {
+                        newlyUnhappyVertices.insert(neighbour);
+                    }
                 }
                 checkedNeighbours.insert(neighbour);
             }

@@ -7,12 +7,19 @@
 void Solvers::PassiveLeafNodeHandlers::handleLeafNode(DataStructures::LeafNode* node) const
 {
     DataStructures::TableEntry::ColourAssignments assignments{graph};
+    std::vector<DataStructures::VertexType> precolouredVertices{};
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-        assignments.assignColour(vertex, graph->getColour(vertex));
+    {
+        if (graph->isPrecoloured(vertex))
+        {
+            assignments.assignColour(vertex, graph->getColour(vertex));
+            precolouredVertices.emplace_back(vertex);
+        }
+    }
 
     node->getTable()->push(
         new DataStructures::TableEntry{
-            0,
+            evaluator->evaluate(precolouredVertices, assignments, graph, 0),
             DataStructures::TableEntry::NextEntries{},
             assignments
         }

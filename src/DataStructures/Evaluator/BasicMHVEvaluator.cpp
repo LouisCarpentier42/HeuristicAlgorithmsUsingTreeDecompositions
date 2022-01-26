@@ -44,8 +44,6 @@ int DataStructures::BasicMHVEvaluator::evaluate(
 
     for (DataStructures::VertexType vertex : recolouredVertices)
     {
-        if (graph->isPrecoloured(vertex)) continue;
-
         bool vertexIsHappy{true};
         for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
         {
