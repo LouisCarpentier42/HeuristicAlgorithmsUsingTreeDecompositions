@@ -36,12 +36,16 @@ int DataStructures::BasicMHVEvaluator::evaluate(
         const DataStructures::Graph *graph,
         int startEvaluation) const
 {
+    int evaluation{startEvaluation};
+    // TODO probably not needed with checkedNeighboursArray -> needed but why?
+    //  try to remove this set + also in the other evaluators
     std::set<DataStructures::VertexType> newlyHappyVertices{};
-    std::set<DataStructures::VertexType> checkedNeighbours{};
+    std::set<DataStructures::VertexType> checkedNeighbours{recolouredVertices.begin(), recolouredVertices.end()};
 
     for (DataStructures::VertexType vertex : recolouredVertices)
     {
         if (graph->isPrecoloured(vertex)) continue;
+
         bool vertexIsHappy{true};
         for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
         {
@@ -66,6 +70,7 @@ int DataStructures::BasicMHVEvaluator::evaluate(
                 if (neighbourIsHappy)
                 {
                     newlyHappyVertices.insert(neighbour);
+//                    evaluation++;
                 }
                 checkedNeighbours.insert(neighbour);
             }
@@ -79,8 +84,10 @@ int DataStructures::BasicMHVEvaluator::evaluate(
         if (vertexIsHappy)
         {
             newlyHappyVertices.insert(vertex);
+//            evaluation++;
         }
     }
 
+//    return evaluation;
     return startEvaluation + newlyHappyVertices.size();
 }

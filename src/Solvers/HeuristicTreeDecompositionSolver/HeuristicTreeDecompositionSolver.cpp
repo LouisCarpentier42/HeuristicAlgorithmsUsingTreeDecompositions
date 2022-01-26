@@ -3,6 +3,7 @@
 //
 #include "HeuristicTreeDecompositionSolver.h"
 #include "../../DataStructures/Evaluator/BasicMHVEvaluator.h" // TODO remove
+#include "../../DataStructures/Evaluator/PotentialHappyColouredMHVEvaluator.h" // TODO remove
 
 #include <iostream>
 
@@ -38,7 +39,7 @@ void Solvers::HeuristicTreeDecompositionSolver::solve(
 
     std::cout << "--- " << treeDecomposition->getRoot()->getId() << " ---\n";
     int count{1};
-    DataStructures::BasicMHVEvaluator e{};
+    DataStructures::PotentialHappyColouredMHVEvaluator e{6,2,-1};
     for (DataStructures::TableEntry* entry : *treeDecomposition->getRoot()->getTable())
     {
         entry->colourGraph(graph);

@@ -22,9 +22,9 @@ c
 problem MaximumHappyVertices
 baseline greedyMHV
 baseline growthMHV
-heuristicTD tdAlgo_min 8 basicMHVEvaluator passive bestColour passive greedyColourBag(min)
-heuristicTD tdAlgo_max 8 basicMHVEvaluator passive bestColour passive greedyColourBag(max)
-heuristicTD tdAlgo_avg 8 basicMHVEvaluator passive bestColour passive greedyColourBag(avg)
+heuristicTD tdAlgo_min 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(min)
+heuristicTD tdAlgo_max 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(max)
+heuristicTD tdAlgo_avg 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(avg)
 c heuristicTD greedyColourBag2 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(min)
 c heuristicTD mostCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostColouredNeighbours,avg)
 c heuristicTD fewestCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(DynamicOrderJoinNodeHandler,avg)
