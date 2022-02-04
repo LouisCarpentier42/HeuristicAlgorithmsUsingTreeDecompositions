@@ -79,7 +79,6 @@ void Solvers::DynamicOrderJoinNodeHandler::handleJoinNode(DataStructures::JoinNo
             node->getTable()->push(
                 new DataStructures::TableEntry{
                     evaluator->evaluate(node->getBagContent(), assignments, graph, initialMergedEvaluation),
-                    DataStructures::TableEntry::NextEntries{leftEntry, rightEntry},
                     assignments
                 }
             );

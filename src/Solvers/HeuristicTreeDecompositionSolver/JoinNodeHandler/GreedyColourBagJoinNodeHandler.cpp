@@ -58,7 +58,6 @@ void Solvers::GreedyColourBagJoinNodeHandler::handleJoinNode(DataStructures::Joi
             node->getTable()->push(
                 new DataStructures::TableEntry{
                     bestEvaluation,
-                    DataStructures::TableEntry::NextEntries{leftEntry, rightEntry},
                     assignments
                 }
             );

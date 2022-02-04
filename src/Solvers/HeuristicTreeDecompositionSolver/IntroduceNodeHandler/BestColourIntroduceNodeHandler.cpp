@@ -28,7 +28,6 @@ void Solvers::BestColourIntroduceNodeHandler::handleIntroduceNode(DataStructures
                 assignments.assignColour(node->getIntroducedVertex(), colour);
                 auto* newEntry = new DataStructures::TableEntry{
                     evaluator->evaluate(node->getIntroducedVertex(), assignments, graph, entry->getEvaluation()),
-                    DataStructures::TableEntry::NextEntries{entry},
                     assignments
                 };
                 table.push(newEntry);

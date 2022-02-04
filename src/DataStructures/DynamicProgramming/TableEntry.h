@@ -17,7 +17,6 @@ namespace DataStructures
     class TableEntry
     {
     public:
-        using NextEntries = std::vector<TableEntry*>; // TODO needed?
         class ColourAssignments
         {
         private:
@@ -38,13 +37,11 @@ namespace DataStructures
 
     private:
         const int evaluation;
-        NextEntries nextEntries; // TODO needed?
         ColourAssignments colourAssignments;
 
     public:
         TableEntry(
             int evaluation,
-            NextEntries nextEntries,
             ColourAssignments& importantColourAssignments
         );
 

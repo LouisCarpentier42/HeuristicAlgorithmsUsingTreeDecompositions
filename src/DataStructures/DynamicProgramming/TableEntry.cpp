@@ -6,10 +6,8 @@
 
 DataStructures::TableEntry::TableEntry(
         int evaluation,
-        DataStructures::TableEntry::NextEntries nextEntries,
         DataStructures::TableEntry::ColourAssignments& colourAssignments)
     : evaluation{evaluation},
-      nextEntries{std::move(nextEntries)},
       colourAssignments{colourAssignments} {}
 
 int DataStructures::TableEntry::getEvaluation() const

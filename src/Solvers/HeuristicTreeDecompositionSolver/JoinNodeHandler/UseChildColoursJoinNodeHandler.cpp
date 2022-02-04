@@ -26,7 +26,6 @@ void Solvers::UseChildColoursJoinNodeHandler::handleJoinNode(DataStructures::Joi
             node->getTable()->push(
                 new DataStructures::TableEntry{
                     evaluator->evaluate(node->getBagContent(), leftExtendedAssignments, graph, mergedEvaluation),
-                    DataStructures::TableEntry::NextEntries{leftEntry, rightEntry},
                     leftExtendedAssignments
                 }
             );
@@ -40,7 +39,6 @@ void Solvers::UseChildColoursJoinNodeHandler::handleJoinNode(DataStructures::Joi
             node->getTable()->push(
                 new DataStructures::TableEntry{
                     evaluator->evaluate(node->getBagContent(), rightExtendedAssignments, graph, mergedEvaluation),
-                    DataStructures::TableEntry::NextEntries{leftEntry, rightEntry},
                     rightExtendedAssignments
                 }
             );

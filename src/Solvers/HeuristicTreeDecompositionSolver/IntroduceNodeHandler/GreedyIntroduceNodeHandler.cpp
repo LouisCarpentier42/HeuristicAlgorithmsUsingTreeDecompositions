@@ -26,7 +26,6 @@ void Solvers::GreedyIntroduceNodeHandler::handleIntroduceNode(DataStructures::In
                 node->getTable()->push(
                     new DataStructures::TableEntry{
                         evaluator->evaluate(node->getIntroducedVertex(), assignments, graph, entry->getEvaluation()),
-                        DataStructures::TableEntry::NextEntries{entry},
                         assignments
                     }
                 );
