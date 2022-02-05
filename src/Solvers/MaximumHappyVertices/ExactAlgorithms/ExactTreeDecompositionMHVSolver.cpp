@@ -119,15 +119,18 @@ void MaximumHappyVertices::ExactTreeDecompositionMHV::handleIntroduceNode(DataSt
         std::set<DataStructures::ColourType> coloursOfHappyNeighbours{};
         for (DataStructures::VertexType neighbour : graph->getNeighbours(node->getIntroducedVertex()))
         {
-            coloursOfNeighbours.insert(happyVerticesEntry->getColourAssignments().getColour(neighbour));
-            if (happyVerticesEntry->getHappyVertices().isHappy(neighbour))
+            if (happyVerticesEntry->getColourAssignments().isColoured(neighbour))
             {
-                coloursOfHappyNeighbours.insert(happyVerticesEntry->getColourAssignments().getColour(neighbour));
-                if (coloursOfHappyNeighbours.size() >= 2)
+                coloursOfNeighbours.insert(happyVerticesEntry->getColourAssignments().getColour(neighbour));
+                if (happyVerticesEntry->getHappyVertices().isHappy(neighbour))
                 {
-                    // If there are 2 neighbours happy and coloured differently, then case will always apply and
-                    // the extensions will always result in an evaluation of NEGATIVE_INFINITY
-                    break;
+                    coloursOfHappyNeighbours.insert(happyVerticesEntry->getColourAssignments().getColour(neighbour));
+                    if (coloursOfHappyNeighbours.size() >= 2)
+                    {
+                        // If there are 2 neighbours happy and coloured differently, then case will always apply and
+                        // the extensions will always result in an evaluation of NEGATIVE_INFINITY
+                        break;
+                    }
                 }
             }
         }
