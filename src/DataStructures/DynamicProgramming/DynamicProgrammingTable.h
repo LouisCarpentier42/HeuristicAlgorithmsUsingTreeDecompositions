@@ -9,18 +9,23 @@
 #include "../DataStructuresAliases.h"
 #include "../Graph/Graph.h"
 
-#include <vector>
+#include <set>
 #include <ostream>
-
-// TODO optimize (eg with std::set)
 
 namespace DataStructures
 {
     class DynamicProgrammingTable
     {
     private:
+        struct table_entry_pointer_comparator
+        {
+            bool operator()(const TableEntry* entry1, const TableEntry* entry2) const
+            {
+                return *entry1 < *entry2;
+            }
+        };
         size_t capacity;
-        std::vector<TableEntry*> entries;
+        std::set<TableEntry*, table_entry_pointer_comparator> entries;
 
     public:
         explicit DynamicProgrammingTable(size_t capacity);
@@ -32,12 +37,12 @@ namespace DataStructures
         [[nodiscard]] size_t getCapacity() const;
         void setCapacity(size_t capacity);
         void clear();
-        void push(TableEntry* entry);
+        void push(TableEntry* newEntry);
 
         void referenceTable(DynamicProgrammingTable* other);
 
-        std::vector<TableEntry*>::const_iterator begin();
-        std::vector<TableEntry*>::const_iterator end();
+        std::set<TableEntry*>::const_iterator begin();
+        std::set<TableEntry*>::const_iterator end();
 
         friend std::ostream& operator<<(std::ostream& out, const DynamicProgrammingTable& table);
     };

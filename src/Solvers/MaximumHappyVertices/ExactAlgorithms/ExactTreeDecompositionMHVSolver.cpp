@@ -19,7 +19,7 @@ void MaximumHappyVertices::ExactTreeDecompositionMHV::solve(
         DataStructures::NiceTreeDecomposition* treeDecomposition)
 {
     setProperties(graph);
-    // TODO
+    // TODO finish method
 }
 
 void MaximumHappyVertices::ExactTreeDecompositionMHV::solveAtNode(DataStructures::NiceNode* node) const

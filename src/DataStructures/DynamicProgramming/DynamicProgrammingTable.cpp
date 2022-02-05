@@ -5,28 +5,20 @@
 #include "DynamicProgrammingTable.h"
 
 #include <algorithm>
+#include <random>
 
 DataStructures::DynamicProgrammingTable::DynamicProgrammingTable(size_t capacity)
     : capacity{capacity} {}
 
 DataStructures::TableEntry* DataStructures::DynamicProgrammingTable::getBestEntry() const
 {
-    return *std::max_element(
-        entries.begin(),
-        entries.end(),
-        [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() < entry2->getEvaluation();}
-    );
+    return *std::prev(entries.end());
 }
 
 DataStructures::TableEntry* DataStructures::DynamicProgrammingTable::popBestEntry()
 {
-    std::sort(
-        entries.begin(),
-        entries.end(),
-        [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() < entry2->getEvaluation();}
-    );
-    DataStructures::TableEntry* bestEntry = entries.back();
-    entries.pop_back();
+    DataStructures::TableEntry* bestEntry = *std::prev(entries.end());
+    entries.erase(std::prev(entries.end()));
     return bestEntry;
 }
 
@@ -48,7 +40,6 @@ size_t DataStructures::DynamicProgrammingTable::getCapacity() const
 void DataStructures::DynamicProgrammingTable::setCapacity(size_t capacity)
 {
     this->capacity = capacity;
-    entries.resize(capacity);
     clear();
 }
 
@@ -57,87 +48,59 @@ void DataStructures::DynamicProgrammingTable::clear()
     entries.clear();
 }
 
-void DataStructures::DynamicProgrammingTable::push(DataStructures::TableEntry* entry)
+void DataStructures::DynamicProgrammingTable::push(DataStructures::TableEntry* newEntry)
 {
-    // There can't be two entries with identical colour assignment
-    for (int i{0}; i < entries.size(); i++)
+    // Check if there is already an entry with identical colour assignment
+    auto iterator = entries.begin();
+    while (iterator != entries.end())
     {
-        if (entry->getColourAssignments() == entries[i]->getColourAssignments())
+        if (newEntry->getColourAssignments() == (*iterator)->getColourAssignments())
         {
-            if (entry->getEvaluation() > entries[i]->getEvaluation()) // TODO maybe check if ever a different eval
+            // If there exists another entry with the same colour assignment, then it will be replaced
+            // only if the evaluation of the new entry is greater than that of the existing entry.
+            if ((*iterator)->getEvaluation() < newEntry->getEvaluation())
             {
-                delete entries[i]; // TODO not sure if needed?
-                entries[i] = entry;
+                entries.erase(iterator);
+                entries.insert(newEntry);
             }
             return;
         }
+        iterator++;
     }
 
-    entries.push_back(entry);
 
+    entries.insert(newEntry);
     if (entries.size() > capacity)
     {
-        auto worstEntryIt = std::min_element(
-            entries.begin(),
-            entries.end(),
-            [](TableEntry* entry1, TableEntry* entry2){return entry1->getEvaluation() < entry2->getEvaluation();}
-        );
-        entries.erase(worstEntryIt);
-    }
+        // TODO remove one of the methods to prune the dynamic programming table
+//        // Remove all entries with the worst evaluation
+//        int worstEvaluation{(*entries.begin())->getEvaluation()};
+//        if ((*std::prev(entries.end()))->getEvaluation() == worstEvaluation)
+//        {
+//            // If all entries have the identical evaluation, then none should be removed or none remain
+//            return;
+//        }
+//        else
+//        {
+//            // Remove all entries with the worst evaluation
+//            while ((*entries.begin())->getEvaluation() == worstEvaluation)
+//                entries.erase(entries.begin());
+//        }
 
-//    // TODO OLD VERSION IN COLOURINGQUEUE
-//
-//    // Prune the queue if it has too many elements
-//    if (queue.size() > nbColourings)
-//    {
-//        // Find the worst element in the queue
-//        auto it = std::min_element(queue.begin(), queue.end(),
-//                                   [this](auto* c1, auto* c2){return evaluator->compare(graph, c1, c2);});
-//
-//        // Remove all the elements in the queue that have the worst evaluation
-//        int worstEvaluation{evaluator->evaluate(graph, *it)};
-//        std::vector<DataStructures::MutableColouring*>allColourings{queue};
-//        queue.clear();
-//        std::copy_if(
-//                allColourings.begin(),
-//                allColourings.end(),
-//                std::back_inserter(queue),
-//                [this,worstEvaluation](auto* c){return evaluator->evaluate(graph, c)>worstEvaluation;}
-//                );
-//
-//        // If the queue is not full, then add random colourings with the worst evaluation to fill it
-//        if (queue.size() < nbColourings)
-//        {
-//            std::vector<DataStructures::MutableColouring*>fillUpColourings{};
-//            std::copy_if(
-//                    allColourings.begin(),
-//                    allColourings.end(),
-//                    std::back_inserter(fillUpColourings),
-//                    [this,worstEvaluation](auto* c){return evaluator->evaluate(graph, c)==worstEvaluation;}
-//                    );
-//            std::sample(
-//                    fillUpColourings.begin(),
-//                    fillUpColourings.end(),
-//                    std::back_inserter(queue),
-//                    nbColourings - queue.size(),
-//                    std::mt19937{std::random_device{}()}
-//                    );
-//        }
-//
-//        if (queue.empty())
-//        {
-//            queue = allColourings;
-//
-//            //            // If all colouring have the same (worst) evaluation, then sample some randomly
-//            //            std::sample(
-//            //                allColourings.begin(),
-//            //                allColourings.end(),
-//            //                std::back_inserter(queue),
-//            //                nbColourings,
-//            //                std::mt19937{std::random_device{}()}
-//            //            );
-//        }
-//    }
+        // Find the range of elements that have the worst evaluation and select a random element from it to erase
+        auto worstEntriesStart = entries.begin();
+        auto worstEntriesEnd = entries.begin();
+        do {
+            worstEntriesEnd++;
+        }
+        while (worstEntriesEnd != entries.end() &&
+            (*worstEntriesEnd)->getEvaluation() == (*entries.begin())->getEvaluation());
+
+        static std::mt19937 rng{std::random_device{}()};
+        std::uniform_int_distribution<> dis(0, std::distance(worstEntriesStart, worstEntriesEnd) - 1);
+        std::advance(worstEntriesStart, dis(rng));
+        entries.erase(worstEntriesStart);
+    }
 }
 
 void DataStructures::DynamicProgrammingTable::referenceTable(DataStructures::DynamicProgrammingTable* other)
@@ -146,12 +109,12 @@ void DataStructures::DynamicProgrammingTable::referenceTable(DataStructures::Dyn
         push(entry);
 }
 
-std::vector<DataStructures::TableEntry *>::const_iterator DataStructures::DynamicProgrammingTable::begin()
+std::set<DataStructures::TableEntry *>::const_iterator DataStructures::DynamicProgrammingTable::begin()
 {
     return entries.begin();
 }
 
-std::vector<DataStructures::TableEntry *>::const_iterator DataStructures::DynamicProgrammingTable::end()
+std::set<DataStructures::TableEntry *>::const_iterator DataStructures::DynamicProgrammingTable::end()
 {
     return entries.end();
 }
@@ -160,9 +123,7 @@ std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures
 {
     int count{1};
     for (DataStructures::TableEntry* entry : table.entries)
-    {
         out << "E(" << count++ << "): " << entry->getEvaluation() << " " << entry->getColourAssignments() << "\n";
-    }
     return out;
 }
 

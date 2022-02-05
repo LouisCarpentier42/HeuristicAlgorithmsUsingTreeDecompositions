@@ -2,11 +2,6 @@
 // Created by louis on 10/11/2021.
 //
 #include "HeuristicTreeDecompositionSolver.h"
-#include "../../DataStructures/Evaluator/BasicMHVEvaluator.h" // TODO remove
-#include "../../DataStructures/Evaluator/PotentialHappyColouredMHVEvaluator.h" // TODO remove
-#include "../../DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.h" // TODO remove
-
-#include <iostream>
 
 Solvers::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositionSolver(
         size_t nbSolutionsToKeep,
@@ -38,16 +33,7 @@ void Solvers::HeuristicTreeDecompositionSolver::solve(
 
     solveAtNode(treeDecomposition->getRoot());
 
-    std::cout << "--- " << treeDecomposition->getRoot()->getId() << " ---\n";
-    int count{1};
-    DataStructures::PotentialHappyUncolouredMHVEvaluator e{6,5,2, 1, -1, -1};
-    for (DataStructures::TableEntry* entry : *treeDecomposition->getRoot()->getTable())
-    {
-        entry->colourGraph(graph);
-        std::cout << "E(" << count++ << "): " << entry->getEvaluation() << " " << e.evaluate(graph) << " " << entry->getColourAssignments() << "\n";
-        graph->removeColours();
-    }
-    std::cout << "\n";
+    std::cout << *treeDecomposition->getRoot()->getTable() << "\n"; // TODO remove
 
     treeDecomposition->getRoot()->getTable()->getBestEntry()->colourGraph(graph);
 }
@@ -71,7 +57,6 @@ void Solvers::HeuristicTreeDecompositionSolver::solveAtNode(DataStructures::Nice
             break;
     }
 }
-
 
 void Solvers::NodeHandler::setSolverProperties(
         const DataStructures::Evaluator* newEvaluator,

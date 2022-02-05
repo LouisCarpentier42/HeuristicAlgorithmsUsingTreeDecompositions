@@ -32,17 +32,18 @@ namespace DataStructures
             void assignColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
 
             friend bool operator==(const TableEntry::ColourAssignments& c1, const TableEntry::ColourAssignments& c2);
+            friend bool operator<(const TableEntry::ColourAssignments& c1, const TableEntry::ColourAssignments& c2);
             friend std::ostream& operator<<(std::ostream& out, const TableEntry::ColourAssignments& assignments);
         };
 
     private:
         const int evaluation;
-        ColourAssignments colourAssignments;
+        const ColourAssignments colourAssignments;
 
     public:
         TableEntry(
             int evaluation,
-            ColourAssignments& importantColourAssignments
+            const ColourAssignments& colourAssignments
         );
 
         virtual ~TableEntry() = default;
@@ -50,10 +51,15 @@ namespace DataStructures
         [[nodiscard]] int getEvaluation() const;
         [[nodiscard]] ColourAssignments getColourAssignments() const;
 
-        virtual void colourGraph(DataStructures::Graph* graph) const;
+        void colourGraph(DataStructures::Graph* graph) const;
+
+        friend bool operator<(const TableEntry& entry1, const TableEntry& entry2);
     };
 
+    bool operator<(const TableEntry& entry1, const TableEntry& entry2);
+
     bool operator==(const TableEntry::ColourAssignments& c1, const TableEntry::ColourAssignments& c2);
+    bool operator<(const TableEntry::ColourAssignments& c1, const TableEntry::ColourAssignments& c2);
     std::ostream& operator<<(std::ostream& out, const TableEntry::ColourAssignments& assignments);
 }
 

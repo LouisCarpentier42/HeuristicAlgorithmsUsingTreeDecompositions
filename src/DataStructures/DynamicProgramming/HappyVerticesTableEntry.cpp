@@ -16,13 +16,6 @@ DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments DataStructures
     return happyVertices;
 }
 
-void DataStructures::HappyVerticesTableEntry::colourGraph(DataStructures::Graph *graph) const
-{
-    // TODO
-    TableEntry::colourGraph(graph);
-}
-
-
 DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments::HappyVerticesAssignments(const DataStructures::Graph* graph)
     : vertexIsHappy(graph->getNbVertices(), false) {}
 

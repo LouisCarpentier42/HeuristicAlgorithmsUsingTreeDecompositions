@@ -9,7 +9,7 @@
 
 #include <vector>
 
-namespace DataStructures
+namespace DataStructures // TODO probably completely separate from normal table entries
 {
     class HappyVerticesTableEntry : public TableEntry
     {
@@ -38,8 +38,6 @@ namespace DataStructures
                 HappyVerticesAssignments& happyVerticesAssignment
         );
         [[nodiscard]] HappyVerticesAssignments getHappyVertices();
-
-        void colourGraph(DataStructures::Graph* graph) const final;
     };
 }
 

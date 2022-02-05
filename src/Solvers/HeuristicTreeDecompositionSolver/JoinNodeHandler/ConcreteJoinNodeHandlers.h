@@ -35,9 +35,6 @@ namespace Solvers
         void handleJoinNode(DataStructures::JoinNode* node) const override;
     };
 
-
-// TODO dynamic join node handler (Good luck future Louis ...)
-
     class DynamicOrderJoinNodeHandler : public JoinNodeHandler
     {
     public:

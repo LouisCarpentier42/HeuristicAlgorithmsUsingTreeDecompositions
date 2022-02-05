@@ -6,7 +6,7 @@
 
 DataStructures::TableEntry::TableEntry(
         int evaluation,
-        DataStructures::TableEntry::ColourAssignments& colourAssignments)
+        const DataStructures::TableEntry::ColourAssignments& colourAssignments)
     : evaluation{evaluation},
       colourAssignments{colourAssignments} {}
 
@@ -56,10 +56,22 @@ void DataStructures::TableEntry::ColourAssignments::assignColour(DataStructures:
     assignments[vertex] = colour;
 }
 
+bool DataStructures::operator<(const DataStructures::TableEntry& entry1, const DataStructures::TableEntry& entry2)
+{
+    if (entry1.getEvaluation() != entry2.getEvaluation())
+        return entry1.getEvaluation() < entry2.getEvaluation();
+    else
+        return entry1.getColourAssignments() < entry2.getColourAssignments();
+}
+
 bool DataStructures::operator==(const DataStructures::TableEntry::ColourAssignments& c1, const DataStructures::TableEntry::ColourAssignments& c2)
 {
     return c1.assignments == c2.assignments;
-//    return false;
+}
+
+bool DataStructures::operator<(const DataStructures::TableEntry::ColourAssignments &c1, const DataStructures::TableEntry::ColourAssignments &c2)
+{
+    return c1.assignments < c2.assignments;
 }
 
 std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures::TableEntry::ColourAssignments& assignments)
