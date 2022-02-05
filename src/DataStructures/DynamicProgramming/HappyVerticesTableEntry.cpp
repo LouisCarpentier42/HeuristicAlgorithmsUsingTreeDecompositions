@@ -7,30 +7,36 @@
 DataStructures::HappyVerticesTableEntry::HappyVerticesTableEntry(
         int evaluation,
         DataStructures::TableEntry::ColourAssignments &importantColourAssignments,
-        DataStructures::HappyVerticesTableEntry::HappyVerticesAssignment& happyVerticesAssignment)
+        DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments& happyVerticesAssignment)
     : TableEntry{evaluation, importantColourAssignments}, happyVertices{happyVerticesAssignment}
 { }
 
-DataStructures::HappyVerticesTableEntry::HappyVerticesAssignment DataStructures::HappyVerticesTableEntry::getHappyVertices()
+DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments DataStructures::HappyVerticesTableEntry::getHappyVertices()
 {
     return happyVertices;
 }
 
+void DataStructures::HappyVerticesTableEntry::colourGraph(DataStructures::Graph *graph) const
+{
+    // TODO
+    TableEntry::colourGraph(graph);
+}
 
-DataStructures::HappyVerticesTableEntry::HappyVerticesAssignment::HappyVerticesAssignment(const DataStructures::Graph* graph)
+
+DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments::HappyVerticesAssignments(const DataStructures::Graph* graph)
     : vertexIsHappy(graph->getNbVertices(), false) {}
 
-void DataStructures::HappyVerticesTableEntry::HappyVerticesAssignment::makeHappy(DataStructures::VertexType vertex)
+void DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments::makeHappy(DataStructures::VertexType vertex)
 {
     vertexIsHappy[vertex] = true;
 }
 
-void DataStructures::HappyVerticesTableEntry::HappyVerticesAssignment::makeUnhappy(DataStructures::VertexType vertex)
+void DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments::makeUnhappy(DataStructures::VertexType vertex)
 {
     vertexIsHappy[vertex] = false;
 }
 
-bool DataStructures::HappyVerticesTableEntry::HappyVerticesAssignment::isHappy(DataStructures::VertexType vertex)
+bool DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments::isHappy(DataStructures::VertexType vertex)
 {
     return vertexIsHappy[vertex];
 }

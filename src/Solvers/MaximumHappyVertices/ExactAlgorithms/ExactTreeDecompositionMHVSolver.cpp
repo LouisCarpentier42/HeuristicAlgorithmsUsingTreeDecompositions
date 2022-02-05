@@ -11,31 +11,20 @@
 #include <vector>
 
 
+static int POSITIVE_INFINITY = std::numeric_limits<int>::max();
+static int NEGATIVE_INFINITY = std::numeric_limits<int>::min();
+
 void MaximumHappyVertices::ExactTreeDecompositionMHV::solve(
         DataStructures::Graph* graph,
         DataStructures::NiceTreeDecomposition* treeDecomposition)
 {
     setProperties(graph);
-}
-
-void MaximumHappyVertices::ExactTreeDecompositionMHV::setProperties(DataStructures::Graph* graph)
-{
-    this->graph = graph;
-    S.clear();
-    std::vector<bool> coloursUsed(graph->getNbColours()+1, false);
-    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-    {
-        if (graph->isPrecoloured(vertex) && !coloursUsed[graph->getColour(vertex)])
-        {
-            coloursUsed[graph->getColour(vertex)] = true;
-            S.insert(vertex);
-        }
-    }
+    // TODO
 }
 
 void MaximumHappyVertices::ExactTreeDecompositionMHV::solveAtNode(DataStructures::NiceNode* node) const
 {
-    node->getTable()->setCapacity(std::numeric_limits<int>::max());
+    node->getTable()->setCapacity(POSITIVE_INFINITY);
     switch(node->getNodeType())
     {
         case DataStructures::NodeType::LeafNode:
@@ -75,7 +64,7 @@ void MaximumHappyVertices::ExactTreeDecompositionMHV::handleLeafNode(DataStructu
     for (int counter{0}; counter < std::pow(2, counter); counter++)
     {
         // Create the happy vertex assignment and find its evaluation
-        DataStructures::HappyVerticesTableEntry::HappyVerticesAssignment happyVerticesAssignment{graph};
+        DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments happyVerticesAssignment{graph};
         bool evalIsNegativeInfinity{false};
         int nbHappyVerticesAssignedHappy{static_cast<int>(happyVertices.size())};
         for (int i{0}; i < nbColours; ++i)
@@ -121,7 +110,105 @@ void MaximumHappyVertices::ExactTreeDecompositionMHV::handleLeafNode(DataStructu
 
 void MaximumHappyVertices::ExactTreeDecompositionMHV::handleIntroduceNode(DataStructures::IntroduceNode* node) const
 {
+    solveAtNode(node->getChild());
 
+    for(DataStructures::TableEntry* entry : *node->getChild()->getTable())
+    {
+        auto* happyVerticesEntry = dynamic_cast<DataStructures::HappyVerticesTableEntry*>(entry);
+        std::set<DataStructures::ColourType> coloursOfNeighbours{};
+        std::set<DataStructures::ColourType> coloursOfHappyNeighbours{};
+        for (DataStructures::VertexType neighbour : graph->getNeighbours(node->getIntroducedVertex()))
+        {
+            coloursOfNeighbours.insert(happyVerticesEntry->getColourAssignments().getColour(neighbour));
+            if (happyVerticesEntry->getHappyVertices().isHappy(neighbour))
+            {
+                coloursOfHappyNeighbours.insert(happyVerticesEntry->getColourAssignments().getColour(neighbour));
+                if (coloursOfHappyNeighbours.size() >= 2)
+                {
+                    // If there are 2 neighbours happy and coloured differently, then case will always apply and
+                    // the extensions will always result in an evaluation of NEGATIVE_INFINITY
+                    break;
+                }
+            }
+        }
+
+        for (DataStructures::ColourType colour{1}; colour <= graph->getNbColours(); colour++)
+        {
+            auto hasDifferentColour = [colour](DataStructures::ColourType otherColour){ return colour != otherColour; };
+            // Check case 2: if any of the neighbours is happy and has a different colour
+            if (std::any_of(coloursOfHappyNeighbours.begin(), coloursOfHappyNeighbours.end(), hasDifferentColour))
+            {
+                DataStructures::TableEntry::ColourAssignments colourPartition_happy{happyVerticesEntry->getColourAssignments()};
+                colourPartition_happy.assignColour(node->getIntroducedVertex(), colour);
+                DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments happyVerticesAssignments_happy{happyVerticesEntry->getHappyVertices()};
+                happyVerticesAssignments_happy.makeHappy(node->getIntroducedVertex());
+                node->getTable()->push(
+                    new DataStructures::HappyVerticesTableEntry{
+                        NEGATIVE_INFINITY,
+                        colourPartition_happy,
+                        happyVerticesAssignments_happy
+                    }
+                );
+
+                DataStructures::TableEntry::ColourAssignments colourPartition_unhappy{happyVerticesEntry->getColourAssignments()};
+                colourPartition_unhappy.assignColour(node->getIntroducedVertex(), colour);
+                DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments happyVerticesAssignments_unhappy{happyVerticesEntry->getHappyVertices()};
+                happyVerticesAssignments_unhappy.makeUnhappy(node->getIntroducedVertex());
+                node->getTable()->push(
+                    new DataStructures::HappyVerticesTableEntry{
+                        NEGATIVE_INFINITY,
+                        colourPartition_unhappy,
+                        happyVerticesAssignments_unhappy
+                    }
+                );
+            }
+            else
+            {
+                // Case 1 only prohibits the introduced vertex from being happy, thus negative extension can be added
+                DataStructures::TableEntry::ColourAssignments colourPartition_unhappy{happyVerticesEntry->getColourAssignments()};
+                colourPartition_unhappy.assignColour(node->getIntroducedVertex(), colour);
+                DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments happyVerticesAssignments_unhappy{happyVerticesEntry->getHappyVertices()};
+                happyVerticesAssignments_unhappy.makeUnhappy(node->getIntroducedVertex());
+                node->getTable()->push(
+                    new DataStructures::HappyVerticesTableEntry{
+                        happyVerticesEntry->getEvaluation(),
+                        colourPartition_unhappy,
+                        happyVerticesAssignments_unhappy
+                    }
+                );
+
+                // Check case 1: if any of the neighbours has a different colour
+                if (std::any_of(coloursOfNeighbours.begin(), coloursOfNeighbours.end(), hasDifferentColour))
+                {
+                    DataStructures::TableEntry::ColourAssignments colourPartition_happy{happyVerticesEntry->getColourAssignments()};
+                    colourPartition_happy.assignColour(node->getIntroducedVertex(), colour);
+                    DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments happyVerticesAssignments_happy{happyVerticesEntry->getHappyVertices()};
+                    happyVerticesAssignments_happy.makeHappy(node->getIntroducedVertex());
+                    node->getTable()->push(
+                        new DataStructures::HappyVerticesTableEntry{
+                            NEGATIVE_INFINITY,
+                            colourPartition_happy,
+                            happyVerticesAssignments_happy
+                        }
+                    );
+                }
+                else
+                {
+                    DataStructures::TableEntry::ColourAssignments colourPartition_happy{happyVerticesEntry->getColourAssignments()};
+                    colourPartition_happy.assignColour(node->getIntroducedVertex(), colour);
+                    DataStructures::HappyVerticesTableEntry::HappyVerticesAssignments happyVerticesAssignments_happy{happyVerticesEntry->getHappyVertices()};
+                    happyVerticesAssignments_happy.makeHappy(node->getIntroducedVertex());
+                    node->getTable()->push(
+                        new DataStructures::HappyVerticesTableEntry{
+                            happyVerticesEntry->getEvaluation() + 1,
+                            colourPartition_happy,
+                            happyVerticesAssignments_happy
+                        }
+                    );
+                }
+            }
+        }
+    }
 }
 
 void MaximumHappyVertices::ExactTreeDecompositionMHV::handleForgetVertexBag(DataStructures::ForgetNode* node) const
@@ -132,5 +219,20 @@ void MaximumHappyVertices::ExactTreeDecompositionMHV::handleForgetVertexBag(Data
 void MaximumHappyVertices::ExactTreeDecompositionMHV::handleJoinNode(DataStructures::JoinNode* node) const
 {
 
+}
+
+void MaximumHappyVertices::ExactTreeDecompositionMHV::setProperties(DataStructures::Graph* graph)
+{
+    this->graph = graph;
+    S.clear();
+    std::vector<bool> coloursUsed(graph->getNbColours()+1, false);
+    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+    {
+        if (graph->isPrecoloured(vertex) && !coloursUsed[graph->getColour(vertex)])
+        {
+            coloursUsed[graph->getColour(vertex)] = true;
+            S.insert(vertex);
+        }
+    }
 }
 

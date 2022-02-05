@@ -14,14 +14,14 @@ namespace DataStructures
     class HappyVerticesTableEntry : public TableEntry
     {
     public:
-        class HappyVerticesAssignment
+        class HappyVerticesAssignments
         {
         private:
             std::vector<bool> vertexIsHappy{};
 
         public:
-            HappyVerticesAssignment(const HappyVerticesAssignment& other) = default; // TODO needed?
-            explicit HappyVerticesAssignment(const DataStructures::Graph* graph);
+            HappyVerticesAssignments(const HappyVerticesAssignments& other) = default;
+            explicit HappyVerticesAssignments(const DataStructures::Graph* graph);
 
             void makeHappy(DataStructures::VertexType vertex);
             void makeUnhappy(DataStructures::VertexType vertex);
@@ -29,15 +29,17 @@ namespace DataStructures
         };
 
     private:
-        HappyVerticesAssignment happyVertices;
+        HappyVerticesAssignments happyVertices;
 
     public:
         HappyVerticesTableEntry(
-            int evaluation,
-            ColourAssignments& importantColourAssignments,
-            HappyVerticesAssignment& happyVerticesAssignment
+                int evaluation,
+                ColourAssignments& importantColourAssignments,
+                HappyVerticesAssignments& happyVerticesAssignment
         );
-        [[nodiscard]] HappyVerticesAssignment getHappyVertices();
+        [[nodiscard]] HappyVerticesAssignments getHappyVertices();
+
+        void colourGraph(DataStructures::Graph* graph) const final;
     };
 }
 

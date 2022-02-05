@@ -45,10 +45,12 @@ namespace DataStructures
             ColourAssignments& importantColourAssignments
         );
 
+        virtual ~TableEntry() = default;
+
         [[nodiscard]] int getEvaluation() const;
         [[nodiscard]] ColourAssignments getColourAssignments() const;
 
-        void colourGraph(DataStructures::Graph* graph) const;
+        virtual void colourGraph(DataStructures::Graph* graph) const;
     };
 
     bool operator==(const TableEntry::ColourAssignments& c1, const TableEntry::ColourAssignments& c2);

@@ -5,9 +5,6 @@
 #include "ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.h"
 #include "DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.h"
 
-#include <set>
-
-
 int main(int argc, char** argv)
 {
     (void)argc;
@@ -84,4 +81,5 @@ int main(int argc, char** argv)
 //    Jdrasil::computeApproximateTreeDecomposition(graphFile);
 //    Jdrasil::computeExactTreeDecomposition(graphFile);
 //    Jdrasil::computeHeuristicTreeDecomposition(graphFile);
+
 }
