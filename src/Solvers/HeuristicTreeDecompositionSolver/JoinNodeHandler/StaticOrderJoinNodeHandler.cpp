@@ -55,7 +55,7 @@ void Solvers::StaticOrderJoinNodeHandler::handleJoinNode(DataStructures::JoinNod
         for (DataStructures::TableEntry* rightEntry : *node->getRightChild()->getTable())
         {
             // Create a colour assignment
-            DataStructures::TableEntry::ColourAssignments assignments
+            DataStructures::ColourAssignments assignments
             {
                 leftEntry->getColourAssignments(),
                 rightEntry->getColourAssignments()

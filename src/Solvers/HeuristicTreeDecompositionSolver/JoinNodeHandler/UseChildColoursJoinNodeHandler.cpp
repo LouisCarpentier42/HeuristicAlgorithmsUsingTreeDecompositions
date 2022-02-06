@@ -18,7 +18,7 @@ void Solvers::UseChildColoursJoinNodeHandler::handleJoinNode(DataStructures::Joi
             int mergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
 
             // Insert the colour assignment in which the bag is coloured following the left entry
-            DataStructures::TableEntry::ColourAssignments leftExtendedAssignments
+            DataStructures::ColourAssignments leftExtendedAssignments
             {
                 leftEntry->getColourAssignments(),
                 rightEntry->getColourAssignments()
@@ -31,7 +31,7 @@ void Solvers::UseChildColoursJoinNodeHandler::handleJoinNode(DataStructures::Joi
             );
 
             // Insert the colour assignment in which the bag is coloured following the right entry
-            DataStructures::TableEntry::ColourAssignments rightExtendedAssignments
+            DataStructures::ColourAssignments rightExtendedAssignments
             {
                 rightEntry->getColourAssignments(),
                 leftEntry->getColourAssignments()

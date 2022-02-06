@@ -36,7 +36,7 @@ int DataStructures::PotentialHappyUncolouredMHVEvaluator::evaluate(const DataStr
 
 int DataStructures::PotentialHappyUncolouredMHVEvaluator::evaluate(
         const std::vector<DataStructures::VertexType>& recolouredVertices,
-        const DataStructures::TableEntry::ColourAssignments& colourAssignments,
+        const DataStructures::ColourAssignments& colourAssignments,
         const DataStructures::Graph *graph,
         int startEvaluation) const
 {

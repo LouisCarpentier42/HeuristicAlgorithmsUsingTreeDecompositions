@@ -38,7 +38,7 @@ void Solvers::DynamicOrderJoinNodeHandler::handleJoinNode(DataStructures::JoinNo
         for (DataStructures::TableEntry* rightEntry : *node->getRightChild()->getTable())
         {
             // Create a colour assignment
-            DataStructures::TableEntry::ColourAssignments assignments
+            DataStructures::ColourAssignments assignments
             {
                 leftEntry->getColourAssignments(),
                 rightEntry->getColourAssignments()
@@ -89,7 +89,7 @@ void Solvers::DynamicOrderJoinNodeHandler::handleJoinNode(DataStructures::JoinNo
 int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbColouredNeighbours(
         DataStructures::VertexType vertex,
         const DataStructures::Graph* graph,
-        const DataStructures::TableEntry::ColourAssignments& assignments)
+        const DataStructures::ColourAssignments& assignments)
 {
     return std::count_if(
             graph->getNeighbours(vertex).begin(),
@@ -100,7 +100,7 @@ int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbColouredNeighbour
 int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbPotentialHappyNeighbours(
         DataStructures::VertexType vertex,
         const DataStructures::Graph* graph,
-        const DataStructures::TableEntry::ColourAssignments& assignments)
+        const DataStructures::ColourAssignments& assignments)
 {
     int nbPotentialHappyNeighbours{0};
     for (DataStructures::VertexType potentialHappyNeighbour : graph->getNeighbours(vertex))
@@ -132,7 +132,7 @@ int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbPotentialHappyNei
 DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostColouredNeighboursSelector::select(
         DataStructures::BagContent& bagContent,
         const DataStructures::Graph* graph,
-        const DataStructures::TableEntry::ColourAssignments& assignments) const
+        const DataStructures::ColourAssignments& assignments) const
 {
     auto bestIterator = bagContent.begin();
     int bestNbColouredNeighbours{getNbColouredNeighbours(*bestIterator, graph, assignments)};
@@ -151,7 +151,7 @@ DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostC
 DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::FewestColouredNeighboursSelector::select(
         DataStructures::BagContent& bagContent,
         const DataStructures::Graph* graph,
-        const DataStructures::TableEntry::ColourAssignments& assignments) const
+        const DataStructures::ColourAssignments& assignments) const
 {
     auto bestIterator = bagContent.begin();
     int bestNbColouredNeighbours{getNbColouredNeighbours(*bestIterator, graph, assignments)};
@@ -170,7 +170,7 @@ DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::Fewes
 DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostPotentialHappyNeighboursSelector::select(
         DataStructures::BagContent& bagContent,
         const DataStructures::Graph* graph,
-        const DataStructures::TableEntry::ColourAssignments& assignments) const
+        const DataStructures::ColourAssignments& assignments) const
 {
     auto bestIterator = bagContent.begin();
     int bestNbPotentialHappyNeighbours{getNbPotentialHappyNeighbours(*bestIterator, graph, assignments)};
@@ -189,7 +189,7 @@ DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostP
 DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostPercentPotentialHappyNeighboursSelector::select(
         DataStructures::BagContent& bagContent,
         const DataStructures::Graph* graph,
-        const DataStructures::TableEntry::ColourAssignments& assignments) const
+        const DataStructures::ColourAssignments& assignments) const
 {
     auto bestIterator = bagContent.begin();
     double bestPercentPotentialHappyNeighbours{

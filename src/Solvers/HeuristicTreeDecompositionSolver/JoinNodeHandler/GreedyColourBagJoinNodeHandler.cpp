@@ -25,7 +25,7 @@ void Solvers::GreedyColourBagJoinNodeHandler::handleJoinNode(DataStructures::Joi
             }
 
             // Find the best colour for the vertices in the bag
-            DataStructures::TableEntry::ColourAssignments assignments
+            DataStructures::ColourAssignments assignments
             {
                 leftEntry->getColourAssignments(),
                 rightEntry->getColourAssignments()

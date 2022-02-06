@@ -32,7 +32,7 @@ int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* gra
 
 int DataStructures::BasicMHVEvaluator::evaluate(
         const std::vector<DataStructures::VertexType>& recolouredVertices,
-        const DataStructures::TableEntry::ColourAssignments& colourAssignments,
+        const DataStructures::ColourAssignments& colourAssignments,
         const DataStructures::Graph *graph,
         int startEvaluation) const
 {

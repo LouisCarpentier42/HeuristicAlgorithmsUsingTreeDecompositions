@@ -7,35 +7,15 @@
 
 #include "../DataStructuresAliases.h"
 #include "../Graph/Graph.h"
+#include "../Solution/ColourAssignments.h"
 
 #include <map>
 #include <vector>
-#include <ostream>
 
 namespace DataStructures
 {
     class TableEntry
     {
-    public:
-        class ColourAssignments
-        {
-        private:
-            std::vector<DataStructures::ColourType> assignments;
-
-        public:
-            ColourAssignments(const ColourAssignments& other) = default;
-            explicit ColourAssignments(const DataStructures::Graph* graph);
-            ColourAssignments(const ColourAssignments& primaryColourAssignment, const ColourAssignments& secondaryColourAssignment);
-
-            [[nodiscard]] DataStructures::VertexType getColour(DataStructures::VertexType vertex) const;
-            [[nodiscard]] bool isColoured(DataStructures::VertexType vertex) const;
-            void assignColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
-
-            friend bool operator==(const TableEntry::ColourAssignments& c1, const TableEntry::ColourAssignments& c2);
-            friend bool operator<(const TableEntry::ColourAssignments& c1, const TableEntry::ColourAssignments& c2);
-            friend std::ostream& operator<<(std::ostream& out, const TableEntry::ColourAssignments& assignments);
-        };
-
     private:
         const int evaluation;
         const ColourAssignments colourAssignments;
@@ -46,8 +26,6 @@ namespace DataStructures
             const ColourAssignments& colourAssignments
         );
 
-        virtual ~TableEntry() = default;
-
         [[nodiscard]] int getEvaluation() const;
         [[nodiscard]] ColourAssignments getColourAssignments() const;
 
@@ -57,10 +35,6 @@ namespace DataStructures
     };
 
     bool operator<(const TableEntry& entry1, const TableEntry& entry2);
-
-    bool operator==(const TableEntry::ColourAssignments& c1, const TableEntry::ColourAssignments& c2);
-    bool operator<(const TableEntry::ColourAssignments& c1, const TableEntry::ColourAssignments& c2);
-    std::ostream& operator<<(std::ostream& out, const TableEntry::ColourAssignments& assignments);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TABLEENTRY_H

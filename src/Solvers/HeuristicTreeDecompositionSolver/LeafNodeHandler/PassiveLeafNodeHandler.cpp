@@ -6,7 +6,7 @@
 
 void Solvers::PassiveLeafNodeHandlers::handleLeafNode(DataStructures::LeafNode* node) const
 {
-    DataStructures::TableEntry::ColourAssignments assignments{graph};
+    DataStructures::ColourAssignments assignments{graph};
     std::vector<DataStructures::VertexType> precolouredVertices{};
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {

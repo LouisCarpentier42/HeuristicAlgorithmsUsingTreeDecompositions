@@ -52,18 +52,18 @@ namespace Solvers
             [[nodiscard]] virtual DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
                 const DataStructures::Graph* graph,
-                const DataStructures::TableEntry::ColourAssignments& assignments
+                const DataStructures::ColourAssignments& assignments
             ) const = 0;
         protected:
             [[nodiscard]] static int getNbColouredNeighbours(
                 DataStructures::VertexType vertex,
                 const DataStructures::Graph* graph,
-                const DataStructures::TableEntry::ColourAssignments& assignments
+                const DataStructures::ColourAssignments& assignments
             );
             [[nodiscard]] static int getNbPotentialHappyNeighbours(
                 DataStructures::VertexType vertex,
                 const DataStructures::Graph* graph,
-                const DataStructures::TableEntry::ColourAssignments& assignments
+                const DataStructures::ColourAssignments& assignments
             );
         };
         const VertexSelector* vertexSelector;
@@ -79,7 +79,7 @@ namespace Solvers
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
                 const DataStructures::Graph* graph,
-                const DataStructures::TableEntry::ColourAssignments& assignments
+                const DataStructures::ColourAssignments& assignments
             ) const override;
         };
 
@@ -89,7 +89,7 @@ namespace Solvers
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
                 const DataStructures::Graph* graph,
-                const DataStructures::TableEntry::ColourAssignments& assignments
+                const DataStructures::ColourAssignments& assignments
             ) const override;
         };
 
@@ -99,7 +99,7 @@ namespace Solvers
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
                 const DataStructures::Graph* graph,
-                const DataStructures::TableEntry::ColourAssignments& assignments
+                const DataStructures::ColourAssignments& assignments
             ) const override;
         };
 
@@ -109,7 +109,7 @@ namespace Solvers
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
                 const DataStructures::Graph* graph,
-                const DataStructures::TableEntry::ColourAssignments& assignments
+                const DataStructures::ColourAssignments& assignments
             ) const override;
         };
     };

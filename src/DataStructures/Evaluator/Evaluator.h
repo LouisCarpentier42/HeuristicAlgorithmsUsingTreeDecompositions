@@ -35,14 +35,14 @@ namespace DataStructures
          */
         [[nodiscard]] virtual int evaluate(
             const std::vector<DataStructures::VertexType>& recolouredVertices,
-            const DataStructures::TableEntry::ColourAssignments& colourAssignments,
+            const DataStructures::ColourAssignments& colourAssignments,
             const DataStructures::Graph* graph,
             int startEvaluation
         ) const = 0;
 
         [[nodiscard]] int evaluate(
             const DataStructures::VertexType& recolouredVertex,
-            const DataStructures::TableEntry::ColourAssignments& colourAssignments,
+            const DataStructures::ColourAssignments& colourAssignments,
             const DataStructures::Graph* graph,
             int startEvaluation) const
         { return evaluate(std::vector<VertexType>{recolouredVertex}, colourAssignments, graph, startEvaluation); }

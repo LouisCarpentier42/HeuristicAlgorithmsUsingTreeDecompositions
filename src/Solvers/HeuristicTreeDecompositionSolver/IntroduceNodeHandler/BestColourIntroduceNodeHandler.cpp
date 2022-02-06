@@ -24,7 +24,7 @@ void Solvers::BestColourIntroduceNodeHandler::handleIntroduceNode(DataStructures
             DataStructures::DynamicProgrammingTable table{graph->getNbColours()};
             for (DataStructures::ColourType colour{1}; colour <= graph->getNbColours(); colour++)
             {
-                DataStructures::TableEntry::ColourAssignments assignments = entry->getColourAssignments();
+                DataStructures::ColourAssignments assignments = entry->getColourAssignments();
                 assignments.assignColour(node->getIntroducedVertex(), colour);
                 auto* newEntry = new DataStructures::TableEntry{
                     evaluator->evaluate(node->getIntroducedVertex(), assignments, graph, entry->getEvaluation()),
