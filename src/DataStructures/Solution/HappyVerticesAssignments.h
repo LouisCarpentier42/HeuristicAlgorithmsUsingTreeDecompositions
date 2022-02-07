@@ -7,6 +7,7 @@
 
 #include "../Graph/Graph.h"
 
+#include <ostream>
 #include <vector>
 
 
@@ -23,14 +24,16 @@ namespace DataStructures
 
         void makeHappy(DataStructures::VertexType vertex);
         void makeUnhappy(DataStructures::VertexType vertex);
-        [[nodiscard]] bool isHappy(DataStructures::VertexType vertex);
+        [[nodiscard]] bool isHappy(DataStructures::VertexType vertex) const;
 
         friend bool operator==(const HappyVerticesAssignments& h1, const HappyVerticesAssignments& h2);
         friend bool operator<(const HappyVerticesAssignments& h1, const HappyVerticesAssignments& h2);
+        friend std::ostream& operator<<(std::ostream& out, const HappyVerticesAssignments& assignments);
     };
 
     bool operator==(const HappyVerticesAssignments& h1, const HappyVerticesAssignments& h2);
     bool operator<(const HappyVerticesAssignments& h1, const HappyVerticesAssignments& h2);
+    std::ostream& operator<<(std::ostream& out, const HappyVerticesAssignments& assignments);
 }
 
 

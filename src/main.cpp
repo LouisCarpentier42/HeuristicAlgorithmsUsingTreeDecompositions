@@ -5,6 +5,8 @@
 #include "ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.h"
 #include "DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.h"
 
+#include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionSolutionIterator.h"
+
 int main(int argc, char** argv)
 {
     (void)argc;
@@ -24,10 +26,9 @@ int main(int argc, char** argv)
     ExperimentalAnalysis::Experiment experiment = reader.readExperiment(solverFile, experimentFile);
     ExperimentalAnalysis::executeExperiment(reader, experiment);
 
-//    std::string name{"he005"};
-//    std::string graphFile{name + ".gr"};
-//    std::string treeFile{name + ".tw"};
-//    std::string niceTreeFile{name + "_nice.tw"};
+//    DataStructures::Graph* graph = experiment.testInstances[0].graph;
+//    std::vector<DataStructures::ColourType> colouring = experiment.testInstances[0].colourings[0];
+//    graph->setInitialColours(colouring);
 
 //    TreeDecompositionSolverTimer timer{1.0, 4.0, 10000.0, 0.20};
 //    timer.executeSolver(graphFile);

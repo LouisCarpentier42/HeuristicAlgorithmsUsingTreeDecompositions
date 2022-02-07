@@ -27,6 +27,7 @@ namespace DataStructures
         [[nodiscard]] DataStructures::VertexType getColour(DataStructures::VertexType vertex) const;
         [[nodiscard]] bool isColoured(DataStructures::VertexType vertex) const;
         void assignColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
+        void removeColour(DataStructures::VertexType vertex);
 
         friend bool operator==(const ColourAssignments& c1, const ColourAssignments& c2);
         friend bool operator<(const ColourAssignments& c1, const ColourAssignments& c2);

@@ -11,3 +11,4 @@ c - the number of colour functions that should be solved
 c - the number of times each colour function should be solved by the tree decomposition heuristics
 c
 experiment he005.gr he005_nice.tw random(3,0.01,1) 1
+c experiment my_first_graph.gr my_first_graph_nice.tw random(3,0.01,1) 1

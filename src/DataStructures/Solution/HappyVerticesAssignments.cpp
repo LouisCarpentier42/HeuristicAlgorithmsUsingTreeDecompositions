@@ -18,7 +18,7 @@ void DataStructures::HappyVerticesAssignments::makeUnhappy(DataStructures::Verte
     vertexIsHappy[vertex] = false;
 }
 
-bool DataStructures::HappyVerticesAssignments::isHappy(DataStructures::VertexType vertex)
+bool DataStructures::HappyVerticesAssignments::isHappy(DataStructures::VertexType vertex) const
 {
     return vertexIsHappy[vertex];
 }
@@ -32,3 +32,12 @@ bool DataStructures::operator<(const DataStructures::HappyVerticesAssignments& h
 {
     return h1.vertexIsHappy < h2.vertexIsHappy;
 }
+
+std::ostream &DataStructures::operator<<(std::ostream& out, const DataStructures::HappyVerticesAssignments& assignments)
+{
+    out << "[" << assignments.vertexIsHappy[0];
+    for (int i{1}; i < assignments.vertexIsHappy.size(); i++)
+        out << ", " << assignments.vertexIsHappy[i];
+    return out << "]";
+}
+

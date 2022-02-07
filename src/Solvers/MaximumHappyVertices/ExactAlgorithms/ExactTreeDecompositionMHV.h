@@ -24,9 +24,9 @@ namespace MaximumHappyVertices
         std::set<DataStructures::VertexType> S{};
 
     public:
-        void solve(
-                DataStructures::Graph* graph,
-                DataStructures::NiceTreeDecomposition* treeDecomposition
+        [[nodiscard]] int solve(
+            DataStructures::Graph* graph,
+            DataStructures::NiceTreeDecomposition* treeDecomposition
         );
         ExactTreeDecompositionRanking solveAtNode(DataStructures::NiceNode* node) const;
 

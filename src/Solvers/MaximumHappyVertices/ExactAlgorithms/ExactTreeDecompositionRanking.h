@@ -18,7 +18,7 @@ namespace MaximumHappyVertices
     class ExactTreeDecompositionRanking
     {
     public:
-        static int NEGATIVE_INFINITY = std::numeric_limits<int>::min();
+        static const int NEGATIVE_INFINITY = std::numeric_limits<int>::min();
         using ExactTreeDecompositionSolution = std::pair<const DataStructures::ColourAssignments, const DataStructures::HappyVerticesAssignments>;
         using ExactTreeDecompositionRankingIterator = const std::_Rb_tree_const_iterator<std::pair<const ExactTreeDecompositionSolution , int>>;
 
@@ -32,6 +32,7 @@ namespace MaximumHappyVertices
             const DataStructures::HappyVerticesAssignments& happyVerticesAssignments
         );
 
+        [[nodiscard]] int getBestEvaluation();
         [[nodiscard]] int getEvaluation(
             const DataStructures::ColourAssignments& colourAssignments,
             const DataStructures::HappyVerticesAssignments& happyVerticesAssignments

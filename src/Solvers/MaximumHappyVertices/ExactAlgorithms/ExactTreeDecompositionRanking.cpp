@@ -3,6 +3,8 @@
 //
 
 #include "ExactTreeDecompositionRanking.h"
+#include <algorithm>
+#include <iostream> // TODO remove
 
 void MaximumHappyVertices::ExactTreeDecompositionRanking::addSolution(
         int evaluation,
@@ -10,6 +12,11 @@ void MaximumHappyVertices::ExactTreeDecompositionRanking::addSolution(
         const DataStructures::HappyVerticesAssignments& happyVerticesAssignments)
 {
     solutions.insert({{colourAssignments, happyVerticesAssignments}, evaluation});
+}
+
+int MaximumHappyVertices::ExactTreeDecompositionRanking::getBestEvaluation()
+{
+    return std::max_element(solutions.begin(), solutions.end(), [](auto& s1, auto& s2) { return s1.second < s2.second; })->second;
 }
 
 int MaximumHappyVertices::ExactTreeDecompositionRanking::getEvaluation(

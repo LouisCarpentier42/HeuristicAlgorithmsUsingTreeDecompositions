@@ -5,6 +5,7 @@
 #include <chrono>
 #include <random>
 #include "experimentalAnalysis.h"
+#include "../Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h"
 
 
 void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& experiment)
@@ -57,6 +58,14 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
                     std::cout << "Evaluation: " << evaluation/testInstance.nbRepetitions << "\n";
                     std::cout << "Time (µs):  " << duration.count()/testInstance.nbRepetitions << "\n\n";
                 }
+
+                MaximumHappyVertices::ExactTreeDecompositionMHV exactSolver{};
+                int exactEvaluation{exactSolver.solve(testInstance.graph, &niceTreeDecomposition)};
+                std::cout << "BEST SOLUTION: " << exactEvaluation << "\n";
+
+                for (auto c : colouring)
+                    std::cout << c << " ";
+                std::cout << '\n';
             }
         }
     }

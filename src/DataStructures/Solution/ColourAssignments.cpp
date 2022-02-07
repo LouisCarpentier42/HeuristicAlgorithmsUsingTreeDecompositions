@@ -35,6 +35,11 @@ void DataStructures::ColourAssignments::assignColour(DataStructures::VertexType 
     assignments[vertex] = colour;
 }
 
+void DataStructures::ColourAssignments::removeColour(DataStructures::VertexType vertex)
+{
+    assignments[vertex] = 0;
+}
+
 
 bool DataStructures::operator==(const DataStructures::ColourAssignments& c1, const DataStructures::ColourAssignments& c2)
 {
