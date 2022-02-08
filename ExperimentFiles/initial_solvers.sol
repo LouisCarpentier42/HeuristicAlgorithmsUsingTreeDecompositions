@@ -20,6 +20,7 @@ c - the handler for forget nodes (potentially with its parameters)
 c - the handler for join nodes (potentially with its parameters)
 c
 problem MaximumHappyVertices
+nbRepetitions 2
 baseline greedyMHV
 baseline growthMHV
 heuristicTD tdAlgo_min 8 uncolouredMHVEvaluator(6,2,-1,5,1,-1) passive bestColour passive greedyColourBag(min)

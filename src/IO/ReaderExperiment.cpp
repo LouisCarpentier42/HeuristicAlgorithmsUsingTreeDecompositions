@@ -6,6 +6,7 @@
 #include "Reader.h"
 #include "../Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
 #include "../Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
+#include "../Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h"
 #include "../Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/ConcreteLeafNodeHandlers.h"
 #include "../Solvers/HeuristicTreeDecompositionSolver/IntroduceNodeHandler/ConcreteIntroduceNodeHandlers.h"
 #include "../Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h"
@@ -135,7 +136,7 @@ Solvers::JoinNodeHandler* readJoinNodeHandler(std::string& str)
     throw std::runtime_error("Invalid join node handler identifier is given: " + str + "!");
 }
 
-std::vector<std::vector<DataStructures::ColourType>> readColouringString(std::string& str, DataStructures::Graph* graph)
+std::map<std::string, std::vector<DataStructures::ColourType>> readColouringString(std::string& str, DataStructures::Graph* graph)
 {
     std::vector<std::string> parameters = splitParameters(str);
     if (parameters[0] == "random")
@@ -143,11 +144,13 @@ std::vector<std::vector<DataStructures::ColourType>> readColouringString(std::st
         int nbColours{IO::Reader::convertToInt(parameters[1])};
         double percentColouredVertices{std::stod(parameters[2])};
         int nbColourings{IO::Reader::convertToInt(parameters[3])};
-        std::vector<std::vector<DataStructures::ColourType>> colourings{};
+        unsigned int seed{parameters.size() <= 4
+                            ? std::random_device{}()
+                            : IO::Reader::convertToInt(parameters[4])};
+        static std::mt19937 rng{seed};
+        std::map<std::string, std::vector<DataStructures::ColourType>> colourings{};
         for (int j{0}; j < nbColourings; j++)
         {
-            static std::mt19937 rng{1};
-//            static std::mt19937 rng{std::random_device{}()}; // TODO not random
             std::uniform_int_distribution<DataStructures::ColourType> colourDistribution(1, nbColours);
 
             // Create a random shuffling of the vertices and colour them in this order
@@ -162,8 +165,10 @@ std::vector<std::vector<DataStructures::ColourType>> readColouringString(std::st
             size_t nbVerticesToColour{static_cast<size_t>(percentColouredVertices * static_cast<double>(graph->getNbVertices()))};
             for (int i{nbColours}; i < nbVerticesToColour; i++)
                 colourVector[allVertices[i]] = colourDistribution(rng);
-
-            colourings.push_back(colourVector);
+            colourings["random(nbColours:" + std::to_string(nbColours) + ";" +
+                       "%colouredVertices:" + std::to_string(percentColouredVertices) + ";" +
+                       "generated:[" + std::to_string(j+1) + "/" + std::to_string(nbColourings) + "];" +
+                       "seed:" + std::to_string(seed) + ")"] = colourVector;
         }
         return colourings;
     }
@@ -185,9 +190,11 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
         throw std::runtime_error("Can't read '" + experimentsFilename + "' because the file can't be opened!");
     }
 
+    Solvers::ExactTreeDecompositionSolverBase* exactTreeDecompositionSolver{};
     DataStructures::Evaluator* evaluator{};
     std::map<std::string, Solvers::SolverBase*> baselines{};
     std::map<std::string, Solvers::HeuristicTreeDecompositionSolver*> treeDecompositionSolvers{};
+    size_t nbRepetitionsPerInstance{1};
     while (solverFile)
     {
         std::string line{};
@@ -199,7 +206,14 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
             if (evaluator)
                 throw std::runtime_error("An experiment can only have 1 problem!");
             else if (tokens[1] == "MaximumHappyVertices")
+            {
+                exactTreeDecompositionSolver = new MaximumHappyVertices::ExactTreeDecompositionMHV{};
                 evaluator = new DataStructures::BasicMHVEvaluator{};
+            }
+        }
+        else if (tokens[0] == "nbRepetitions")
+        {
+            nbRepetitionsPerInstance = static_cast<size_t>(convertToInt(tokens[1]));
         }
         else if (tokens[0] == "baseline")
         {
@@ -240,9 +254,9 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
             testInstances.push_back(
                 ExperimentalAnalysis::TestInstance{
                     graph,
+                    tokens[1],
                     tokens[2],
                     readColouringString(tokens[3], graph),
-                    static_cast<size_t>(convertToInt(tokens[4])),
                 }
             );
         }
@@ -259,7 +273,18 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
     if (testInstances.empty())
         throw std::runtime_error("An experiment must have test instances!");
 
-    return ExperimentalAnalysis::Experiment{evaluator, baselines, treeDecompositionSolvers, testInstances};
+    std::string resultFile = resultFilesDir;
+    resultFile.append(experimentsFilename.substr(0, experimentsFilename.size()-4));
+
+    return ExperimentalAnalysis::Experiment{
+        resultFile,
+        exactTreeDecompositionSolver,
+        evaluator,
+        baselines,
+        treeDecompositionSolvers,
+        testInstances,
+        nbRepetitionsPerInstance
+    };
 }
 
 

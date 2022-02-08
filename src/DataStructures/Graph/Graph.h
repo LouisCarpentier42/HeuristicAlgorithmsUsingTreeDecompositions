@@ -31,7 +31,7 @@ namespace DataStructures
         [[nodiscard]] const std::vector<VertexType>& getNeighbours(VertexType vertexType) const;
 
         void setColour(VertexType vertexType, ColourType colour);
-        void setInitialColours(std::vector<DataStructures::ColourType>& colours);
+        void setInitialColours(const std::vector<DataStructures::ColourType>& colours);
         void setInitialColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
         void removeColours();
         void removeInitialColours();

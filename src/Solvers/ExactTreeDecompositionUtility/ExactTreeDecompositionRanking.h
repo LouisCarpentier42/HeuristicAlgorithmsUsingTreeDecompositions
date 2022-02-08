@@ -5,15 +5,13 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONRANKING_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONRANKING_H
 
-#include "../../../DataStructures/Solution/ColourAssignments.h"
-#include "../../../DataStructures/Solution/HappyVerticesAssignments.h"
+#include "../../DataStructures/Solution/ColourAssignments.h"
+#include "../../DataStructures/Solution/HappyVerticesAssignments.h"
 
 #include <limits>
 #include <map>
 
-
-
-namespace MaximumHappyVertices
+namespace Solvers
 {
     class ExactTreeDecompositionRanking
     {

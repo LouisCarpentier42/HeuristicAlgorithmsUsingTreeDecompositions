@@ -31,12 +31,14 @@ namespace IO
         const std::string graphFilesDir;
         const std::string treeDecompositionFilesDir;
         const std::string experimentFilesDir;
+        const std::string resultFilesDir;
 
     public:
         Reader(
             std::string graphFilesDir,
             std::string treeDecompositionFilesDir,
-            std::string experimentFilesDir
+            std::string experimentFilesDir,
+            std::string resultFilesDir
         );
 
         [[nodiscard]] DataStructures::Graph* readGraph(const std::string& filename) const;

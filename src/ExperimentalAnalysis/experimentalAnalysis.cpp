@@ -5,14 +5,19 @@
 #include <chrono>
 #include <random>
 #include "experimentalAnalysis.h"
-#include "../Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h"
-
 
 void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& experiment)
 {
+    std::ofstream resultFile;
+    resultFile.open(experiment.resultFileName + ".csv");
+    resultFile << "Solver name,graph name,tree decomposition name,initial colouring name,";
+    for (int i{0}; i < experiment.nbRepetitionsPerInstance; i++)
+        resultFile << "evaluation run " << (i+1) << ",time (µs) run " << (i+1) << ",";
+    resultFile << "mean evaluation,mean time(µs)\n";
+
     for (const TestInstance& testInstance : experiment.testInstances)
     {
-        for (std::vector<DataStructures::ColourType> colouring : testInstance.colourings)
+        for (auto const& [colouringName, colouring] : testInstance.colourings)
         {
             testInstance.graph->removeInitialColours();
             testInstance.graph->setInitialColours(colouring);
@@ -20,19 +25,24 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
             // Test the baselines
             for (auto const& [name, baseline] : experiment.baselines)
             {
-                testInstance.graph->removeColours();
-
-                std::cout << ">>> " << name << " <<<\n";
-
-                auto start = std::chrono::high_resolution_clock::now();
-                baseline->solve(testInstance.graph);
-                auto stop = std::chrono::high_resolution_clock::now();
-                int evaluation{experiment.evaluator->evaluate(testInstance.graph)};
-                std::chrono::microseconds duration{std::chrono::duration_cast<std::chrono::microseconds>(stop - start)};
-
-                std::cout << testInstance.graph->getColourString() << "\n";
-                std::cout << "Evaluation: " << evaluation << "\n";
-                std::cout << "Time (µs):  " << duration.count() << "\n\n";
+                resultFile << name << "," << testInstance.graphName << "," << testInstance.treeDecompositionName << "," << colouringName << ",";
+                std::chrono::microseconds duration{0};
+                int evaluation{0};
+                for (int repetition{0}; repetition < experiment.nbRepetitionsPerInstance; repetition++)
+                {
+                    testInstance.graph->removeColours();
+                    auto start = std::chrono::high_resolution_clock::now();
+                    baseline->solve(testInstance.graph);
+                    auto stop = std::chrono::high_resolution_clock::now();
+                    int newEvaluation{experiment.evaluator->evaluate(testInstance.graph)};
+                    evaluation += newEvaluation;
+                    duration += std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+                    resultFile << newEvaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << ",";
+                }
+//                std::cout << testInstance.graph->getColourString() << "\n";
+//                std::cout << "Evaluation: " << evaluation/experiment.nbRepetitionsPerInstance << "\n";
+//                std::cout << "Time (µs):  " << duration.count()/experiment.nbRepetitionsPerInstance << "\n\n";
+                resultFile << evaluation/experiment.nbRepetitionsPerInstance << "," << duration.count()/experiment.nbRepetitionsPerInstance << "\n";
             }
 
             // Test the solvers
@@ -42,31 +52,24 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
 
                 for (auto const& [name, solver] : experiment.treeDecompositionSolvers)
                 {
-                    std::cout << ">>> " << name << " <<<\n";
+                    resultFile << name << "," << testInstance.graphName << "," << testInstance.treeDecompositionName << "," << colouringName << ",";
                     std::chrono::microseconds duration{0};
                     int evaluation{0};
-                    for (int repetition{0}; repetition < testInstance.nbRepetitions; repetition++)
+                    for (int repetition{0}; repetition < experiment.nbRepetitionsPerInstance; repetition++)
                     {
                         testInstance.graph->removeColours();
                         auto start = std::chrono::high_resolution_clock::now();
                         solver->solve(testInstance.graph, &niceTreeDecomposition);
                         auto stop = std::chrono::high_resolution_clock::now();
+                        int newEvaluation{experiment.evaluator->evaluate(testInstance.graph)};
+                        evaluation += newEvaluation;
                         duration += std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-                        evaluation += experiment.evaluator->evaluate(testInstance.graph);
+                        resultFile << newEvaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << ",";
                     }
-                    std::cout << testInstance.graph->getColourString() << "\n";
-                    std::cout << "Evaluation: " << evaluation/testInstance.nbRepetitions << "\n";
-                    std::cout << "Time (µs):  " << duration.count()/testInstance.nbRepetitions << "\n\n";
+                    resultFile << evaluation/experiment.nbRepetitionsPerInstance << "," << duration.count()/experiment.nbRepetitionsPerInstance << "\n";
                 }
-
-                MaximumHappyVertices::ExactTreeDecompositionMHV exactSolver{};
-                int exactEvaluation{exactSolver.solve(testInstance.graph, &niceTreeDecomposition)};
-                std::cout << "BEST SOLUTION: " << exactEvaluation << "\n";
-
-                for (auto c : colouring)
-                    std::cout << c << " ";
-                std::cout << '\n';
             }
         }
     }
+    resultFile.close();
 }

@@ -15,10 +15,12 @@ int main(int argc, char** argv)
     std::string graphFilesDir = "../GraphFiles/";
     std::string treeDecompositionFilesDir = "../TreeDecompositionFiles/";
     std::string experimentFilesDir = "../ExperimentFiles/";
+    std::string resultFilesDir = "../ResultFiles/";
     IO::Reader reader{
         graphFilesDir,
         treeDecompositionFilesDir,
-        experimentFilesDir
+        experimentFilesDir,
+        resultFilesDir
     };
 
     std::string solverFile{"initial_solvers.sol"};

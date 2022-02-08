@@ -3,10 +3,13 @@
 //
 #include "Reader.h"
 
-IO::Reader::Reader(std::string graphFilesDir, std::string treeDecompositionFilesDir, std::string experimentFilesDir)
+#include <utility>
+
+IO::Reader::Reader(std::string graphFilesDir, std::string treeDecompositionFilesDir, std::string experimentFilesDir, std::string resultFilesDir)
     : graphFilesDir{std::move(graphFilesDir)},
       treeDecompositionFilesDir{std::move(treeDecompositionFilesDir)},
-      experimentFilesDir{std::move(experimentFilesDir)}
+      experimentFilesDir{std::move(experimentFilesDir)},
+      resultFilesDir{std::move(resultFilesDir)}
 {}
 
 std::vector<std::string> IO::Reader::tokenize(std::string& line)

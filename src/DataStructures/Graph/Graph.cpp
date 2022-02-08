@@ -54,7 +54,7 @@ void DataStructures::Graph::setColour(DataStructures::VertexType vertexType, Dat
     }
 }
 
-void DataStructures::Graph::setInitialColours(std::vector<DataStructures::ColourType>& colours)
+void DataStructures::Graph::setInitialColours(const std::vector<DataStructures::ColourType>& colours)
 {
     removeInitialColours();
     for (int i{0}; i < colours.size(); i++)
@@ -85,7 +85,7 @@ void DataStructures::Graph::removeColours()
 
 void DataStructures::Graph::removeInitialColours()
 {
-    for (DataStructures::Vertex vertex : vertices)
+    for (DataStructures::Vertex& vertex : vertices)
     {
         vertex.colour = 0;
         vertex.isColoured = false;

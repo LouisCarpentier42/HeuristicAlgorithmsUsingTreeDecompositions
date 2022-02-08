@@ -11,32 +11,27 @@
 #include "../../../DataStructures/TreeDecomposition/IntroduceNode.h"
 #include "../../../DataStructures/TreeDecomposition/ForgetNode.h"
 #include "../../../DataStructures/TreeDecomposition/JoinNode.h"
-#include "ExactTreeDecompositionRanking.h"
+#include "../../ExactTreeDecompositionUtility/ExactTreeDecompositionRanking.h"
+#include "../../ExactTreeDecompositionSolverBase.h"
 
 #include <set>
 
 namespace MaximumHappyVertices
 {
-    class ExactTreeDecompositionMHV
+    class ExactTreeDecompositionMHV : public Solvers::ExactTreeDecompositionSolverBase
     {
     private:
         DataStructures::Graph* graph;
         std::set<DataStructures::VertexType> S{};
 
     public:
-        [[nodiscard]] int solve(
-            DataStructures::Graph* graph,
-            DataStructures::NiceTreeDecomposition* treeDecomposition
-        );
-        ExactTreeDecompositionRanking solveAtNode(DataStructures::NiceNode* node) const;
-
-        void setProperties(DataStructures::Graph* graph);
+        void setProperties(DataStructures::Graph* graph) override;
 
     private:
-        ExactTreeDecompositionRanking handleLeafNode(DataStructures::LeafNode* node) const;
-        ExactTreeDecompositionRanking handleIntroduceNode(DataStructures::IntroduceNode* node) const;
-        ExactTreeDecompositionRanking handleForgetVertexBag(DataStructures::ForgetNode* node) const;
-        ExactTreeDecompositionRanking handleJoinNode(DataStructures::JoinNode* node) const;
+        Solvers::ExactTreeDecompositionRanking handleLeafNode(DataStructures::LeafNode* node) const override;
+        Solvers::ExactTreeDecompositionRanking handleIntroduceNode(DataStructures::IntroduceNode* node) const override;
+        Solvers::ExactTreeDecompositionRanking handleForgetVertexBag(DataStructures::ForgetNode* node) const override;
+        Solvers::ExactTreeDecompositionRanking handleJoinNode(DataStructures::JoinNode* node) const override;
     };
 }
 
