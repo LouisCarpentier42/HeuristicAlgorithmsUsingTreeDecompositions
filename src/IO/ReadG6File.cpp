@@ -22,8 +22,13 @@ void IO::Reader::readG6File(const std::string& filename) const
     while (g6File)
     {
         graphNb++;
-        std::getline(g6File, line); // First line is blank
-        std::getline(g6File, line); // Second line simply contains 'Graph $graphNb, order $#nodes'
+
+        std::vector<std::string> tokens = tokenize(line);
+        while (tokens.empty() || tokens[0] != "Graph")
+        {
+            std::getline(g6File, line);
+            tokens = tokenize(line);
+        }
 
         std::getline(g6File, line);
         if (line.empty()) break;
@@ -33,8 +38,14 @@ void IO::Reader::readG6File(const std::string& filename) const
         outputFile << "c Generated from g6-file '" << filename << "'\n";
         outputFile << "p tw " << line << "\n";
 
+        std::vector<std::string> edgeTokens{};
         std::getline(g6File, line);
-        std::vector<std::string> edgeTokens = tokenize(line);
+        while (!line.empty())
+        {
+            std::vector<std::string> newEdgeTokens = tokenize(line);
+            edgeTokens.insert(edgeTokens.end(), newEdgeTokens.begin(), newEdgeTokens.end());
+            std::getline(g6File, line);
+        }
         for (int i{0}; i < edgeTokens.size(); i+=2)
             outputFile << (convertToInt(edgeTokens[i])+1) << " " << (convertToInt(edgeTokens[i+1])+1) << "\n";
 
