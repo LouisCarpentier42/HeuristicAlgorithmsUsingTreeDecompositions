@@ -13,17 +13,51 @@ int Solvers::ExactTreeDecompositionSolverBase::solve(
     return rankingRoot.getBestEvaluation();
 }
 
-Solvers::ExactTreeDecompositionRanking Solvers::ExactTreeDecompositionSolverBase::solveAtNode(DataStructures::NiceNode* node) const
+Solvers::ExactTreeDecompositionRanking Solvers::ExactTreeDecompositionSolverBase::solveAtNode(
+        DataStructures::NiceNode* node,
+        std::vector<ExactTreeDecompositionRanking> rankingsChildren) const
 {
     switch(node->getNodeType())
     {
         case DataStructures::NodeType::LeafNode:
+        {
             return handleLeafNode(dynamic_cast<DataStructures::LeafNode*>(node));
+        }
         case DataStructures::NodeType::IntroduceNode:
-            return handleIntroduceNode(dynamic_cast<DataStructures::IntroduceNode*>(node));
+        {
+            auto* introduceNode = dynamic_cast<DataStructures::IntroduceNode*>(node);
+            if (rankingsChildren.empty())
+            {
+                return handleIntroduceNode(introduceNode,solveAtNode(introduceNode->getChild()));
+            }
+            else
+            {
+                return handleIntroduceNode(introduceNode, rankingsChildren[0]);
+            }
+        }
         case DataStructures::NodeType::ForgetNode:
-            return handleForgetVertexBag(dynamic_cast<DataStructures::ForgetNode*>(node));
+        {
+            auto* forgetNode = dynamic_cast<DataStructures::ForgetNode*>(node);
+            if (rankingsChildren.empty())
+            {
+                return handleForgetNode(forgetNode, solveAtNode(forgetNode->getChild()));
+            }
+            else
+            {
+                return handleForgetNode(forgetNode, rankingsChildren[0]);
+            }
+        }
         case DataStructures::NodeType::JoinNode:
-            return handleJoinNode(dynamic_cast<DataStructures::JoinNode*>(node));
+        {
+            auto* joinNode = dynamic_cast<DataStructures::JoinNode*>(node);
+            if (rankingsChildren.empty())
+            {
+                return handleJoinNode(joinNode, solveAtNode(joinNode->getLeftChild()), solveAtNode(joinNode->getRightChild()));
+            }
+            else
+            {
+                return handleJoinNode(joinNode, rankingsChildren[0], rankingsChildren[1]);
+            }
+        }
     }
 }

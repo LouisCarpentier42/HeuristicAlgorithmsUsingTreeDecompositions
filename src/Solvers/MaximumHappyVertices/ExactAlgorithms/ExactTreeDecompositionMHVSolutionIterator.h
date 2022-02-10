@@ -2,8 +2,8 @@
 // Created by louis on 07/02/2022.
 //
 
-#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONSOLUTIONITERATOR_H
-#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONSOLUTIONITERATOR_H
+#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONMHVSOLUTIONITERATOR_H
+#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONMHVSOLUTIONITERATOR_H
 
 #include "../../../DataStructures/Solution/ColourAssignments.h"
 #include "../../../DataStructures/Solution/HappyVerticesAssignments.h"
@@ -12,7 +12,7 @@
 
 namespace MaximumHappyVertices
 {
-    class ExactTreeDecompositionSolutionIterator
+    class ExactTreeDecompositionMHVSolutionIterator
     {
     private:
         const int nbColours;
@@ -25,7 +25,7 @@ namespace MaximumHappyVertices
         int currentHappinessAssignmentId{-1};
 
     public:
-        ExactTreeDecompositionSolutionIterator(std::set<DataStructures::VertexType> verticesToConsider, DataStructures::Graph* graph);
+        ExactTreeDecompositionMHVSolutionIterator(std::set<DataStructures::VertexType> verticesToConsider, DataStructures::Graph* graph);
 
         [[nodiscard]] const DataStructures::ColourAssignments getColourAssignments() const;
         [[nodiscard]] const DataStructures::HappyVerticesAssignments getHappyVerticesAssignments() const;
@@ -34,4 +34,4 @@ namespace MaximumHappyVertices
     };
 }
 
-#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONSOLUTIONITERATOR_H
+#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONMHVSOLUTIONITERATOR_H

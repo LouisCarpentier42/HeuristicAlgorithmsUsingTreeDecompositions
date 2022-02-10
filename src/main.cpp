@@ -5,7 +5,7 @@
 #include "ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.h"
 #include "DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.h"
 
-#include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionSolutionIterator.h"
+#include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHVSolutionIterator.h"
 
 int main(int argc, char** argv)
 {

@@ -20,6 +20,8 @@ namespace ExperimentalAnalysis
         const std::string graphName;
         const std::string treeDecompositionName;
         const std::map<std::string, std::vector<DataStructures::ColourType>> colourings;
+        const bool executeExactTD;
+        const bool compareExactTD;
     };
 
     struct Experiment

@@ -51,6 +51,20 @@ int DataStructures::Node::getNbChildren() const
     return childVector.size();
 }
 
+int DataStructures::Node::getHeight() const
+{
+    if (isLeaf()) return 0;
+
+    int height{0};
+    for (Node* child : childVector)
+    {
+        int heightChild{child->getHeight()};
+        if (heightChild > height)
+            height = heightChild;
+    }
+    return height + 1;
+}
+
 std::vector<DataStructures::Node*>::const_iterator DataStructures::Node::beginChildrenIterator() const
 {
     return childVector.begin();

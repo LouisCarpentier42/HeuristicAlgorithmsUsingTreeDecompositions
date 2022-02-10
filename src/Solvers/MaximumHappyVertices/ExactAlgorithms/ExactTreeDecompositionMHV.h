@@ -28,10 +28,22 @@ namespace MaximumHappyVertices
         void setProperties(DataStructures::Graph* graph) override;
 
     private:
-        Solvers::ExactTreeDecompositionRanking handleLeafNode(DataStructures::LeafNode* node) const override;
-        Solvers::ExactTreeDecompositionRanking handleIntroduceNode(DataStructures::IntroduceNode* node) const override;
-        Solvers::ExactTreeDecompositionRanking handleForgetVertexBag(DataStructures::ForgetNode* node) const override;
-        Solvers::ExactTreeDecompositionRanking handleJoinNode(DataStructures::JoinNode* node) const override;
+        Solvers::ExactTreeDecompositionRanking handleLeafNode(
+            DataStructures::LeafNode* node
+        ) const override;
+        Solvers::ExactTreeDecompositionRanking handleIntroduceNode(
+            DataStructures::IntroduceNode* node,
+            const Solvers::ExactTreeDecompositionRanking& rankingChild
+        ) const override;
+        Solvers::ExactTreeDecompositionRanking handleForgetNode(
+            DataStructures::ForgetNode* node,
+            const Solvers::ExactTreeDecompositionRanking& rankingChild
+        ) const override;
+        Solvers::ExactTreeDecompositionRanking handleJoinNode(
+            DataStructures::JoinNode* node,
+            const Solvers::ExactTreeDecompositionRanking& rankingLeftChild,
+            const Solvers::ExactTreeDecompositionRanking& rankingRightChild
+        ) const override;
     };
 }
 

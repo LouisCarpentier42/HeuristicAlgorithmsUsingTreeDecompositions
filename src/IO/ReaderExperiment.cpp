@@ -251,14 +251,40 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
         else if (tokens[0] == "experiment")
         {
             DataStructures::Graph* graph = readGraph(tokens[1]);
-            testInstances.push_back(
-                ExperimentalAnalysis::TestInstance{
-                    graph,
-                    tokens[1],
-                    tokens[2],
-                    readColouringString(tokens[3], graph),
+            if (tokens.size() == 4)
+            {
+                testInstances.push_back(
+                    ExperimentalAnalysis::TestInstance{
+                        graph,
+                        tokens[1],
+                        tokens[2],
+                        readColouringString(tokens[3], graph),
+                        false,
+                        false
+                    }
+                );
+            }
+            else
+            {
+                std::vector<std::string> parameters = splitParameters(tokens[4]);
+                if (parameters[0] == "exactTD")
+                {
+                    testInstances.push_back(
+                        ExperimentalAnalysis::TestInstance{
+                            graph,
+                            tokens[1],
+                            tokens[2],
+                            readColouringString(tokens[3], graph),
+                            parameters[1] == "true",
+                            parameters[2] == "true"
+                        }
+                    );
                 }
-            );
+                else
+                {
+                    std::cout << "Invalid extra parameters for experiment: ignoring '" << tokens[4] << "'\n";
+                }
+            }
         }
         else
         {

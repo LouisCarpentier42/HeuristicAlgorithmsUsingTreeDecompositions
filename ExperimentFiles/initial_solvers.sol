@@ -7,6 +7,9 @@ c The line that starts with 'problem' decides the problem that will be solved
 c There must be exactly 1 such line in the file
 c Note that no check is performed to see if the solvers are compatible with the problem
 c
+c Furthermore there must be exactly one line starting with 'nbRepetitions' followed by an integer.
+c This number dictates how many times all solvers (baseline and heuristic TD) are executed on each problem instance.
+c
 c Lines that start with baseline are the baseline solvers used for comparison
 c
 c Lines starting with heuristicTD represent settings for the heuristic solver using tree decompositions
@@ -23,7 +26,7 @@ problem MaximumHappyVertices
 nbRepetitions 2
 baseline greedyMHV
 baseline growthMHV
-heuristicTD tdAlgo_min 8 uncolouredMHVEvaluator(6,2,-1,5,1,-1) passive bestColour passive greedyColourBag(min)
+heuristicTD tdAlgo_min 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(min)
 heuristicTD tdAlgo_max 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(max)
 heuristicTD tdAlgo_avg 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(avg)
 c heuristicTD greedyColourBag2 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(min)

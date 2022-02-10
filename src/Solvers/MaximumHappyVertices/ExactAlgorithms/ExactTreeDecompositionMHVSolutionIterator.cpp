@@ -2,11 +2,11 @@
 // Created by louis on 07/02/2022.
 //
 
-#include "ExactTreeDecompositionSolutionIterator.h"
+#include "ExactTreeDecompositionMHVSolutionIterator.h"
 
 #include <cmath>
 
-MaximumHappyVertices::ExactTreeDecompositionSolutionIterator::ExactTreeDecompositionSolutionIterator(
+MaximumHappyVertices::ExactTreeDecompositionMHVSolutionIterator::ExactTreeDecompositionMHVSolutionIterator(
         std::set<DataStructures::VertexType> verticesToConsider,
         DataStructures::Graph* graph)
     : nbColours{static_cast<int>(graph->getNbColours())},
@@ -29,17 +29,17 @@ MaximumHappyVertices::ExactTreeDecompositionSolutionIterator::ExactTreeDecomposi
     }
 }
 
-const DataStructures::ColourAssignments MaximumHappyVertices::ExactTreeDecompositionSolutionIterator::getColourAssignments() const
+const DataStructures::ColourAssignments MaximumHappyVertices::ExactTreeDecompositionMHVSolutionIterator::getColourAssignments() const
 {
     return colourAssignments;
 }
 
-const DataStructures::HappyVerticesAssignments MaximumHappyVertices::ExactTreeDecompositionSolutionIterator::getHappyVerticesAssignments() const
+const DataStructures::HappyVerticesAssignments MaximumHappyVertices::ExactTreeDecompositionMHVSolutionIterator::getHappyVerticesAssignments() const
 {
     return happyVerticesAssignments;
 }
 
-bool MaximumHappyVertices::ExactTreeDecompositionSolutionIterator::next()
+bool MaximumHappyVertices::ExactTreeDecompositionMHVSolutionIterator::next()
 {
     currentHappinessAssignmentId++;
 

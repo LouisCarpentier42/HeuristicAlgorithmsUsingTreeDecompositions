@@ -22,14 +22,29 @@ namespace Solvers
             DataStructures::Graph* graph,
             DataStructures::NiceTreeDecomposition* treeDecomposition
         );
-        ExactTreeDecompositionRanking solveAtNode(DataStructures::NiceNode* node) const;
+        ExactTreeDecompositionRanking solveAtNode(
+            DataStructures::NiceNode* node,
+            std::vector<ExactTreeDecompositionRanking> rankingsChildren = {}
+        ) const;
         virtual void setProperties(DataStructures::Graph* graph) = 0;
 
     private:
-        virtual Solvers::ExactTreeDecompositionRanking handleLeafNode(DataStructures::LeafNode* node) const = 0;
-        virtual Solvers::ExactTreeDecompositionRanking handleIntroduceNode(DataStructures::IntroduceNode* node) const = 0;
-        virtual Solvers::ExactTreeDecompositionRanking handleForgetVertexBag(DataStructures::ForgetNode* node) const = 0;
-        virtual Solvers::ExactTreeDecompositionRanking handleJoinNode(DataStructures::JoinNode* node) const = 0;
+        virtual Solvers::ExactTreeDecompositionRanking handleLeafNode(
+            DataStructures::LeafNode* node
+        ) const = 0;
+        virtual Solvers::ExactTreeDecompositionRanking handleIntroduceNode(
+            DataStructures::IntroduceNode* node,
+            const ExactTreeDecompositionRanking& rankingChild
+        ) const = 0;
+        virtual Solvers::ExactTreeDecompositionRanking handleForgetNode(
+            DataStructures::ForgetNode* node,
+            const ExactTreeDecompositionRanking& rankingChild
+        ) const = 0;
+        virtual Solvers::ExactTreeDecompositionRanking handleJoinNode(
+            DataStructures::JoinNode* node,
+            const ExactTreeDecompositionRanking& rankingLeftChild,
+            const ExactTreeDecompositionRanking& rankingRightChild
+        ) const = 0;
     };
 }
 

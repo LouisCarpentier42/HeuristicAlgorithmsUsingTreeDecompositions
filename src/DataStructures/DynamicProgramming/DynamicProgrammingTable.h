@@ -35,6 +35,7 @@ namespace DataStructures
         [[nodiscard]] bool hasReachedCapacity() const;
         [[nodiscard]] bool empty() const;
         [[nodiscard]] size_t getCapacity() const;
+        [[nodiscard]] size_t getNbEntries() const;
         void setCapacity(size_t capacity);
         void clear();
         void push(TableEntry* newEntry);

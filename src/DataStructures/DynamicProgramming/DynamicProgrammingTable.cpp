@@ -37,6 +37,11 @@ size_t DataStructures::DynamicProgrammingTable::getCapacity() const
     return capacity;
 }
 
+size_t DataStructures::DynamicProgrammingTable::getNbEntries() const
+{
+    return entries.size();
+}
+
 void DataStructures::DynamicProgrammingTable::setCapacity(size_t capacity)
 {
     this->capacity = capacity;
@@ -68,25 +73,9 @@ void DataStructures::DynamicProgrammingTable::push(DataStructures::TableEntry* n
         iterator++;
     }
 
-
     entries.insert(newEntry);
     if (entries.size() > capacity)
     {
-        // TODO remove one of the methods to prune the dynamic programming table
-//        // Remove all entries with the worst evaluation
-//        int worstEvaluation{(*entries.begin())->getEvaluation()};
-//        if ((*std::prev(entries.end()))->getEvaluation() == worstEvaluation)
-//        {
-//            // If all entries have the identical evaluation, then none should be removed or none remain
-//            return;
-//        }
-//        else
-//        {
-//            // Remove all entries with the worst evaluation
-//            while ((*entries.begin())->getEvaluation() == worstEvaluation)
-//                entries.erase(entries.begin());
-//        }
-
         // Find the range of elements that have the worst evaluation and select a random element from it to erase
         auto worstEntriesStart = entries.begin();
         auto worstEntriesEnd = entries.begin();
