@@ -5,8 +5,14 @@
 
 #include <utility>
 
-IO::Reader::Reader(std::string graphFilesDir, std::string treeDecompositionFilesDir, std::string experimentFilesDir, std::string resultFilesDir)
+IO::Reader::Reader(
+        std::string graphFilesDir,
+        std::string g6GraphFilesDir,
+        std::string treeDecompositionFilesDir,
+        std::string experimentFilesDir,
+        std::string resultFilesDir)
     : graphFilesDir{std::move(graphFilesDir)},
+      g6GraphFilesDir{std::move(g6GraphFilesDir)},
       treeDecompositionFilesDir{std::move(treeDecompositionFilesDir)},
       experimentFilesDir{std::move(experimentFilesDir)},
       resultFilesDir{std::move(resultFilesDir)}

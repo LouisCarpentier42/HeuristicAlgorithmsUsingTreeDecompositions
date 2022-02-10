@@ -7,5 +7,6 @@ c - the name of the graph to use
 c - the name of the (nice) tree decomposition to use
 c - the method for generating a colour function
 c
-experiment he005.gr he005_nice.tw random(3,0.01,1) exactTD(false,true)
+experiment PACE_heuristic/he005.gr PACE_heuristic/he005_nice.tw random(3,0.01,1) exactTD(false,true)
 experiment my_first_graph.gr my_first_graph_nice.tw random(3,0.01,1) exactTD(false,true)
+experiment graph5c/graph1.gr graph5c/graph1_nice.tw random(3,0.01,1) exactTD(false,true)

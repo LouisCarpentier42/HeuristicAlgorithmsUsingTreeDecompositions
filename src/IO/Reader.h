@@ -29,6 +29,7 @@ namespace IO
     {
     private:
         const std::string graphFilesDir;
+        const std::string g6GraphFilesDir;
         const std::string treeDecompositionFilesDir;
         const std::string experimentFilesDir;
         const std::string resultFilesDir;
@@ -36,11 +37,13 @@ namespace IO
     public:
         Reader(
             std::string graphFilesDir,
+            std::string g6GraphFilesDir,
             std::string treeDecompositionFilesDir,
             std::string experimentFilesDir,
             std::string resultFilesDir
         );
 
+        void readG6File(const std::string& filename) const;
         [[nodiscard]] DataStructures::Graph* readGraph(const std::string& filename) const;
         [[nodiscard]] DataStructures::TreeDecomposition readTreeDecomposition(const std::string& filename) const;
         [[nodiscard]] DataStructures::NiceTreeDecomposition readNiceTreeDecomposition(const std::string& filename) const;

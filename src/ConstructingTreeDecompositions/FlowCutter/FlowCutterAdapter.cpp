@@ -12,6 +12,9 @@
 #include <string>
 #include <array>
 
+
+static const std::string TREE_DECOMPOSITION_DIR = "../TreeDecompositionFiles/";
+
 void FlowCutter::computeHeuristicTreeDecomposition(const std::string& graphFile, int time)
 {
     // Initialize the command to run
@@ -20,9 +23,20 @@ void FlowCutter::computeHeuristicTreeDecomposition(const std::string& graphFile,
             "cd ../src/ConstructingTreeDecompositions/FlowCutter/flow-cutter-pace17 && timeout %ds ./flow_cutter_pace17 < ../../../../GraphFiles/%s",
             time, graphFile.c_str());
 
+    std::string treeFileDir = TREE_DECOMPOSITION_DIR;
+    std::string graphFormatted = graphFile;
+    if (graphFile.find('/') != std::string::npos)
+    {
+        treeFileDir += graphFile.substr(0, graphFile.find_last_of('/'));
+        graphFormatted = graphFile.substr(graphFile.find_last_of('/')+1);
+        char mkDirCommand[256];
+        sprintf(mkDirCommand, R"(mkdir %s)",treeFileDir.c_str());
+        system(mkDirCommand);
+    }
+
     // Create an output file with the same name
     char outFileName[256];
-    sprintf(outFileName, "../TreeDecompositionFiles/%s.tw", graphFile.substr(0, graphFile.size()-3).c_str());
+    sprintf(outFileName, "%s/%s.tw", treeFileDir.c_str(), graphFormatted.substr(0, graphFormatted.size()-3).c_str());
     std::ofstream outFile{outFileName};
     if (!outFile) {
         throw std::runtime_error("Output file couldn't be created!");

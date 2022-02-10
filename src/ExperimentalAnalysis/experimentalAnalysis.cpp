@@ -72,7 +72,6 @@ void computeComparisonScores(
             }
             if (currentColourAssignmentIsRelevant)
             {
-//                std::cout << "Relevant colouring: " << entry->getColourAssignments() << "\n";
                 isRelevant[i] = true;
                 break;
             }
@@ -80,11 +79,6 @@ void computeComparisonScores(
         evaluations[i] = entry->getEvaluation();
         i++;
     }
-
-//    std::cout << "isRelevant: ";
-//    for (bool r : isRelevant)
-//        std::cout << r << " ";
-//    std::cout << "\n";
 
     double accuracy{0.0};
     double nbRelevant{0.0};
@@ -134,6 +128,14 @@ std::map<std::string, std::map<DataStructures::NiceNode*, double>> compareHeuris
 
 void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& experiment)
 {
+    std::string treeDecompositionResultsDir;
+    if (experiment.exactTreeDecompositionSolver != nullptr && std::any_of(experiment.testInstances.begin(), experiment.testInstances.end(), [](auto instance){return instance.compareExactTD; }))
+    {
+        treeDecompositionResultsDir = experiment.resultFileName + "_accuracies/";
+        char command[256];
+        sprintf(command, R"(mkdir %s)", treeDecompositionResultsDir.c_str());
+        system(command);
+    }
     std::ofstream resultFile;
     resultFile.open(experiment.resultFileName + ".csv");
     resultFile << "Solver name,graph name,tree decomposition name,initial colouring name,";
@@ -200,7 +202,9 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
                     if (accuracyFiles.find(testInstance.treeDecompositionName) == accuracyFiles.end())
                     {
                         accuracyFiles[testInstance.treeDecompositionName] = std::ofstream{};
-                        accuracyFiles[testInstance.treeDecompositionName].open(experiment.resultFileName + "_accuracies_" + testInstance.treeDecompositionName.substr(0, testInstance.treeDecompositionName.size()-3) + ".csv");
+                        std::string fileName{testInstance.treeDecompositionName.substr(0, testInstance.treeDecompositionName.size()-3) + ".csv"};
+                        std::replace(fileName.begin(), fileName.end(), '/', '-');
+                        accuracyFiles[testInstance.treeDecompositionName].open(treeDecompositionResultsDir + fileName);
                         accuracyFiles[testInstance.treeDecompositionName] << "Solver name,graph name,initial colouring name,";
 
                         accuracyFiles[testInstance.treeDecompositionName] << "MAP,";
@@ -244,10 +248,7 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
                         }
                         file << (totalAccuracy / totalNbNodes) << ",";
                         for (int i{0}; i < 4; i++)
-                        {
                             file << (accuracyForType[i] / nbNodesForType[i]) << ",";
-                            std::cout << i << " " << accuracyForType[i] << " " << nbNodesForType[i] << "\n";
-                        }
 
                         for (int h{0}; h < treeHeight; h++)
                             file << (accuracyAtHeight[h] / nbNodesAtHeight[h]) << ",";
