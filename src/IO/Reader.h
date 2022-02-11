@@ -49,8 +49,17 @@ namespace IO
         [[nodiscard]] DataStructures::NiceTreeDecomposition readNiceTreeDecomposition(const std::string& filename) const;
         [[nodiscard]] ExperimentalAnalysis::Experiment readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const;
 
-        static std::vector<std::string> tokenize(std::string& line);
-        static int convertToInt(std::string& str);
+        [[nodiscard]] static const DataStructures::Evaluator* readEvaluator(const std::string& str);
+        [[nodiscard]] static Solvers::LeafNodeHandler* readLeafNodeHandler(const std::string& str);
+        [[nodiscard]] static Solvers::IntroduceNodeHandler* readIntroduceNodeHandler(const std::string& str);
+        [[nodiscard]] static Solvers::ForgetNodeHandler* readForgetNodeHandler(const std::string& str);
+        [[nodiscard]] static Solvers::JoinNodeHandler* readJoinNodeHandler(const std::string& str);
+        [[nodiscard]] static Solvers::EvaluationMerger* getEvaluationMerger(const std::string& str);
+        [[nodiscard]] static std::map<std::string, std::vector<DataStructures::ColourType>> readColouringString(const std::string& str, const DataStructures::Graph* graph);
+
+        static std::vector<std::string> tokenize(const std::string& line);
+        static int convertToInt(const std::string& str);
+        static std::vector<std::string> splitParameters(const std::string& str);
     };
 }
 

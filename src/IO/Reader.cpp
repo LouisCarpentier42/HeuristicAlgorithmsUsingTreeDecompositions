@@ -18,7 +18,7 @@ IO::Reader::Reader(
       resultFilesDir{std::move(resultFilesDir)}
 {}
 
-std::vector<std::string> IO::Reader::tokenize(std::string& line)
+std::vector<std::string> IO::Reader::tokenize(const std::string& line)
 {
     std::vector<std::string> tokens;
     std::istringstream iss(line);
@@ -28,11 +28,34 @@ std::vector<std::string> IO::Reader::tokenize(std::string& line)
     return tokens;
 }
 
-int IO::Reader::convertToInt(std::string& str)
+int IO::Reader::convertToInt(const std::string& str)
 {
     int num;
     std::stringstream ss;
     ss << str;
     ss >> num;
     return num;
+}
+
+std::vector<std::string> IO::Reader::splitParameters(const std::string& str)
+{
+    std::stringstream strStream(str);
+    std::string parametersString;
+    std::vector<std::string> allParameters;
+    while(std::getline(strStream, parametersString, '('))
+        allParameters.push_back(parametersString);
+
+    if (allParameters.size() == 1)
+        return allParameters;
+
+    allParameters.pop_back();
+    parametersString.pop_back();
+
+    std::string parameter;
+
+    std::stringstream parametersStringStream(parametersString);
+    while(std::getline(parametersStringStream, parameter, ','))
+        allParameters.push_back(parameter);
+
+    return allParameters;
 }
