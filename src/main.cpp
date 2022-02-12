@@ -1,4 +1,5 @@
 
+#include "rng.h"
 #include "ExperimentalAnalysis/Experiment.h"
 #include "ExperimentalAnalysis/experimentalAnalysis.h"
 #include "IO/Reader.h"
@@ -9,9 +10,10 @@
 #include "ConstructingTreeDecompositions/TreeDecompositionSolverTimer.h"
 #include "ConstructingTreeDecompositions/FlowCutter/FlowCutterAdapter.h"
 
+#include <cstring>
+
 int main(int argc, char** argv)
 {
-    // TODO include general seed variable somewhere
     if (argc == 1)
     {
         std::string defaultRootDir = "../../";
@@ -48,9 +50,45 @@ int main(int argc, char** argv)
         //    FlowCutter::computeHeuristicTreeDecomposition(graphFile, 2);
         //    Jdrasil::computeNiceTreeDecomposition(graphFile, treeFile);
     }
+    else if (strcmp(argv[1], "heuristic-algorithm") == 0)
+    {
+        DataStructures::Evaluator* problemEvaluator;
+        if (strcmp(argv[2], "MHV") == 0)
+            problemEvaluator = new DataStructures::BasicMHVEvaluator{};
+        else
+            throw std::runtime_error("'" + std::string(argv[2]) + "' is not a valid problem!");
+
+        IO::Reader reader{
+            IO::Reader::getParameter(argc, argv, "--graphFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--g6GraphFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--treeDecompositionFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--experimentFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--resultFilesDir", false)
+        };
+
+        std::string seed = IO::Reader::getParameter(argc, argv, "--seed", false);
+        if (!seed.empty())
+            RNG::setRNG(std::strtoll(seed.c_str(), nullptr, 10));
+
+        Solvers::HeuristicTreeDecompositionSolver solver{
+            static_cast<size_t>(IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--nbSolutionsToKeep", true))),
+            IO::Reader::readEvaluator(argc, argv),
+            IO::Reader::readLeafNodeHandler(argc, argv),
+            IO::Reader::readIntroduceNodeHandler(argc, argv),
+            IO::Reader::readForgetNodeHandler(argc, argv),
+            IO::Reader::readJoinNodeHandler(argc, argv)
+        };
+
+        DataStructures::Graph* graph = reader.readGraph(IO::Reader::getParameter(argc, argv, "--graphFile", true));
+        graph->setInitialColours(IO::Reader::readColouringVector(argc, argv, graph));
+        DataStructures::NiceTreeDecomposition treeDecomposition = reader.readNiceTreeDecomposition(IO::Reader::getParameter(argc, argv, "--treeDecompositionFile", true));
+
+        solver.solve(graph, &treeDecomposition);
+
+        std::cout << "Evaluation for '" << argv[2] << "': " << problemEvaluator->evaluate(graph) << "." << std::endl;
+    }
     else
     {
-
+        throw std::runtime_error("Invalid argument '" + std::string{argv[1]} + "'!");
     }
-
 }

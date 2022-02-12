@@ -7,7 +7,6 @@
 #include "../Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
 #include "../Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h"
 
-#include <random>
 
 
 ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const
@@ -89,12 +88,12 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
             {
                 testInstances.push_back(
                     ExperimentalAnalysis::TestInstance{
-                        graph,
-                        tokens[1],
-                        tokens[2],
-                        readColouringString(tokens[3], graph),
-                        false,
-                        false
+                            graph,
+                            tokens[1],
+                            tokens[2],
+                            readColouringVector(tokens[3], graph),
+                            false,
+                            false
                     }
                 );
             }
@@ -105,10 +104,10 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
                 {
                     testInstances.push_back(
                         ExperimentalAnalysis::TestInstance{
-                            graph,
-                            tokens[1],
-                            tokens[2],
-                            readColouringString(tokens[3], graph),
+                                graph,
+                                tokens[1],
+                                tokens[2],
+                                readColouringVector(tokens[3], graph),
                             parameters[1] == "true",
                             parameters[2] == "true"
                         }

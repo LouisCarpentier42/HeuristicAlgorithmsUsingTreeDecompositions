@@ -87,4 +87,4 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHVSolutionIterator.h
         src/Solvers/ExactTreeDecompositionSolverBase.h
         src/Solvers/ExactTreeDecompositionSolverBase.cpp
-        src/IO/ReadG6File.cpp src/IO/ReadComponents.cpp)
+        src/IO/ReadG6File.cpp src/rng.h src/IO/readEvaluator.cpp src/IO/readLeafNodeHandler.cpp src/IO/readIntroduceNodeHandler.cpp src/IO/readForgetNodeHandler.cpp src/IO/readJoinNodeHandler.cpp src/IO/readColouringVector.cpp)

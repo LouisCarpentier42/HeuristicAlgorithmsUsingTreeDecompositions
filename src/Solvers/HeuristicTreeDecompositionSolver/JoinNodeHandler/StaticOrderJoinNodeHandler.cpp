@@ -2,10 +2,10 @@
 // Created by louis on 21/11/2021.
 //
 #include "ConcreteJoinNodeHandlers.h"
+#include "../../../rng.h"
 
 #include <numeric>
 #include <algorithm>
-#include <random>
 
 Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(
         const Solvers::EvaluationMerger* evaluationMerger,
@@ -17,7 +17,6 @@ void Solvers::StaticOrderJoinNodeHandler::setGraph(const DataStructures::Graph* 
 {
     NodeHandler::setGraph(graphToSolve);
 
-    static std::mt19937 rng{std::random_device{}()};
     std::vector<DataStructures::VertexType> orderToColourVertices(graphToSolve->getNbVertices());
     std::iota(orderToColourVertices.begin(), orderToColourVertices.end(), 0);
     switch (order)
@@ -33,7 +32,7 @@ void Solvers::StaticOrderJoinNodeHandler::setGraph(const DataStructures::Graph* 
                       [graphToSolve](auto v1, auto v2){ return graphToSolve->getDegree(v1) < graphToSolve->getDegree(v2); });
             break;
         case Order::random:
-            std::shuffle(orderToColourVertices.begin(), orderToColourVertices.end(), rng);
+            std::shuffle(orderToColourVertices.begin(), orderToColourVertices.end(), RNG::rng);
             break;
     }
     // Save the vertices that are not precoloured, because those are the ones that should be coloured

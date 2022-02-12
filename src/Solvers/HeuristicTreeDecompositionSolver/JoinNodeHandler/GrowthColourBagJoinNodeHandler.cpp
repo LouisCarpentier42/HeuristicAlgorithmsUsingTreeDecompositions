@@ -7,6 +7,7 @@
 void Solvers::GrowthColourBagJoinNodeHandler::handleJoinNode(DataStructures::JoinNode *node) const
 {
     // TODO GrowthColourBagJoinNodeHandler
+    // TODO add in param file for tuner
 //    DataStructures::ColouringQueue leftChildSolutions = solver->solveAtNode(node->getLeftChild());
 //    DataStructures::ColouringQueue rightChildSolutions = solver->solveAtNode(node->getRightChild());
 //

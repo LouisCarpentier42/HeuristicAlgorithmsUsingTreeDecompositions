@@ -3,7 +3,8 @@
 //
 #include "Reader.h"
 
-#include <utility>
+#include <cstring>
+
 
 IO::Reader::Reader(
         std::string graphFilesDir,
@@ -17,6 +18,23 @@ IO::Reader::Reader(
       experimentFilesDir{std::move(experimentFilesDir)},
       resultFilesDir{std::move(resultFilesDir)}
 {}
+
+
+std::string IO::Reader::getParameter(int argc, char** argv, const std::string& paramName, bool isObligatedParam)
+{
+    for (int i{0}; i < argc-1; i++)
+    {
+        if (strcmp(argv[i], paramName.c_str()) == 0)
+        {
+            return std::string{argv[i+1]};
+        }
+    }
+
+    if (isObligatedParam)
+        throw std::runtime_error("Obligated parameter '" + std::string(paramName) + "' is not specified!");
+
+    return std::string{};
+}
 
 std::vector<std::string> IO::Reader::tokenize(const std::string& line)
 {

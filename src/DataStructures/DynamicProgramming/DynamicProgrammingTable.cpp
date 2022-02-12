@@ -3,9 +3,9 @@
 //
 
 #include "DynamicProgrammingTable.h"
+#include "../../rng.h"
 
 #include <algorithm>
-#include <random>
 
 DataStructures::DynamicProgrammingTable::DynamicProgrammingTable(size_t capacity)
     : capacity{capacity} {}
@@ -85,9 +85,8 @@ void DataStructures::DynamicProgrammingTable::push(DataStructures::TableEntry* n
         while (worstEntriesEnd != entries.end() &&
             (*worstEntriesEnd)->getEvaluation() == (*entries.begin())->getEvaluation());
 
-        static std::mt19937 rng{std::random_device{}()};
         std::uniform_int_distribution<> dis(0, std::distance(worstEntriesStart, worstEntriesEnd) - 1);
-        std::advance(worstEntriesStart, dis(rng));
+        std::advance(worstEntriesStart, dis(RNG::rng));
         entries.erase(worstEntriesStart);
     }
 }

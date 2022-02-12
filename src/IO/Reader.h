@@ -50,13 +50,20 @@ namespace IO
         [[nodiscard]] ExperimentalAnalysis::Experiment readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const;
 
         [[nodiscard]] static const DataStructures::Evaluator* readEvaluator(const std::string& str);
+        [[nodiscard]] static const DataStructures::Evaluator* readEvaluator(int argc, char** argv);
         [[nodiscard]] static Solvers::LeafNodeHandler* readLeafNodeHandler(const std::string& str);
+        [[nodiscard]] static Solvers::LeafNodeHandler* readLeafNodeHandler(int argc, char** argv);
         [[nodiscard]] static Solvers::IntroduceNodeHandler* readIntroduceNodeHandler(const std::string& str);
+        [[nodiscard]] static Solvers::IntroduceNodeHandler* readIntroduceNodeHandler(int argc, char** argv);
         [[nodiscard]] static Solvers::ForgetNodeHandler* readForgetNodeHandler(const std::string& str);
+        [[nodiscard]] static Solvers::ForgetNodeHandler* readForgetNodeHandler(int argc, char** argv);
         [[nodiscard]] static Solvers::JoinNodeHandler* readJoinNodeHandler(const std::string& str);
+        [[nodiscard]] static Solvers::JoinNodeHandler* readJoinNodeHandler(int argc, char** argv);
         [[nodiscard]] static Solvers::EvaluationMerger* getEvaluationMerger(const std::string& str);
-        [[nodiscard]] static std::map<std::string, std::vector<DataStructures::ColourType>> readColouringString(const std::string& str, const DataStructures::Graph* graph);
+        [[nodiscard]] static std::map<std::string, std::vector<DataStructures::ColourType>> readColouringVector(const std::string& str, const DataStructures::Graph* graph);
+        [[nodiscard]] static std::vector<DataStructures::ColourType> readColouringVector(int argc, char** argv, const DataStructures::Graph* graph);
 
+        static std::string getParameter(int argc, char** argv, const std::string& paramName, bool isObligatedParam);
         static std::vector<std::string> tokenize(const std::string& line);
         static int convertToInt(const std::string& str);
         static std::vector<std::string> splitParameters(const std::string& str);

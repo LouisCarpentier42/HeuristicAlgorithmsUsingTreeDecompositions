@@ -3,11 +3,11 @@
 //
 
 #include "GrowthMHV.h"
+#include "../../../rng.h"
 
 #include <algorithm>
 #include <set>
 #include <numeric>
-#include <random>
 #include <functional>
 
 
@@ -102,10 +102,9 @@ void MaximumHappyVertices::GrowthMHV::solve(DataStructures::Graph* graph) const
         }
         else
         {
-            static std::mt19937 rng{std::random_device{}()};
             std::uniform_int_distribution<> distribution(0, graph->getNbColours());
             DataStructures::VertexType lf_vertex{*LF_vertices.begin()};
-            DataStructures::ColourType colour = distribution(rng);
+            DataStructures::ColourType colour = distribution(RNG::rng);
             graph->setColour(lf_vertex, colour);
             verticesToUpdate = verticesAtDistance(1, lf_vertex, graph);
         }

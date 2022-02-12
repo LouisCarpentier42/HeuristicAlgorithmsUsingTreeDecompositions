@@ -23,14 +23,12 @@ c - the handler for forget nodes (potentially with its parameters)
 c - the handler for join nodes (potentially with its parameters)
 c
 problem MaximumHappyVertices
-nbRepetitions 2
-baseline greedyMHV
-baseline growthMHV
+nbRepetitions 1
 heuristicTD tdAlgo_min 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(min)
 heuristicTD tdAlgo_max 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(max)
 heuristicTD tdAlgo_avg 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(avg)
 c heuristicTD greedyColourBag2 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(min)
-c heuristicTD mostCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostColouredNeighbours,avg)
-c heuristicTD fewestCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(DynamicOrderJoinNodeHandler,avg)
-c heuristicTD mostHappy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostPotentialHappyNeighbours,avg)
-c heuristicTD most%Happy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(mostPercentPotentialHappyNeighbours,avg)
+c heuristicTD mostCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(avg,mostColouredNeighbour)
+c heuristicTD fewestCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(avg,DynamicOrderJoinNodeHandle)
+c heuristicTD mostHappy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(avg,ostPotentialHappyNeighbours)
+c heuristicTD most%Happy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(avg,mostPercentPotentialHappyNeighbours)
