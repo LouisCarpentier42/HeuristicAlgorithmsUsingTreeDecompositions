@@ -6,7 +6,7 @@
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONSOLVERBASE_H
 
 #include "../DataStructures/Graph/Graph.h"
-#include "ExactTreeDecompositionUtility/ExactTreeDecompositionRanking.h"
+#include "SolversUtility/ExactTreeDecompositionRanking.h"
 #include "../DataStructures/TreeDecomposition/TreeDecomposition.h"
 #include "../DataStructures/TreeDecomposition/LeafNode.h"
 #include "../DataStructures/TreeDecomposition/IntroduceNode.h"

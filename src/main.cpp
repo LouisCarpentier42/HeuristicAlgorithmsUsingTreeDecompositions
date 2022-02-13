@@ -1,54 +1,130 @@
 
 #include "rng.h"
+#include "IO/Reader.h"
 #include "ExperimentalAnalysis/Experiment.h"
 #include "ExperimentalAnalysis/experimentalAnalysis.h"
-#include "IO/Reader.h"
 #include "ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.h"
 #include "DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.h"
 
 #include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHVSolutionIterator.h"
+#include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h"
+#include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.h"
 #include "ConstructingTreeDecompositions/TreeDecompositionSolverTimer.h"
 #include "ConstructingTreeDecompositions/FlowCutter/FlowCutterAdapter.h"
+#include "Solvers/SolversUtility/ColouringIterator.h"
 
 #include <cstring>
 
 int main(int argc, char** argv)
 {
+    std::string defaultRootDir = "../../";
+    std::string defaultGraphFilesDir = defaultRootDir + "GraphFiles/";
+    std::string defaultG6GraphFilesDir = defaultGraphFilesDir + "g6GraphFiles/";
+    std::string defaultTreeDecompositionFilesDir = defaultRootDir + "TreeDecompositionFiles/";
+    std::string defaultExperimentFilesDir = defaultRootDir + "ExperimentFiles/";
+    std::string defaultResultFilesDir = defaultRootDir + "ResultFiles/";
+    IO::Reader defaultReader{
+            defaultGraphFilesDir,
+            defaultG6GraphFilesDir,
+            defaultTreeDecompositionFilesDir,
+            defaultExperimentFilesDir,
+            defaultResultFilesDir
+    };
     if (argc == 1)
     {
-        std::string defaultRootDir = "../../";
-        std::string graphFilesDir = defaultRootDir + "GraphFiles/";
-        std::string g6GraphFilesDir = graphFilesDir + "g6GraphFiles/";
-        std::string treeDecompositionFilesDir = defaultRootDir + "TreeDecompositionFiles/";
-        std::string experimentFilesDir = defaultRootDir + "ExperimentFiles/";
-        std::string resultFilesDir = defaultRootDir + "ResultFiles/";
-        IO::Reader reader{
-            graphFilesDir,
-            g6GraphFilesDir,
-            treeDecompositionFilesDir,
-            experimentFilesDir,
-            resultFilesDir
-        };
-
         std::string solverFile{"initial_solvers.sol"};
         std::string experimentFile{"initial_experiment.exp"};
-        ExperimentalAnalysis::Experiment experiment = reader.readExperiment(solverFile, experimentFile);
-        ExperimentalAnalysis::executeExperiment(reader, experiment);
+        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
+        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
 
-        //    DataStructures::Graph* graph = experiment.testInstances[0].graph;
-        //    std::vector<DataStructures::ColourType> colouring = experiment.testInstances[0].colourings[0];
-        //    graph->setInitialColours(colouring);
+//        std::vector<DataStructures::ColourType> colouring;
+//        DataStructures::Graph* graph = experiment.testInstances[0].graph;
+//        for (auto const& [name, c] : experiment.testInstances[0].colourings)
+//        {
+//            colouring = c;
+//            break;
+//        }
+//        graph->setInitialColours(colouring);
 
-        //    reader.readG6File("graph5c");
-        //    std::string name{"my_first_graph"};
-        //    std::string graphFile{name + ".gr"};
-        //    std::string treeFile{name + ".tw"};f
-        //    std::string niceTreeFile{name + "_nice.tw"};
-        //
-        //    TreeDecompositionSolverTimer timer{1.0, 4.0, 10000.0, 0.20};
-        //    timer.executeSolver(graphFile);
-        //    FlowCutter::computeHeuristicTreeDecomposition(graphFile, 2);
-        //    Jdrasil::computeNiceTreeDecomposition(graphFile, treeFile);
+//        reader.readG6File("graph5c");
+//        std::string name{"my_first_graph"};
+//        std::string graphFile{name + ".gr"};
+//        std::string treeFile{name + ".tw"};f
+//        std::string niceTreeFile{name + "_nice.tw"};
+//
+//        TreeDecompositionSolverTimer timer{1.0, 4.0, 10000.0, 0.20};
+//        timer.executeSolver(graphFile);
+//        FlowCutter::computeHeuristicTreeDecomposition(graphFile, 2);
+//        Jdrasil::computeNiceTreeDecomposition(graphFile, treeFile);
+    }
+    else if (strcmp(argv[1], "stress-test") == 0)
+    {
+        DataStructures::Evaluator* problemEvaluator;
+        Solvers::SolverBase* exactBruteForceSolver;
+        Solvers::ExactTreeDecompositionSolverBase* exactTreeDecompositionSolver;
+        if (strcmp(argv[2], "MHV") == 0)
+        {
+            problemEvaluator = new DataStructures::BasicMHVEvaluator{};
+            exactBruteForceSolver = new MaximumHappyVertices::ExactBruteForceMHV{};
+            exactTreeDecompositionSolver = new MaximumHappyVertices::ExactTreeDecompositionMHV{};
+        }
+        else
+        {
+            throw std::runtime_error("'" + std::string(argv[2]) + "' is not a valid problem!");
+        }
+
+        std::ifstream stressTests{defaultExperimentFilesDir + "stress_test.txt"};
+        if (!stressTests)
+            throw std::runtime_error("No stress-test file found at '" + defaultExperimentFilesDir + "stress_test.txt'!");
+
+        std::string line;
+        std::getline(stressTests, line);
+        std::vector<std::string> tokens = IO::Reader::tokenize(line);
+
+        int counter{0};
+        while (stressTests)
+        {
+            counter++;
+
+            if (tokens.size() != 4)
+            {
+                std::cerr << "The line '" << line << "' does not contain 4 arguments and is ignored.\n";
+            }
+            else
+            {
+                DataStructures::Graph* graph = defaultReader.readGraph(tokens[0]);
+                DataStructures::NiceTreeDecomposition niceTreeDecomposition = defaultReader.readNiceTreeDecomposition(tokens[1]);
+
+                std::string colourString = "random(" + tokens[2] + "," + tokens[3] + ",1)";
+                std::map<std::string, std::vector<DataStructures::ColourType>> colourVectors = IO::Reader::readColouringVector(colourString, graph);
+
+                for (auto const& [name, colourVector] : colourVectors)
+                {
+                    graph->removeInitialColours();
+                    graph->setInitialColours(colourVector);
+
+                    exactBruteForceSolver->solve(graph);
+                    int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
+                    graph->removeColours();
+
+                    int tdEvaluation{exactTreeDecompositionSolver->solve(graph, &niceTreeDecomposition)};
+                    graph->removeColours();
+
+                    if (bruteForceEvaluation != tdEvaluation)
+                    {
+                        std::cerr << "[brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "] - line: '" << line << "'\n";
+                    }
+                }
+
+                if (counter % 100 == 0)
+                {
+                    std::cout << "Done with stress test " << counter << "\n";
+                }
+            }
+
+            std::getline(stressTests, line);
+            tokens = IO::Reader::tokenize(line);
+        }
     }
     else if (strcmp(argv[1], "heuristic-algorithm") == 0)
     {

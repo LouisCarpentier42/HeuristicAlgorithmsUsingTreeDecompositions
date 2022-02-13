@@ -1,0 +1,3 @@
+PACE_heuristic/he005.gr PACE_heuristic/he005_nice.tw 3 0.01
+my_first_graph.gr my_first_graph_nice.tw 2 0.01
+graph5c/graph1.gr graph5c/graph1_nice.tw 2 0.01

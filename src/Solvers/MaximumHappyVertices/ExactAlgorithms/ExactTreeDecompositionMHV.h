@@ -11,7 +11,7 @@
 #include "../../../DataStructures/TreeDecomposition/IntroduceNode.h"
 #include "../../../DataStructures/TreeDecomposition/ForgetNode.h"
 #include "../../../DataStructures/TreeDecomposition/JoinNode.h"
-#include "../../ExactTreeDecompositionUtility/ExactTreeDecompositionRanking.h"
+#include "../../SolversUtility/ExactTreeDecompositionRanking.h"
 #include "../../ExactTreeDecompositionSolverBase.h"
 
 #include <set>

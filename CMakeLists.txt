@@ -77,8 +77,8 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/EvaluationMerger.h
         src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.cpp
         src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h
-        src/Solvers/ExactTreeDecompositionUtility/ExactTreeDecompositionRanking.cpp
-        src/Solvers/ExactTreeDecompositionUtility/ExactTreeDecompositionRanking.h
+        src/Solvers/SolversUtility/ExactTreeDecompositionRanking.cpp
+        src/Solvers/SolversUtility/ExactTreeDecompositionRanking.h
         src/DataStructures/Solution/ColourAssignments.cpp
         src/DataStructures/Solution/ColourAssignments.h
         src/DataStructures/Solution/HappyVerticesAssignments.cpp
@@ -87,4 +87,4 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHVSolutionIterator.h
         src/Solvers/ExactTreeDecompositionSolverBase.h
         src/Solvers/ExactTreeDecompositionSolverBase.cpp
-        src/IO/ReadG6File.cpp src/rng.h src/IO/readEvaluator.cpp src/IO/readLeafNodeHandler.cpp src/IO/readIntroduceNodeHandler.cpp src/IO/readForgetNodeHandler.cpp src/IO/readJoinNodeHandler.cpp src/IO/readColouringVector.cpp)
+        src/IO/ReadG6File.cpp src/rng.h src/IO/readEvaluator.cpp src/IO/readLeafNodeHandler.cpp src/IO/readIntroduceNodeHandler.cpp src/IO/readForgetNodeHandler.cpp src/IO/readJoinNodeHandler.cpp src/IO/readColouringVector.cpp src/Solvers/SolversUtility/ColouringIterator.cpp src/Solvers/SolversUtility/ColouringIterator.h src/Solvers/SolversUtility/SolutionIterator.h src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.cpp src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.h)
