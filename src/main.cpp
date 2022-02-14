@@ -82,6 +82,7 @@ int main(int argc, char** argv)
         std::vector<std::string> tokens = IO::Reader::tokenize(line);
 
         int counter{0};
+        int nbMistakes{0};
         while (stressTests)
         {
             counter++;
@@ -92,33 +93,35 @@ int main(int argc, char** argv)
             }
             else
             {
+                // TODO put bottom two lines in reader
+//                FlowCutter::computeHeuristicTreeDecomposition(tokens[0], 1);
+//                Jdrasil::computeNiceTreeDecomposition(tokens[0], tokens[0].substr(0, tokens[0].size()-3) + ".tw");
 
-                FlowCutter::computeHeuristicTreeDecomposition(tokens[0], 1);
-                Jdrasil::computeNiceTreeDecomposition(tokens[0], tokens[0].substr(0, tokens[0].size()-3) + ".tw");
+                DataStructures::Graph* graph = defaultReader.readGraph(tokens[0]);
+                DataStructures::NiceTreeDecomposition niceTreeDecomposition = defaultReader.readNiceTreeDecomposition(tokens[1]);
 
-//                DataStructures::Graph* graph = defaultReader.readGraph(tokens[0]);
-//                DataStructures::NiceTreeDecomposition niceTreeDecomposition = defaultReader.readNiceTreeDecomposition(tokens[1]);
-//
-//                std::string colourString = "random(" + tokens[2] + "," + tokens[3] + ",1)";
-//                std::map<std::string, std::vector<DataStructures::ColourType>> colourVectors = IO::Reader::readColouringVector(colourString, graph);
-//
-//                for (auto const& [name, colourVector] : colourVectors)
-//                {
-//                    graph->removeInitialColours();
-//                    graph->setInitialColours(colourVector);
-//
-//                    exactBruteForceSolver->solve(graph);
-//                    int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
-//                    graph->removeColours();
-//
-//                    int tdEvaluation{exactTreeDecompositionSolver->solve(graph, &niceTreeDecomposition)};
-//                    graph->removeColours();
-//
-//                    if (bruteForceEvaluation != tdEvaluation)
-//                    {
-//                        std::cerr << "[brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "] - line: '" << line << "'\n";
-//                    }
-//                }
+                std::string colourString = "random(" + tokens[2] + "," + tokens[3] + ",1)";
+                std::map<std::string, std::vector<DataStructures::ColourType>> colourVectors = IO::Reader::readColouringVector(colourString, graph);
+
+                for (auto const& [name, colourVector] : colourVectors)
+                {
+                    graph->removeInitialColours();
+                    graph->setInitialColours(colourVector);
+
+                    exactBruteForceSolver->solve(graph);
+                    int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
+                    graph->removeColours();
+
+                    int tdEvaluation{exactTreeDecompositionSolver->solve(graph, &niceTreeDecomposition)};
+                    graph->removeColours();
+
+                    std::cout << "[brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "]\n";
+                    if (bruteForceEvaluation != tdEvaluation)
+                    {
+                        std::cerr << "[ERROR] - line: '" << line << "'\n";
+                        nbMistakes++;
+                    }
+                }
 
                 if (counter % 50 == 0)
                 {
@@ -128,6 +131,15 @@ int main(int argc, char** argv)
 
             std::getline(stressTests, line);
             tokens = IO::Reader::tokenize(line);
+        }
+
+        if (nbMistakes == 0)
+        {
+            std::cout << "All stress tests succeeded!\n";
+        }
+        else
+        {
+            std::cout << nbMistakes << " stress tests failed!\n";
         }
     }
     else if (strcmp(argv[1], "heuristic-algorithm") == 0)
