@@ -13,14 +13,14 @@
 #include <array>
 
 
-static const std::string TREE_DECOMPOSITION_DIR = "../TreeDecompositionFiles/";
+static const std::string TREE_DECOMPOSITION_DIR = "../../TreeDecompositionFiles/";
 
 void FlowCutter::computeHeuristicTreeDecomposition(const std::string& graphFile, int time)
 {
     // Initialize the command to run
     char command[256];
     sprintf(command,
-            "cd ../src/ConstructingTreeDecompositions/FlowCutter/flow-cutter-pace17 && timeout %ds ./flow_cutter_pace17 < ../../../../GraphFiles/%s",
+            "cd ../../src/ConstructingTreeDecompositions/FlowCutter/flow-cutter-pace17 && timeout %ds ./flow_cutter_pace17 < ../../../../GraphFiles/%s",
             time, graphFile.c_str());
 
     std::string treeFileDir = TREE_DECOMPOSITION_DIR;
@@ -39,7 +39,7 @@ void FlowCutter::computeHeuristicTreeDecomposition(const std::string& graphFile,
     sprintf(outFileName, "%s/%s.tw", treeFileDir.c_str(), graphFormatted.substr(0, graphFormatted.size()-3).c_str());
     std::ofstream outFile{outFileName};
     if (!outFile) {
-        throw std::runtime_error("Output file couldn't be created!");
+        throw std::runtime_error("Output file couldn't be created: " + std::string{outFileName});
     }
 
     std::array<char, 256> buffer{};

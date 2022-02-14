@@ -92,31 +92,35 @@ int main(int argc, char** argv)
             }
             else
             {
-                DataStructures::Graph* graph = defaultReader.readGraph(tokens[0]);
-                DataStructures::NiceTreeDecomposition niceTreeDecomposition = defaultReader.readNiceTreeDecomposition(tokens[1]);
 
-                std::string colourString = "random(" + tokens[2] + "," + tokens[3] + ",1)";
-                std::map<std::string, std::vector<DataStructures::ColourType>> colourVectors = IO::Reader::readColouringVector(colourString, graph);
+                FlowCutter::computeHeuristicTreeDecomposition(tokens[0], 1);
+                Jdrasil::computeNiceTreeDecomposition(tokens[0], tokens[0].substr(0, tokens[0].size()-3) + ".tw");
 
-                for (auto const& [name, colourVector] : colourVectors)
-                {
-                    graph->removeInitialColours();
-                    graph->setInitialColours(colourVector);
+//                DataStructures::Graph* graph = defaultReader.readGraph(tokens[0]);
+//                DataStructures::NiceTreeDecomposition niceTreeDecomposition = defaultReader.readNiceTreeDecomposition(tokens[1]);
+//
+//                std::string colourString = "random(" + tokens[2] + "," + tokens[3] + ",1)";
+//                std::map<std::string, std::vector<DataStructures::ColourType>> colourVectors = IO::Reader::readColouringVector(colourString, graph);
+//
+//                for (auto const& [name, colourVector] : colourVectors)
+//                {
+//                    graph->removeInitialColours();
+//                    graph->setInitialColours(colourVector);
+//
+//                    exactBruteForceSolver->solve(graph);
+//                    int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
+//                    graph->removeColours();
+//
+//                    int tdEvaluation{exactTreeDecompositionSolver->solve(graph, &niceTreeDecomposition)};
+//                    graph->removeColours();
+//
+//                    if (bruteForceEvaluation != tdEvaluation)
+//                    {
+//                        std::cerr << "[brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "] - line: '" << line << "'\n";
+//                    }
+//                }
 
-                    exactBruteForceSolver->solve(graph);
-                    int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
-                    graph->removeColours();
-
-                    int tdEvaluation{exactTreeDecompositionSolver->solve(graph, &niceTreeDecomposition)};
-                    graph->removeColours();
-
-                    if (bruteForceEvaluation != tdEvaluation)
-                    {
-                        std::cerr << "[brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "] - line: '" << line << "'\n";
-                    }
-                }
-
-                if (counter % 100 == 0)
+                if (counter % 50 == 0)
                 {
                     std::cout << "Done with stress test " << counter << "\n";
                 }
