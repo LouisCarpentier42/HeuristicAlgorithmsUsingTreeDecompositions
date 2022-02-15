@@ -5,17 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/main.cpp
-        src/ConstructingTreeDecompositions/FlowCutter/FlowCutterAdapter.cpp
-        src/ConstructingTreeDecompositions/FlowCutter/FlowCutterAdapter.h
         src/DataStructures/TreeDecomposition/Node.cpp
         src/DataStructures/TreeDecomposition/Node.h
         src/IO/Reader.cpp
         src/IO/Reader.h
-        src/ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.cpp
-        src/ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.h
         src/DataStructures/TreeDecomposition/TreeDecomposition.h
-        src/ConstructingTreeDecompositions/TreeDecompositionSolverTimer.cpp
-        src/ConstructingTreeDecompositions/TreeDecompositionSolverTimer.h
         src/DataStructures/Graph/Graph.cpp
         src/DataStructures/Graph/Graph.h
         src/Solvers/SolverBase.h
@@ -87,4 +81,4 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHVSolutionIterator.h
         src/Solvers/ExactTreeDecompositionSolverBase.h
         src/Solvers/ExactTreeDecompositionSolverBase.cpp
-        src/IO/ReadG6File.cpp src/rng.h src/IO/readEvaluator.cpp src/IO/readLeafNodeHandler.cpp src/IO/readIntroduceNodeHandler.cpp src/IO/readForgetNodeHandler.cpp src/IO/readJoinNodeHandler.cpp src/IO/readColouringVector.cpp src/Solvers/SolversUtility/ColouringIterator.cpp src/Solvers/SolversUtility/ColouringIterator.h src/Solvers/SolversUtility/SolutionIterator.h src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.cpp src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.h)
+        src/IO/ReadG6File.cpp src/rng.h src/IO/readEvaluator.cpp src/IO/readLeafNodeHandler.cpp src/IO/readIntroduceNodeHandler.cpp src/IO/readForgetNodeHandler.cpp src/IO/readJoinNodeHandler.cpp src/IO/readColouringVector.cpp src/Solvers/SolversUtility/ColouringIterator.cpp src/Solvers/SolversUtility/ColouringIterator.h src/Solvers/SolversUtility/SolutionIterator.h src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.cpp src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.h src/ConstructingTreeDecompositions/Constructor.cpp src/ConstructingTreeDecompositions/Constructor.h)

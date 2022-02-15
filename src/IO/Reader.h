@@ -27,20 +27,20 @@ namespace IO
 {
     class Reader
     {
-    private:
-        const std::string graphFilesDir;
-        const std::string g6GraphFilesDir;
-        const std::string treeDecompositionFilesDir;
-        const std::string experimentFilesDir;
-        const std::string resultFilesDir;
+    public:
+        const std::string& graphFilesDir;
+        const std::string& g6GraphFilesDir;
+        const std::string& treeDecompositionFilesDir;
+        const std::string& experimentFilesDir;
+        const std::string& resultFilesDir;
 
     public:
         Reader(
-            std::string graphFilesDir,
-            std::string g6GraphFilesDir,
-            std::string treeDecompositionFilesDir,
-            std::string experimentFilesDir,
-            std::string resultFilesDir
+            const std::string& graphFilesDir,
+            const std::string& g6GraphFilesDir,
+            const std::string& treeDecompositionFilesDir,
+            const std::string& experimentFilesDir,
+            const std::string& resultFilesDir
         );
 
         void readG6File(const std::string& filename) const;
@@ -67,6 +67,8 @@ namespace IO
         static std::vector<std::string> tokenize(const std::string& line);
         static int convertToInt(const std::string& str);
         static std::vector<std::string> splitParameters(const std::string& str);
+        static void createDirectory(const std::string& dir);
+        static bool pathExists(const std::string& path);
     };
 }
 

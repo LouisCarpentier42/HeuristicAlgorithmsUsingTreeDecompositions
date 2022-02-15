@@ -22,8 +22,9 @@ namespace DataStructures
          */
         [[nodiscard]] virtual int evaluate(const DataStructures::Graph* graph) const = 0;
 
-        /** // TODO doc
-         * Evaluate the given colour assignment.
+        /**
+         * Evaluate the given colour assignment for the given graph by computing the score of the
+         * vertices that have been recoloured, focussing on only a subset of the graph.
          *
          * @param recolouredVertices The vertices that have been recoloured and thus could influence the evaluation.
          * @param colourAssignments The colour assignments of all vertices.
@@ -39,7 +40,6 @@ namespace DataStructures
             const DataStructures::Graph* graph,
             int startEvaluation
         ) const = 0;
-
         [[nodiscard]] int evaluate(
             const DataStructures::VertexType& recolouredVertex,
             const DataStructures::ColourAssignments& colourAssignments,

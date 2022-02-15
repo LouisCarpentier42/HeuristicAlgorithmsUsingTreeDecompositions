@@ -3,15 +3,13 @@
 #include "IO/Reader.h"
 #include "ExperimentalAnalysis/Experiment.h"
 #include "ExperimentalAnalysis/experimentalAnalysis.h"
-#include "ConstructingTreeDecompositions/Jdrasil/JdrasilAdapter.h"
 #include "DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.h"
 
 #include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHVSolutionIterator.h"
 #include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h"
 #include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.h"
-#include "ConstructingTreeDecompositions/TreeDecompositionSolverTimer.h"
-#include "ConstructingTreeDecompositions/FlowCutter/FlowCutterAdapter.h"
 #include "Solvers/SolversUtility/ColouringIterator.h"
+#include "ConstructingTreeDecompositions/Constructor.h"
 
 #include <cstring>
 
@@ -24,18 +22,26 @@ int main(int argc, char** argv)
     std::string defaultExperimentFilesDir = defaultRootDir + "ExperimentFiles/";
     std::string defaultResultFilesDir = defaultRootDir + "ResultFiles/";
     IO::Reader defaultReader{
-            defaultGraphFilesDir,
-            defaultG6GraphFilesDir,
-            defaultTreeDecompositionFilesDir,
-            defaultExperimentFilesDir,
-            defaultResultFilesDir
+        defaultGraphFilesDir,
+        defaultG6GraphFilesDir,
+        defaultTreeDecompositionFilesDir,
+        defaultExperimentFilesDir,
+        defaultResultFilesDir
     };
+    std::string defaultFlowCutterDir = defaultRootDir + "src/ConstructingTreeDecompositions/FlowCutter/flow-cutter-pace17/";
+    std::string defaultJdrasilDir = defaultRootDir + "src/ConstructingTreeDecompositions/Jdrasil/";
+    ConstructTreeDecompositions::Constructor defaultConstructor{
+        defaultReader,
+        defaultFlowCutterDir,
+        defaultJdrasilDir
+    };
+
     if (argc == 1)
     {
-        std::string solverFile{"initial_solvers.sol"};
-        std::string experimentFile{"initial_experiment.exp"};
-        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
-        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
+//        std::string solverFile{"initial_solvers.sol"};
+//        std::string experimentFile{"initial_experiment.exp"};
+//        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
+//        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
 
 //        std::vector<DataStructures::ColourType> colouring;
 //        DataStructures::Graph* graph = experiment.testInstances[0].graph;
@@ -46,16 +52,18 @@ int main(int argc, char** argv)
 //        }
 //        graph->setInitialColours(colouring);
 
-//        reader.readG6File("graph5c");
+//        defaultReader.readG6File("graph5c");
 //        std::string name{"my_first_graph"};
 //        std::string graphFile{name + ".gr"};
-//        std::string treeFile{name + ".tw"};f
+//        std::string treeFile{name + ".tw"};
 //        std::string niceTreeFile{name + "_nice.tw"};
 //
 //        TreeDecompositionSolverTimer timer{1.0, 4.0, 10000.0, 0.20};
 //        timer.executeSolver(graphFile);
 //        FlowCutter::computeHeuristicTreeDecomposition(graphFile, 2);
 //        Jdrasil::computeNiceTreeDecomposition(graphFile, treeFile);
+
+//        defaultConstructor.constructWithFlowCutter("graph2c/graph1.gr", 0.5);
     }
     else if (strcmp(argv[1], "stress-test") == 0)
     {
@@ -93,9 +101,13 @@ int main(int argc, char** argv)
             }
             else
             {
-                // TODO put bottom two lines in reader
-//                FlowCutter::computeHeuristicTreeDecomposition(tokens[0], 1);
-//                Jdrasil::computeNiceTreeDecomposition(tokens[0], tokens[0].substr(0, tokens[0].size()-3) + ".tw");
+                if (!IO::Reader::pathExists(defaultReader.treeDecompositionFilesDir + tokens[1]))
+                {
+                    tokens[1] = defaultConstructor.constructNice(
+                                    ConstructTreeDecompositions::ConstructionAlgorithm::FlowCutter,
+                                    tokens[0],
+                                    0.5);
+                }
 
                 DataStructures::Graph* graph = defaultReader.readGraph(tokens[0]);
                 DataStructures::NiceTreeDecomposition niceTreeDecomposition = defaultReader.readNiceTreeDecomposition(tokens[1]);

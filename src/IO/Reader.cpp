@@ -4,19 +4,20 @@
 #include "Reader.h"
 
 #include <cstring>
+#include <sys/stat.h>
 
 
 IO::Reader::Reader(
-        std::string graphFilesDir,
-        std::string g6GraphFilesDir,
-        std::string treeDecompositionFilesDir,
-        std::string experimentFilesDir,
-        std::string resultFilesDir)
-    : graphFilesDir{std::move(graphFilesDir)},
-      g6GraphFilesDir{std::move(g6GraphFilesDir)},
-      treeDecompositionFilesDir{std::move(treeDecompositionFilesDir)},
-      experimentFilesDir{std::move(experimentFilesDir)},
-      resultFilesDir{std::move(resultFilesDir)}
+        const std::string& graphFilesDir,
+        const std::string& g6GraphFilesDir,
+        const std::string& treeDecompositionFilesDir,
+        const std::string& experimentFilesDir,
+        const std::string& resultFilesDir)
+    : graphFilesDir{graphFilesDir},
+      g6GraphFilesDir{g6GraphFilesDir},
+      treeDecompositionFilesDir{treeDecompositionFilesDir},
+      experimentFilesDir{experimentFilesDir},
+      resultFilesDir{resultFilesDir}
 {}
 
 
@@ -76,4 +77,18 @@ std::vector<std::string> IO::Reader::splitParameters(const std::string& str)
         allParameters.push_back(parameter);
 
     return allParameters;
+}
+
+void IO::Reader::createDirectory(const std::string& dir)
+{
+    if (!pathExists(dir))
+    {
+        system(("mkdir " + dir).c_str());
+    }
+}
+
+bool IO::Reader::pathExists(const std::string& path)
+{
+    struct stat buffer{};
+    return stat (path.c_str(), &buffer) == 0;
 }
