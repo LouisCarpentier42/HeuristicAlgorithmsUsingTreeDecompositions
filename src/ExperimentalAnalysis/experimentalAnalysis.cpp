@@ -129,13 +129,10 @@ std::map<std::string, std::map<DataStructures::NiceNode*, double>> compareHeuris
 
 void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& experiment)
 {
-    std::string treeDecompositionResultsDir;
+    std::string treeDecompositionResultsDir = experiment.resultFileName + "_accuracies/";
     if (experiment.exactTreeDecompositionSolver != nullptr && std::any_of(experiment.testInstances.begin(), experiment.testInstances.end(), [](auto instance){return instance.compareExactTD; }))
     {
-        treeDecompositionResultsDir = experiment.resultFileName + "_accuracies/";
-        char command[256];
-        sprintf(command, R"(mkdir %s)", treeDecompositionResultsDir.c_str());
-        system(command);
+        IO::Reader::createDirectory(treeDecompositionResultsDir);
     }
     std::ofstream resultFile;
     resultFile.open(experiment.resultFileName + ".csv");

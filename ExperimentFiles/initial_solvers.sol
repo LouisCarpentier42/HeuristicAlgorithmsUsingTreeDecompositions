@@ -24,7 +24,7 @@ c - the handler for join nodes (potentially with its parameters)
 c
 problem MaximumHappyVertices
 nbRepetitions 1
-heuristicTD tdAlgo_min 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(min)
+heuristicTD tdAlgo_min 8 colouredMHVEvaluator(6,2,-1) passive bestColour bestColour greedyColourBag(min)
 heuristicTD tdAlgo_max 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(max)
 heuristicTD tdAlgo_avg 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(avg)
 c heuristicTD greedyColourBag2 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(min)

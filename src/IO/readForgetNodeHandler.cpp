@@ -9,6 +9,8 @@ Solvers::ForgetNodeHandler* createForgetNodeHandler(std::vector<std::string> par
 {
     if (parameters[0] == "passive")
         return new Solvers::PassiveForgetNodeHandler{};
+    else if (parameters[0] == "bestColour")
+        return new Solvers::BestColourForgetNodeHandler{};
     throw std::runtime_error("Invalid forget node handler identifier is given: " + parameters[0] + "!");
 }
 

@@ -38,32 +38,10 @@ int main(int argc, char** argv)
 
     if (argc == 1)
     {
-//        std::string solverFile{"initial_solvers.sol"};
-//        std::string experimentFile{"initial_experiment.exp"};
-//        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
-//        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
-
-//        std::vector<DataStructures::ColourType> colouring;
-//        DataStructures::Graph* graph = experiment.testInstances[0].graph;
-//        for (auto const& [name, c] : experiment.testInstances[0].colourings)
-//        {
-//            colouring = c;
-//            break;
-//        }
-//        graph->setInitialColours(colouring);
-
-//        defaultReader.readG6File("graph5c");
-//        std::string name{"my_first_graph"};
-//        std::string graphFile{name + ".gr"};
-//        std::string treeFile{name + ".tw"};
-//        std::string niceTreeFile{name + "_nice.tw"};
-//
-//        TreeDecompositionSolverTimer timer{1.0, 4.0, 10000.0, 0.20};
-//        timer.executeSolver(graphFile);
-//        FlowCutter::computeHeuristicTreeDecomposition(graphFile, 2);
-//        Jdrasil::computeNiceTreeDecomposition(graphFile, treeFile);
-
-//        defaultConstructor.constructWithFlowCutter("graph2c/graph1.gr", 0.5);
+        std::string solverFile{"initial_solvers.sol"};
+        std::string experimentFile{"initial_experiment.exp"};
+        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
+        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
     }
     else if (strcmp(argv[1], "stress-test") == 0)
     {
