@@ -10,7 +10,7 @@ c
 c Furthermore there must be exactly one line starting with 'nbRepetitions' followed by an integer.
 c This number dictates how many times all solvers (baseline and heuristic TD) are executed on each problem instance.
 c
-c Lines that start with baseline are the baseline solvers used for comparison
+c Lines that start with 'baseline' are the baseline solvers used for comparison
 c
 c Lines starting with heuristicTD represent settings for the heuristic solver using tree decompositions
 c The arguments are as follows:
@@ -23,10 +23,12 @@ c - the handler for forget nodes (potentially with its parameters)
 c - the handler for join nodes (potentially with its parameters)
 c
 problem MaximumHappyVertices
+baseline greedyMHV
+baseline growthMHV
 nbRepetitions 1
-heuristicTD tdAlgo_min 8 colouredMHVEvaluator(6,2,-1) passive bestColour bestColour greedyColourBag(min)
-heuristicTD tdAlgo_max 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(max)
-heuristicTD tdAlgo_avg 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(avg)
+heuristicTD test 8 colouredMHVEvaluator(6,2,-1) passive bestColour bestColour growthColourBag(avg)
+c heuristicTD tdAlgo_max 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(max)
+c heuristicTD tdAlgo_avg 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(avg)
 c heuristicTD greedyColourBag2 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(min)
 c heuristicTD mostCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(avg,mostColouredNeighbour)
 c heuristicTD fewestCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(avg,DynamicOrderJoinNodeHandle)

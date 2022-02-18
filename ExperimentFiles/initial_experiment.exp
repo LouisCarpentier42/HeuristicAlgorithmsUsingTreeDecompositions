@@ -9,4 +9,4 @@ c - the method for generating a colour function
 c
 c experiment PACE_heuristic/he005.gr PACE_heuristic/he005_nice.tw random(3,0.01,1) exactTD(false,true)
 c experiment my_first_graph.gr my_first_graph_nice.tw random(3,0.01,1) exactTD(false,true)
-experiment graph5c/graph1.gr graph5c/graph1_nice.tw random(3,0.01,1) exactTD(false,true)
+experiment graph5c/graph1.gr graph5c/graph1_nice.tw random(3,0.01,1) exactTD(false,false)

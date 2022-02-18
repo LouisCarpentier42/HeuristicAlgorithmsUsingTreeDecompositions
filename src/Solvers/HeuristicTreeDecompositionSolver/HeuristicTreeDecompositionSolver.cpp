@@ -32,7 +32,7 @@ void Solvers::HeuristicTreeDecompositionSolver::solve(
     joinNodeHandler->setInputInstanceProperties(graph);
 
     solveAtNode(treeDecomposition->getRoot());
-//    std::cout << *treeDecomposition->getRoot()->getTable() << "\n"; // TODO remove
+
     treeDecomposition->getRoot()->getTable()->getBestEntry()->colourGraph(graph);
 }
 

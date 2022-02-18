@@ -10,10 +10,7 @@
 
 // TODO ideas for join bag:
 //  - when merging the colourings, when they differ to much better to skip them
-//  - if left colour and right colour give equal evaluation, try to maintain both
-//  - order of vertices when they are coloured during merge
-//  - Use the n best colourings (attention for uncoloured vertices for only one child)
-//  - Maybe colour vertices of bag in a growth-MHV fashion
+//  - if left colour and right colour give equal evaluation, try to maintain both -> for static order
 
 namespace Solvers
 {

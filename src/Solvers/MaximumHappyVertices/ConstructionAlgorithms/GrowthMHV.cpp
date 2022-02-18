@@ -26,8 +26,6 @@ public:
 
 const DataStructures::Graph* Comparator::graph = nullptr;
 static std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> vertexTypes{};
-static std::set<DataStructures::VertexType, Comparator> H_vertices(Comparator{});
-static std::set<DataStructures::VertexType, Comparator> U_vertices(Comparator{});
 static std::set<DataStructures::VertexType, Comparator> P_vertices(Comparator{});
 static std::set<DataStructures::VertexType, Comparator> LP_vertices(Comparator{});
 static std::set<DataStructures::VertexType, Comparator> LH_vertices(Comparator{});
@@ -40,8 +38,6 @@ void MaximumHappyVertices::GrowthMHV::solve(DataStructures::Graph* graph) const
     vertexTypes.clear();
     vertexTypes.resize(graph->getNbVertices());
     Comparator::graph = graph;
-    H_vertices.clear();
-    U_vertices.clear();
     P_vertices.clear();
     LP_vertices.clear();
     LH_vertices.clear();
@@ -113,14 +109,12 @@ void MaximumHappyVertices::GrowthMHV::solve(DataStructures::Graph* graph) const
         {
             switch (vertexTypes[vertex])
             {
-                case GrowthType::H_vertex: H_vertices.erase(vertex); break;
-                case GrowthType::U_vertex: U_vertices.erase(vertex); break;
                 case GrowthType::P_vertex: P_vertices.erase(vertex);break;
                 case GrowthType::LH_vertex: LH_vertices.erase(vertex); break;
                 case GrowthType::LU_vertex: LU_vertices.erase(vertex); break;
                 case GrowthType::LP_vertex: LP_vertices.erase(vertex); break;
                 case GrowthType::LF_vertex: LF_vertices.erase(vertex); break;
-                case GrowthType::TEMP_INVALID_TYPE: break;
+                default: break;
             }
             vertexTypes[vertex] = GrowthType::TEMP_INVALID_TYPE;
         }
@@ -166,7 +160,6 @@ void MaximumHappyVertices::GrowthMHV::setGrowthTypes(
 
         if (vertexIsUnhappy)
         {
-            U_vertices.insert(vertex);
             vertexTypes[vertex] = GrowthType::U_vertex;
         }
         else if (hasUncolouredNeighbour)
@@ -176,7 +169,6 @@ void MaximumHappyVertices::GrowthMHV::setGrowthTypes(
         }
         else
         {
-            H_vertices.insert(vertex);
             vertexTypes[vertex] = GrowthType::H_vertex;
         }
     }

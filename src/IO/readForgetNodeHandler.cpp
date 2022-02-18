@@ -25,6 +25,7 @@ Solvers::ForgetNodeHandler* IO::Reader::readForgetNodeHandler(int argc, char** a
     std::vector<std::string> parameters;
     parameters.push_back(forgetNodeHandler);
 //    if (forgetNodeHandler == "passive") {}
+//    if (forgetNodeHandler == "bestColour") {}
 
     return createForgetNodeHandler(parameters);
 }
