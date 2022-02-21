@@ -8,40 +8,45 @@
 Solvers::JoinNodeHandler* createJoinNodeHandler(std::vector<std::string> parameters)
 {
     Solvers::EvaluationMerger* merger = IO::Reader::getEvaluationMerger(parameters[1]);
+    double percentMustBeEqual = std::stod(parameters[2]);
 
     if (parameters[0] == "staticOrder")
     {
-        if (parameters[2] == "default")
-            return new Solvers::StaticOrderJoinNodeHandler{merger, Solvers::StaticOrderJoinNodeHandler::Order::defaultOrder};
-        else if (parameters[2] == "gdf")
-            return new Solvers::StaticOrderJoinNodeHandler{merger, Solvers::StaticOrderJoinNodeHandler::Order::greatestDegreeFirst};
-        else if (parameters[2] == "sdf")
-            return new Solvers::StaticOrderJoinNodeHandler{merger, Solvers::StaticOrderJoinNodeHandler::Order::smallestDegreeFirst};
-        else if (parameters[2] == "random")
-            return new Solvers::StaticOrderJoinNodeHandler{merger, Solvers::StaticOrderJoinNodeHandler::Order::random};
+        if (parameters[3] == "default")
+            return new Solvers::StaticOrderJoinNodeHandler{merger, percentMustBeEqual, Solvers::StaticOrderJoinNodeHandler::Order::defaultOrder};
+        else if (parameters[3] == "gdf")
+            return new Solvers::StaticOrderJoinNodeHandler{merger, percentMustBeEqual, Solvers::StaticOrderJoinNodeHandler::Order::greatestDegreeFirst};
+        else if (parameters[3] == "sdf")
+            return new Solvers::StaticOrderJoinNodeHandler{merger, percentMustBeEqual, Solvers::StaticOrderJoinNodeHandler::Order::smallestDegreeFirst};
+        else if (parameters[3] == "random")
+            return new Solvers::StaticOrderJoinNodeHandler{merger, percentMustBeEqual, Solvers::StaticOrderJoinNodeHandler::Order::random};
+        else
+            throw std::runtime_error("Invalid order for static order join node handler: " + parameters[3] + "!");
     }
     else if (parameters[0] == "dynamicOrder")
     {
-        if (parameters[2] == "mostColouredNeighbours")
-            return new Solvers::DynamicOrderJoinNodeHandler{merger, Solvers::DynamicOrderJoinNodeHandler::Order::mostColouredNeighboursFirst};
-        else if (parameters[2] == "fewestColouredNeighboursFirst")
-            return new Solvers::DynamicOrderJoinNodeHandler{merger, Solvers::DynamicOrderJoinNodeHandler::Order::fewestColouredNeighboursFirst};
-        else if (parameters[2] == "mostPotentialHappyNeighbours")
-            return new Solvers::DynamicOrderJoinNodeHandler{merger, Solvers::DynamicOrderJoinNodeHandler::Order::mostPotentialHappyNeighbours};
-        else if (parameters[2] == "mostPercentPotentialHappyNeighbours")
-            return new Solvers::DynamicOrderJoinNodeHandler{merger, Solvers::DynamicOrderJoinNodeHandler::Order::mostPercentPotentialHappyNeighbours};
+        if (parameters[3] == "mostColouredNeighbours")
+            return new Solvers::DynamicOrderJoinNodeHandler{merger, percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order::mostColouredNeighboursFirst};
+        else if (parameters[3] == "fewestColouredNeighboursFirst")
+            return new Solvers::DynamicOrderJoinNodeHandler{merger, percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order::fewestColouredNeighboursFirst};
+        else if (parameters[3] == "mostPotentialHappyNeighbours")
+            return new Solvers::DynamicOrderJoinNodeHandler{merger, percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order::mostPotentialHappyNeighbours};
+        else if (parameters[3] == "mostPercentPotentialHappyNeighbours")
+            return new Solvers::DynamicOrderJoinNodeHandler{merger, percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order::mostPercentPotentialHappyNeighbours};
+        else
+            throw std::runtime_error("Invalid order for dynamic order join node handler: " + parameters[3] + "!");
     }
     else if (parameters[0] == "greedyColourBag")
     {
-        return new Solvers::GreedyColourBagJoinNodeHandler{merger};
+        return new Solvers::GreedyColourBagJoinNodeHandler{merger, percentMustBeEqual};
     }
     else if (parameters[0] == "growthColourBag")
     {
-        return new Solvers::GrowthColourBagJoinNodeHandler{merger};
+        return new Solvers::GrowthColourBagJoinNodeHandler{merger, percentMustBeEqual};
     }
     else if (parameters[0] == "useChildColours")
     {
-        return new Solvers::UseChildColoursJoinNodeHandler{merger};
+        return new Solvers::UseChildColoursJoinNodeHandler{merger, percentMustBeEqual};
     }
     throw std::runtime_error("Invalid join node handler identifier is given: " + parameters[0] + "!");
 }
@@ -57,6 +62,7 @@ Solvers::JoinNodeHandler* IO::Reader::readJoinNodeHandler(int argc, char** argv)
     std::vector<std::string> parameters;
     parameters.push_back(joinNodeHandler);
     parameters.push_back(getParameter(argc, argv, "--evaluationMerger", true));
+    parameters.push_back(getParameter(argc, argv, "--percentMustBeEqual", true));
     //    if (joinNodeHandler == "greedyColourBag") {}
     //    if (joinNodeHandler == "growthColourBag") {}
     //    if (joinNodeHandler == "useChildColours") {}

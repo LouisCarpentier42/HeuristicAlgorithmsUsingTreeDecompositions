@@ -34,7 +34,7 @@ void setGrowthTypes(
         std::deque<DataStructures::VertexType>& verticesToUpdate,
         const DataStructures::Graph* graph,
         const DataStructures::ColourAssignments& colourAssignments,
-        const std::set<DataStructures::VertexType>& verticesToColour)
+        const std::vector<DataStructures::VertexType>& verticesToColour)
 {
     std::deque<DataStructures::VertexType> colouredVerticesToUpdate{};
     std::deque<DataStructures::VertexType> uncolouredVerticesToUpdate{};
@@ -74,7 +74,7 @@ void setGrowthTypes(
         }
         else if (hasUncolouredNeighbour)
         {
-            if (verticesToColour.find(vertex) != verticesToColour.end())
+            if (std::find(verticesToColour.begin(), verticesToColour.end(), vertex) != verticesToColour.end())
                 P_vertices.insert(vertex);
             vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::P_vertex;
         }
@@ -111,25 +111,25 @@ void setGrowthTypes(
 
         if (hasPNeighbour)
         {
-            if (verticesToColour.find(vertex) != verticesToColour.end())
+            if (std::find(verticesToColour.begin(), verticesToColour.end(), vertex) != verticesToColour.end())
                 LP_vertices.insert(vertex);
             vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::LP_vertex;
         }
         else if (isUnhappy)
         {
-            if (verticesToColour.find(vertex) != verticesToColour.end())
+            if (std::find(verticesToColour.begin(), verticesToColour.end(), vertex) != verticesToColour.end())
                 LU_vertices.insert(vertex);
             vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::LU_vertex;
         }
         else if (colourNeighbours == 0) // No neighbours have a colour
         {
-            if (verticesToColour.find(vertex) != verticesToColour.end())
+            if (std::find(verticesToColour.begin(), verticesToColour.end(), vertex) != verticesToColour.end())
                 LF_vertices.insert(vertex);
             vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::LF_vertex;
         }
         else
         {
-            if (verticesToColour.find(vertex) != verticesToColour.end())
+            if (std::find(verticesToColour.begin(), verticesToColour.end(), vertex) != verticesToColour.end())
                 LH_vertices.insert(vertex);
             vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::LH_vertex;
         }
@@ -170,126 +170,119 @@ std::deque<DataStructures::VertexType> verticesAtDistance(
     return {neighbourhood.begin(), neighbourhood.end()};
 }
 
+Solvers::GrowthColourBagJoinNodeHandler::GrowthColourBagJoinNodeHandler(
+        const Solvers::EvaluationMerger *evaluationMerger,
+        double percentMustBeEqual)
+    : PairwiseCombineJoinHandler{evaluationMerger, percentMustBeEqual}
+{ }
 
-void Solvers::GrowthColourBagJoinNodeHandler::handleJoinNode(DataStructures::JoinNode *node) const
+void Solvers::GrowthColourBagJoinNodeHandler::addMergedEntries(
+        DataStructures::JoinNode *node,
+        const DataStructures::TableEntry *leftEntry,
+        const DataStructures::TableEntry *rightEntry) const
 {
-    solver->solveAtNode(node->getLeftChild());
-    solver->solveAtNode(node->getRightChild());
+    // Reset the types
+    vertexTypes.clear();
+    vertexTypes.resize(graph->getNbVertices());
+    Comparator::graph1 = graph;
+    P_vertices.clear();
+    LP_vertices.clear();
+    LH_vertices.clear();
+    LU_vertices.clear();
+    LF_vertices.clear();
 
-    std::set<DataStructures::VertexType> verticesToColour;
-    for (DataStructures::VertexType vertex : node->getBagContent())
+    // Create a colour assignment
+    DataStructures::ColourAssignments assignments
     {
-        if (!graph->isPrecoloured(vertex))
-            verticesToColour.insert(vertex);
-    }
+        leftEntry->getColourAssignments(),
+        rightEntry->getColourAssignments()
+    };
+    for (DataStructures::VertexType vertex : verticesToColour)
+        assignments.removeColour(vertex);
 
-    for (DataStructures::TableEntry* leftEntry : *node->getLeftChild()->getTable())
+    std::deque<DataStructures::VertexType> verticesToUpdate(graph->getNbVertices());
+    std::iota(verticesToUpdate.begin(), verticesToUpdate.end(), 0);
+    setGrowthTypes(verticesToUpdate, graph, assignments, verticesToColour);
+    while (!(LP_vertices.empty() && LH_vertices.empty() && LU_vertices.empty() && LF_vertices.empty()))
     {
-        for (DataStructures::TableEntry* rightEntry : *node->getRightChild()->getTable())
+        if (!P_vertices.empty())
         {
-            // Reset the types
-            vertexTypes.clear();
-            vertexTypes.resize(graph->getNbVertices());
-            Comparator::graph1 = graph;
-            P_vertices.clear();
-            LP_vertices.clear();
-            LH_vertices.clear();
-            LU_vertices.clear();
-            LF_vertices.clear();
-
-            // Create a colour assignment
-            DataStructures::ColourAssignments assignments
+            DataStructures::VertexType p_vertex{*P_vertices.begin()};
+            DataStructures::ColourType colour{assignments.getColour(p_vertex)};
+            for (DataStructures::VertexType neighbour : graph->getNeighbours(p_vertex))
             {
-                leftEntry->getColourAssignments(),
-                rightEntry->getColourAssignments()
-            };
-            for (DataStructures::VertexType vertex : verticesToColour)
-                assignments.removeColour(vertex);
-
-            std::deque<DataStructures::VertexType> verticesToUpdate(graph->getNbVertices());
-            std::iota(verticesToUpdate.begin(), verticesToUpdate.end(), 0);
-            setGrowthTypes(verticesToUpdate, graph, assignments, verticesToColour);
-            while (!(LP_vertices.empty() && LH_vertices.empty() && LU_vertices.empty() && LF_vertices.empty()))
-            {
-                if (!P_vertices.empty())
+                if (vertexTypes[neighbour] == MaximumHappyVertices::GrowthMHV::GrowthType::LP_vertex)
                 {
-                    DataStructures::VertexType p_vertex{*P_vertices.begin()};
-                    DataStructures::ColourType colour{assignments.getColour(p_vertex)};
-                    for (DataStructures::VertexType neighbour : graph->getNeighbours(p_vertex))
-                    {
-                        if (vertexTypes[neighbour] == MaximumHappyVertices::GrowthMHV::GrowthType::LP_vertex)
-                        {
-                            assignments.assignColour(neighbour, colour);
-                        }
-                    }
-                    verticesToUpdate = verticesAtDistance(3, p_vertex, graph);
+                    assignments.assignColour(neighbour, colour);
                 }
-                else if (!LH_vertices.empty())
-                {
-                    DataStructures::VertexType lh_vertex{*LH_vertices.begin()};
-                    auto uNeighbourIt = std::find_if(
-                        graph->getNeighbours(lh_vertex).begin(),
-                        graph->getNeighbours(lh_vertex).end(),
-                        [](const DataStructures::VertexType& neighbour)
-                        { return vertexTypes[neighbour] == MaximumHappyVertices::GrowthMHV::GrowthType::U_vertex; }
-                    );
-                    DataStructures::ColourType colour{assignments.getColour(*uNeighbourIt)};
-                    assignments.assignColour(lh_vertex, colour);
-                    for (DataStructures::VertexType neighbour : graph->getNeighbours(lh_vertex))
-                    {
-                        if (!assignments.isColoured(neighbour))
-                        {
-                            assignments.assignColour(neighbour, colour);
-                        }
-                    }
-                    verticesToUpdate = verticesAtDistance(3, lh_vertex, graph);
-                }
-                else if (!LU_vertices.empty())
-                {
-                    DataStructures::VertexType lu_vertex{*LU_vertices.begin()};
-                    DataStructures::VertexType u_neighbour = *std::find_if(
-                        graph->getNeighbours(lu_vertex).begin(),
-                        graph->getNeighbours(lu_vertex).end(),
-                        [](const DataStructures::VertexType& neighbour)
-                        { return vertexTypes[neighbour] == MaximumHappyVertices::GrowthMHV::GrowthType::U_vertex; }
-                    );
-                    assignments.assignColour(lu_vertex, assignments.getColour(u_neighbour));
-
-                    verticesToUpdate = verticesAtDistance(1, lu_vertex, graph);
-                }
-                else
-                {
-                    std::uniform_int_distribution<> distribution(0, graph->getNbColours());
-                    DataStructures::VertexType lf_vertex{*LF_vertices.begin()};
-                    DataStructures::ColourType colour = distribution(RNG::rng);
-                    assignments.assignColour(lf_vertex, colour);
-                    verticesToUpdate = verticesAtDistance(1, lf_vertex, graph);
-                }
-
-                for (DataStructures::VertexType vertex : verticesToUpdate)
-                {
-                    switch (vertexTypes[vertex])
-                    {
-                        case MaximumHappyVertices::GrowthMHV::GrowthType::P_vertex: P_vertices.erase(vertex);break;
-                        case MaximumHappyVertices::GrowthMHV::GrowthType::LH_vertex: LH_vertices.erase(vertex); break;
-                        case MaximumHappyVertices::GrowthMHV::GrowthType::LU_vertex: LU_vertices.erase(vertex); break;
-                        case MaximumHappyVertices::GrowthMHV::GrowthType::LP_vertex: LP_vertices.erase(vertex); break;
-                        case MaximumHappyVertices::GrowthMHV::GrowthType::LF_vertex: LF_vertices.erase(vertex); break;
-                        default: break;
-                    }
-                    vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::TEMP_INVALID_TYPE;
-                }
-                setGrowthTypes(verticesToUpdate, graph, assignments, verticesToColour);
             }
-
-            // Add a new entry to the table
-            node->getTable()->push(
-                new DataStructures::TableEntry{
-                    evaluator->evaluate(node->getBagContent(), assignments, graph, evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())),
-                    assignments
-                }
-            );
+            verticesToUpdate = verticesAtDistance(3, p_vertex, graph);
         }
+        else if (!LH_vertices.empty())
+        {
+            DataStructures::VertexType lh_vertex{*LH_vertices.begin()};
+            auto uNeighbourIt = std::find_if(
+                    graph->getNeighbours(lh_vertex).begin(),
+                    graph->getNeighbours(lh_vertex).end(),
+                    [](const DataStructures::VertexType& neighbour)
+                    { return vertexTypes[neighbour] == MaximumHappyVertices::GrowthMHV::GrowthType::U_vertex; }
+                    );
+            DataStructures::ColourType colour{assignments.getColour(*uNeighbourIt)};
+            assignments.assignColour(lh_vertex, colour);
+            for (DataStructures::VertexType neighbour : graph->getNeighbours(lh_vertex))
+            {
+                if (!assignments.isColoured(neighbour))
+                {
+                    assignments.assignColour(neighbour, colour);
+                }
+            }
+            verticesToUpdate = verticesAtDistance(3, lh_vertex, graph);
+        }
+        else if (!LU_vertices.empty())
+        {
+            DataStructures::VertexType lu_vertex{*LU_vertices.begin()};
+            DataStructures::VertexType u_neighbour = *std::find_if(
+                    graph->getNeighbours(lu_vertex).begin(),
+                    graph->getNeighbours(lu_vertex).end(),
+                    [](const DataStructures::VertexType& neighbour)
+                    { return vertexTypes[neighbour] == MaximumHappyVertices::GrowthMHV::GrowthType::U_vertex; }
+                    );
+            assignments.assignColour(lu_vertex, assignments.getColour(u_neighbour));
+
+            verticesToUpdate = verticesAtDistance(1, lu_vertex, graph);
+        }
+        else
+        {
+            std::uniform_int_distribution<> distribution(0, graph->getNbColours());
+            DataStructures::VertexType lf_vertex{*LF_vertices.begin()};
+            DataStructures::ColourType colour = distribution(RNG::rng);
+            assignments.assignColour(lf_vertex, colour);
+            verticesToUpdate = verticesAtDistance(1, lf_vertex, graph);
+        }
+
+        for (DataStructures::VertexType vertex : verticesToUpdate)
+        {
+            switch (vertexTypes[vertex])
+            {
+                case MaximumHappyVertices::GrowthMHV::GrowthType::P_vertex: P_vertices.erase(vertex);break;
+                case MaximumHappyVertices::GrowthMHV::GrowthType::LH_vertex: LH_vertices.erase(vertex); break;
+                case MaximumHappyVertices::GrowthMHV::GrowthType::LU_vertex: LU_vertices.erase(vertex); break;
+                case MaximumHappyVertices::GrowthMHV::GrowthType::LP_vertex: LP_vertices.erase(vertex); break;
+                case MaximumHappyVertices::GrowthMHV::GrowthType::LF_vertex: LF_vertices.erase(vertex); break;
+                default: break;
+            }
+            vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::TEMP_INVALID_TYPE;
+        }
+        setGrowthTypes(verticesToUpdate, graph, assignments, verticesToColour);
     }
+
+    // Add a new entry to the table
+    node->getTable()->push(
+        new DataStructures::TableEntry{
+            evaluator->evaluate(node->getBagContent(), assignments, graph, evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())),
+            assignments
+        }
+    );
 }
+
 

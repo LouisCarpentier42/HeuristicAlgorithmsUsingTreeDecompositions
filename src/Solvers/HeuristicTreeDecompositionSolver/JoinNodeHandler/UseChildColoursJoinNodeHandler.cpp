@@ -4,45 +4,43 @@
 
 #include "ConcreteJoinNodeHandlers.h"
 
+Solvers::UseChildColoursJoinNodeHandler::UseChildColoursJoinNodeHandler(
+        const Solvers::EvaluationMerger *evaluationMerger,
+        double percentMustBeEqual)
+    : PairwiseCombineJoinHandler{evaluationMerger, percentMustBeEqual}
+{ }
 
-void Solvers::UseChildColoursJoinNodeHandler::handleJoinNode(DataStructures::JoinNode *node) const
+void Solvers::UseChildColoursJoinNodeHandler::addMergedEntries(
+        DataStructures::JoinNode *node,
+        const DataStructures::TableEntry *leftEntry,
+        const DataStructures::TableEntry *rightEntry) const
 {
-    solver->solveAtNode(node->getLeftChild());
-    solver->solveAtNode(node->getRightChild());
+    // Merge the evaluation functions
+    int mergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
 
-    for (DataStructures::TableEntry* leftEntry : *node->getLeftChild()->getTable())
+    // Insert the colour assignment in which the bag is coloured following the left entry
+    DataStructures::ColourAssignments leftExtendedAssignments
     {
-        for (DataStructures::TableEntry* rightEntry : *node->getRightChild()->getTable())
-        {
-            // Merge the evaluation functions
-            int mergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
-
-            // Insert the colour assignment in which the bag is coloured following the left entry
-            DataStructures::ColourAssignments leftExtendedAssignments
-            {
-                leftEntry->getColourAssignments(),
-                rightEntry->getColourAssignments()
-            };
-            node->getTable()->push(
-                new DataStructures::TableEntry{
-                    evaluator->evaluate(node->getBagContent(), leftExtendedAssignments, graph, mergedEvaluation),
-                    leftExtendedAssignments
-                }
-            );
-
-            // Insert the colour assignment in which the bag is coloured following the right entry
-            DataStructures::ColourAssignments rightExtendedAssignments
-            {
-                rightEntry->getColourAssignments(),
-                leftEntry->getColourAssignments()
-            };
-            node->getTable()->push(
-                new DataStructures::TableEntry{
-                    evaluator->evaluate(node->getBagContent(), rightExtendedAssignments, graph, mergedEvaluation),
-                    rightExtendedAssignments
-                }
-            );
+        leftEntry->getColourAssignments(),
+        rightEntry->getColourAssignments()
+    };
+    node->getTable()->push(
+        new DataStructures::TableEntry{
+            evaluator->evaluate(verticesToColour, leftExtendedAssignments, graph, mergedEvaluation),
+            leftExtendedAssignments
         }
-    }
-}
+    );
 
+    // Insert the colour assignment in which the bag is coloured following the right entry
+    DataStructures::ColourAssignments rightExtendedAssignments
+    {
+        rightEntry->getColourAssignments(),
+        leftEntry->getColourAssignments()
+    };
+    node->getTable()->push(
+        new DataStructures::TableEntry{
+            evaluator->evaluate(verticesToColour, rightExtendedAssignments, graph, mergedEvaluation),
+            rightExtendedAssignments
+        }
+    );
+}

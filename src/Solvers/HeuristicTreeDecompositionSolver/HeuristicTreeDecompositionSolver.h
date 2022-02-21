@@ -97,7 +97,7 @@ namespace Solvers
 
     public:
         explicit JoinNodeHandler(const EvaluationMerger* evaluationMerger) : evaluationMerger{evaluationMerger} {};
-        virtual void handleJoinNode(DataStructures::JoinNode* node) const = 0;
+        virtual void handleJoinNode(DataStructures::JoinNode* node) = 0;
     };
 }
 

@@ -9,8 +9,9 @@
 
 Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(
         const Solvers::EvaluationMerger* evaluationMerger,
+        double percentMustBeEqual,
         Solvers::StaticOrderJoinNodeHandler::Order order)
-    : JoinNodeHandler{evaluationMerger}, order{order}
+    : PairwiseCombineJoinHandler{evaluationMerger, percentMustBeEqual}, order{order}
 { }
 
 void Solvers::StaticOrderJoinNodeHandler::setGraph(const DataStructures::Graph* graphToSolve)
@@ -43,64 +44,74 @@ void Solvers::StaticOrderJoinNodeHandler::setGraph(const DataStructures::Graph* 
     );
 }
 
-
-void Solvers::StaticOrderJoinNodeHandler::handleJoinNode(DataStructures::JoinNode* node) const
+void Solvers::StaticOrderJoinNodeHandler::setVerticesToColour(DataStructures::JoinNode *node)
 {
-    solver->solveAtNode(node->getLeftChild());
-    solver->solveAtNode(node->getRightChild());
-
-    for (DataStructures::TableEntry* leftEntry : *node->getLeftChild()->getTable())
+    verticesToColour.clear();
+    for (DataStructures::VertexType vertex : vertexOrder)
     {
-        for (DataStructures::TableEntry* rightEntry : *node->getRightChild()->getTable())
-        {
-            // Create a colour assignment
-            DataStructures::ColourAssignments assignments
-            {
-                leftEntry->getColourAssignments(),
-                rightEntry->getColourAssignments()
-            };
-            // Colour the vertices in the predefined order
-            int initialMergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
-            int previousEvaluation{initialMergedEvaluation};
-            for (DataStructures::VertexType vertex : vertexOrder)
-            {
-                // If the vertex is coloured in both entries, then the best colour is used
-                if (leftEntry->getColourAssignments().isColoured(vertex) && leftEntry->getColourAssignments().isColoured(vertex))
-                {
-                    assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
-                    int leftEvaluation{evaluator->evaluate(vertex, assignments, graph, previousEvaluation)};
-                    assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
-                    int rightEvaluation{evaluator->evaluate(vertex, assignments, graph, previousEvaluation)};
-
-                    if (leftEvaluation > rightEvaluation)
-                    {
-                        assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
-                        previousEvaluation = leftEvaluation;
-                    }
-                    else
-                    {
-                        // The colour of the vertex is already set to the colour in the right entry
-                        previousEvaluation = rightEvaluation;
-                    }
-                }
-                // If the vertex is coloured in only one entry, then that colour is copied
-                else if (leftEntry->getColourAssignments().isColoured(vertex))
-                {
-                    assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
-                }
-                else if (rightEntry->getColourAssignments().isColoured(vertex))
-                {
-                    assignments.assignColour(vertex, rightEntry->getColourAssignments().getColour(vertex));
-                }
-            }
-
-            // Add a new entry to the table
-            node->getTable()->push(
-                new DataStructures::TableEntry{
-                    evaluator->evaluate(node->getBagContent(), assignments, graph, initialMergedEvaluation),
-                    assignments
-                }
-            );
-        }
+        if (!graph->isPrecoloured(vertex) && std::find(node->getBagContent().begin(), node->getBagContent().end(), vertex) != node->getBagContent().end())
+            verticesToColour.push_back(vertex);
     }
 }
+
+void Solvers::StaticOrderJoinNodeHandler::addMergedEntries(
+        DataStructures::JoinNode* node,
+       const DataStructures::TableEntry* leftEntry,
+       const DataStructures::TableEntry* rightEntry) const
+{
+    // Create a colour assignment
+    DataStructures::ColourAssignments assignments
+    {
+        leftEntry->getColourAssignments(),
+        rightEntry->getColourAssignments()
+    };
+    for (DataStructures::VertexType vertex : node->getBagContent())
+    {
+        if (!graph->isPrecoloured(vertex))
+            assignments.removeColour(vertex);
+    }
+
+    // Colour the vertices in the predefined order
+    int initialMergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
+    int previousEvaluation{initialMergedEvaluation};
+    for (DataStructures::VertexType vertex : verticesToColour)
+    {
+        // You only need to check the colour of vertices that are in the bag, thus those that are coloured in both entries
+        if (leftEntry->getColourAssignments().isColoured(vertex) && rightEntry->getColourAssignments().isColoured(vertex))
+        {
+            // If the vertices have the same colour, then you only need to re-evaluate once
+            if (leftEntry->getColourAssignments().getColour(vertex) == rightEntry->getColourAssignments().getColour(vertex))
+            {
+                assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
+                previousEvaluation = evaluator->evaluate(vertex, assignments, graph, previousEvaluation);
+            }
+            else
+            {
+                assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
+                int leftEvaluation{evaluator->evaluate(vertex, assignments, graph, previousEvaluation)};
+                assignments.assignColour(vertex, rightEntry->getColourAssignments().getColour(vertex));
+                int rightEvaluation{evaluator->evaluate(vertex, assignments, graph, previousEvaluation)};
+
+                if (leftEvaluation > rightEvaluation)
+                {
+                    assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
+                    previousEvaluation = leftEvaluation;
+                }
+                else
+                {
+                    // The colour of the vertex is already set to the colour in the right entry
+                    previousEvaluation = rightEvaluation;
+                }
+            }
+        }
+    }
+
+    // Add a new entry to the table
+    node->getTable()->push(
+        new DataStructures::TableEntry{
+            previousEvaluation,
+            assignments
+        }
+    );
+}
+

@@ -14,7 +14,26 @@
 
 namespace Solvers
 {
-    class StaticOrderJoinNodeHandler : public JoinNodeHandler
+    class PairwiseCombineJoinHandler : public JoinNodeHandler
+    {
+    private:
+        const double percentMustBeEqual;
+
+    protected:
+        std::vector<DataStructures::VertexType> verticesToColour;
+
+    public:
+        explicit PairwiseCombineJoinHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual);
+        void handleJoinNode(DataStructures::JoinNode* node) override;
+        virtual void setVerticesToColour(DataStructures::JoinNode* node);
+        virtual void addMergedEntries(
+            DataStructures::JoinNode* node,
+            const DataStructures::TableEntry* leftEntry,
+            const DataStructures::TableEntry* rightEntry
+        ) const = 0;
+    };
+
+    class StaticOrderJoinNodeHandler : public PairwiseCombineJoinHandler
     {
     public:
         enum class Order {
@@ -27,12 +46,17 @@ namespace Solvers
         const Order order;
         std::vector<DataStructures::VertexType> vertexOrder;
     public:
-        StaticOrderJoinNodeHandler(const EvaluationMerger* evaluationMerger, Order order);
+        StaticOrderJoinNodeHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual, Order order);
         void setGraph(const DataStructures::Graph* graphToSolve) override;
-        void handleJoinNode(DataStructures::JoinNode* node) const override;
+        void setVerticesToColour(DataStructures::JoinNode* node) override;
+        void addMergedEntries(
+            DataStructures::JoinNode* node,
+            const DataStructures::TableEntry* leftEntry,
+            const DataStructures::TableEntry* rightEntry
+        ) const override;
     };
 
-    class DynamicOrderJoinNodeHandler : public JoinNodeHandler
+    class DynamicOrderJoinNodeHandler : public PairwiseCombineJoinHandler
     {
     public:
         enum class Order {
@@ -66,8 +90,12 @@ namespace Solvers
         const VertexSelector* vertexSelector;
 
     public:
-        DynamicOrderJoinNodeHandler(const EvaluationMerger *evaluationMerger, Solvers::DynamicOrderJoinNodeHandler::Order order);
-        void handleJoinNode(DataStructures::JoinNode* node) const override;
+        DynamicOrderJoinNodeHandler(const EvaluationMerger *evaluationMerger, double percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order order);
+        void addMergedEntries(
+            DataStructures::JoinNode* node,
+            const DataStructures::TableEntry* leftEntry,
+            const DataStructures::TableEntry* rightEntry
+        ) const override;
 
     private:
         class MostColouredNeighboursSelector : public VertexSelector
@@ -111,25 +139,38 @@ namespace Solvers
         };
     };
 
-    class GreedyColourBagJoinNodeHandler : public JoinNodeHandler
+    class GreedyColourBagJoinNodeHandler : public PairwiseCombineJoinHandler
     {
     public:
-        explicit GreedyColourBagJoinNodeHandler(const EvaluationMerger* evaluationMerger) : JoinNodeHandler{evaluationMerger} {};
-        void handleJoinNode(DataStructures::JoinNode* node) const override;
+        explicit GreedyColourBagJoinNodeHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual);
+//        void handleJoinNode(DataStructures::JoinNode* node) const override;
+        void addMergedEntries(
+            DataStructures::JoinNode* node,
+            const DataStructures::TableEntry* leftEntry,
+            const DataStructures::TableEntry* rightEntry
+        ) const override;
     };
 
-    class GrowthColourBagJoinNodeHandler : public JoinNodeHandler
+    class GrowthColourBagJoinNodeHandler : public PairwiseCombineJoinHandler
     {
     public:
-        explicit GrowthColourBagJoinNodeHandler(const EvaluationMerger* evaluationMerger) : JoinNodeHandler{evaluationMerger} {};
-        void handleJoinNode(DataStructures::JoinNode* node) const override;
+        explicit GrowthColourBagJoinNodeHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual);
+        void addMergedEntries(
+            DataStructures::JoinNode* node,
+            const DataStructures::TableEntry* leftEntry,
+            const DataStructures::TableEntry* rightEntry
+        ) const override;
     };
 
-    class UseChildColoursJoinNodeHandler : public JoinNodeHandler
+    class UseChildColoursJoinNodeHandler : public PairwiseCombineJoinHandler
     {
     public:
-        explicit UseChildColoursJoinNodeHandler(const EvaluationMerger* evaluationMerger) : JoinNodeHandler{evaluationMerger} {};
-        void handleJoinNode(DataStructures::JoinNode* node) const override;
+        explicit UseChildColoursJoinNodeHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual);
+        void addMergedEntries(
+            DataStructures::JoinNode* node,
+            const DataStructures::TableEntry* leftEntry,
+            const DataStructures::TableEntry* rightEntry
+        ) const override;
     };
 }
 
