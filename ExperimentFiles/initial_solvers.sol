@@ -26,15 +26,6 @@ problem MaximumHappyVertices
 baseline greedyMHV
 baseline growthMHV
 nbRepetitions 1
-heuristicTD static_order 8 colouredMHVEvaluator(6,2,-1) passive bestColour bestColour staticOrder(avg,0.01,gdf)
-heuristicTD dynamic_order 8 colouredMHVEvaluator(6,2,-1) passive bestColour bestColour dynamicOrder(avg,0.01,mostColouredNeighbours)
-heuristicTD greedy 8 colouredMHVEvaluator(6,2,-1) passive bestColour bestColour greedyColourBag(avg,0.01)
-heuristicTD growth 8 colouredMHVEvaluator(6,2,-1) passive bestColour bestColour growthColourBag(avg,0.01)
-heuristicTD use_child 8 colouredMHVEvaluator(6,2,-1) passive bestColour bestColour useChildColours(avg,0.01)
-c heuristicTD tdAlgo_max 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(max)
-c heuristicTD tdAlgo_avg 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(avg)
-c heuristicTD greedyColourBag2 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive greedyColourBag(min)
-c heuristicTD mostCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(avg,mostColouredNeighbour)
-c heuristicTD fewestCol 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(avg,DynamicOrderJoinNodeHandle)
-c heuristicTD mostHappy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(avg,ostPotentialHappyNeighbours)
-c heuristicTD most%Happy 8 colouredMHVEvaluator(6,2,-1) passive bestColour passive dynamicOrder(avg,mostPercentPotentialHappyNeighbours)
+heuristicTD basic 8 basicMHVEvaluator passive bestColour bestColour staticOrder(avg,0.01,gdf)
+heuristicTD potential 8 potentialHappyMHVEvaluator(6,2,-1) passive bestColour bestColour dynamicOrder(avg,0.01,mostColouredNeighbours)
+heuristicTD growth 8 growthMHVEvaluator(6,-1,4,2,2,-1,0) passive bestColour bestColour greedyColourBag(avg,0.01)

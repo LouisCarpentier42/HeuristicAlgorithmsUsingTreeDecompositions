@@ -15,6 +15,9 @@ void Solvers::UseChildColoursJoinNodeHandler::addMergedEntries(
         const DataStructures::TableEntry *leftEntry,
         const DataStructures::TableEntry *rightEntry) const
 {
+    // The colour assignments used to construct a new assignment
+    std::vector<DataStructures::ColourAssignments> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
+
     // Merge the evaluation functions
     int mergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
 
@@ -26,7 +29,7 @@ void Solvers::UseChildColoursJoinNodeHandler::addMergedEntries(
     };
     node->getTable()->push(
         new DataStructures::TableEntry{
-            evaluator->evaluate(verticesToColour, leftExtendedAssignments, graph, mergedEvaluation),
+            evaluator->evaluate(verticesToColour, oldColourAssignments, leftExtendedAssignments, graph, mergedEvaluation),
             leftExtendedAssignments
         }
     );
@@ -39,7 +42,7 @@ void Solvers::UseChildColoursJoinNodeHandler::addMergedEntries(
     };
     node->getTable()->push(
         new DataStructures::TableEntry{
-            evaluator->evaluate(verticesToColour, rightExtendedAssignments, graph, mergedEvaluation),
+            evaluator->evaluate(verticesToColour, oldColourAssignments, rightExtendedAssignments, graph, mergedEvaluation),
             rightExtendedAssignments
         }
     );

@@ -15,6 +15,9 @@ void Solvers::GreedyColourBagJoinNodeHandler::addMergedEntries(
         const DataStructures::TableEntry *leftEntry,
         const DataStructures::TableEntry *rightEntry) const
 {
+    // The colour assignments used to construct a new assignment
+    std::vector<DataStructures::ColourAssignments> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
+
     // Find which vertices in the bag must be recoloured and which colours have been used
     std::vector<bool> useColour(graph->getNbColours() + 1, false);
     for (DataStructures::VertexType vertex : node->getBagContent())
@@ -42,7 +45,7 @@ void Solvers::GreedyColourBagJoinNodeHandler::addMergedEntries(
             assignments.assignColour(vertex, colour);
 
         // Compute the new evaluation and update the best colour and evaluation if needed
-        int updatedEvaluation{evaluator->evaluate(verticesToColour, assignments, graph, mergedEvaluation)};
+        int updatedEvaluation{evaluator->evaluate(verticesToColour, oldColourAssignments, assignments, graph, mergedEvaluation)};
         if (updatedEvaluation > bestEvaluation)
         {
             bestColour = colour;

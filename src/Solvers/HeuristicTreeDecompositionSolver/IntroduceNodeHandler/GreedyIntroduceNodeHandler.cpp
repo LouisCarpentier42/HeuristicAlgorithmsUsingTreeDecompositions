@@ -25,7 +25,7 @@ void Solvers::GreedyIntroduceNodeHandler::handleIntroduceNode(DataStructures::In
                 assignments.assignColour(node->getIntroducedVertex(), colour);
                 node->getTable()->push(
                     new DataStructures::TableEntry{
-                        evaluator->evaluate(node->getIntroducedVertex(), assignments, graph, entry->getEvaluation()),
+                        evaluator->evaluate(node->getIntroducedVertex(), entry->getColourAssignments(), assignments, graph, entry->getEvaluation()),
                         assignments
                     }
                 );

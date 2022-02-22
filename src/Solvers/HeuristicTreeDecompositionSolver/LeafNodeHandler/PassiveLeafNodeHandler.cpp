@@ -19,7 +19,7 @@ void Solvers::PassiveLeafNodeHandlers::handleLeafNode(DataStructures::LeafNode* 
 
     node->getTable()->push(
         new DataStructures::TableEntry{
-            evaluator->evaluate(precolouredVertices, assignments, graph, 0),
+            evaluator->evaluate(precolouredVertices, DataStructures::ColourAssignments{graph}, assignments, graph, 0),
             assignments
         }
     );

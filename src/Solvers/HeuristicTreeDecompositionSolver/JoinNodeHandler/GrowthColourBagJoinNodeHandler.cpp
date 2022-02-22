@@ -181,6 +181,9 @@ void Solvers::GrowthColourBagJoinNodeHandler::addMergedEntries(
         const DataStructures::TableEntry *leftEntry,
         const DataStructures::TableEntry *rightEntry) const
 {
+    // The colour assignments used to construct a new assignment
+    std::vector<DataStructures::ColourAssignments> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
+
     // Reset the types
     vertexTypes.clear();
     vertexTypes.resize(graph->getNbVertices());
@@ -279,7 +282,7 @@ void Solvers::GrowthColourBagJoinNodeHandler::addMergedEntries(
     // Add a new entry to the table
     node->getTable()->push(
         new DataStructures::TableEntry{
-            evaluator->evaluate(node->getBagContent(), assignments, graph, evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())),
+            evaluator->evaluate(node->getBagContent(), oldColourAssignments, assignments, graph, evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())),
             assignments
         }
     );

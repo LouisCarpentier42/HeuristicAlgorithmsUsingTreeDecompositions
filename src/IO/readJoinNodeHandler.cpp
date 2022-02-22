@@ -81,6 +81,10 @@ Solvers::EvaluationMerger* IO::Reader::getEvaluationMerger(const std::string& st
         return new Solvers::MaximumEvaluationMerger{};
     else if (str == "min")
         return new Solvers::MinimumEvaluationMerger{};
+    else if (str == "sum")
+        return new Solvers::SumEvaluationMerger{};
+    else if (str == "product")
+        return new Solvers::ProductEvaluationMerger{};
 
     throw std::runtime_error("Invalid evaluation merger identifier is given: " + str + "!");
 }

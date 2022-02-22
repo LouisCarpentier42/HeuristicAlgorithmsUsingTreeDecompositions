@@ -59,6 +59,9 @@ void Solvers::StaticOrderJoinNodeHandler::addMergedEntries(
        const DataStructures::TableEntry* leftEntry,
        const DataStructures::TableEntry* rightEntry) const
 {
+    // The colour assignments used to construct a new assignment
+    std::vector<DataStructures::ColourAssignments> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
+
     // Create a colour assignment
     DataStructures::ColourAssignments assignments
     {
@@ -72,7 +75,7 @@ void Solvers::StaticOrderJoinNodeHandler::addMergedEntries(
     }
 
     // Colour the vertices in the predefined order
-    int initialMergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
+    int initialMergedEvaluation{};
     int previousEvaluation{initialMergedEvaluation};
     for (DataStructures::VertexType vertex : verticesToColour)
     {
@@ -83,14 +86,14 @@ void Solvers::StaticOrderJoinNodeHandler::addMergedEntries(
             if (leftEntry->getColourAssignments().getColour(vertex) == rightEntry->getColourAssignments().getColour(vertex))
             {
                 assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
-                previousEvaluation = evaluator->evaluate(vertex, assignments, graph, previousEvaluation);
+                previousEvaluation = evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation);
             }
             else
             {
                 assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
-                int leftEvaluation{evaluator->evaluate(vertex, assignments, graph, previousEvaluation)};
+                int leftEvaluation{evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation)};
                 assignments.assignColour(vertex, rightEntry->getColourAssignments().getColour(vertex));
-                int rightEvaluation{evaluator->evaluate(vertex, assignments, graph, previousEvaluation)};
+                int rightEvaluation{evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation)};
 
                 if (leftEvaluation > rightEvaluation)
                 {

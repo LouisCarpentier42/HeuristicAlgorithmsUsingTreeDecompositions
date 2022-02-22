@@ -226,14 +226,14 @@ std::deque<DataStructures::VertexType> MaximumHappyVertices::GrowthMHV::vertices
         DataStructures::VertexType vertex,
         const DataStructures::Graph* graph)
 {
-    // Neighbourhood at distance 1
+    // Initialise variables
     std::set<DataStructures::VertexType> neighbourhood{};
     std::set<DataStructures::VertexType> verticesToCheck{vertex};
 
-    // Neighbourhood at distance 2 to distance (distance-1)
-    for (size_t currentDistance{1}; currentDistance <= distance; currentDistance++)
+    // Neighbourhood at distance 0 to distance (distance-1)
+    for (size_t currentDistance{0}; currentDistance < distance; currentDistance++)
     {
-        std::set<DataStructures::VertexType> nextVerticesToCheck(neighbourhood);
+        std::set<DataStructures::VertexType> nextVerticesToCheck{};
         for (DataStructures::VertexType vertexToCheck : verticesToCheck)
         {
             auto pair = neighbourhood.insert(vertexToCheck);

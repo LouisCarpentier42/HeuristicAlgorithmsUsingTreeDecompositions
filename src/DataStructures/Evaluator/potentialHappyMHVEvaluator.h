@@ -1,17 +1,27 @@
 //
-// Created by louis on 14/11/2021.
+// Created by louis on 18/11/2021.
 //
 
-#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BASICMHVEVALUATOR_H
-#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BASICMHVEVALUATOR_H
+#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_POTENTIALHAPPYMHVEVALUATOR_H
+#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_POTENTIALHAPPYMHVEVALUATOR_H
 
 #include "Evaluator.h"
 
 namespace DataStructures
 {
-    class BasicMHVEvaluator : public Evaluator
+    class potentialHappyMHVEvaluator : public Evaluator
     {
+    private:
+        const int happyVertexWeight;
+        const int potentialHappyVertexWeight;
+        const int unhappyVertexWeight;
+
     public:
+        potentialHappyMHVEvaluator(
+            int happyVertexWeight,
+            int potentialHappyVertexWeight,
+            int unhappyVertexWeight
+        );
 
         [[nodiscard]] int evaluate(const DataStructures::Graph* graph) const override;
 
@@ -24,12 +34,12 @@ namespace DataStructures
         ) const override;
 
     private:
-        [[nodiscard]] static bool isHappy(
+        [[nodiscard]] int getVertexWeight(
             DataStructures::VertexType vertex,
             const DataStructures::ColourAssignments& colourAssignments,
             const DataStructures::Graph* graph
-        );
+        ) const;
     };
 }
 
-#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_BASICMHVEVALUATOR_H
+#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_POTENTIALHAPPYMHVEVALUATOR_H

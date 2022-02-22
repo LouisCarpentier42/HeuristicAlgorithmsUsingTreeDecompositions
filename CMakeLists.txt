@@ -41,8 +41,8 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/DataStructures/Evaluator/BasicMHVEvaluator.cpp
         src/DataStructures/Evaluator/BasicMHVEvaluator.h
         src/Solvers/MaximumHappyVertices/MaximumHappyVerticesSolver.h
-        src/DataStructures/Evaluator/PotentialHappyColouredMHVEvaluator.cpp
-        src/DataStructures/Evaluator/PotentialHappyColouredMHVEvaluator.h
+        src/DataStructures/Evaluator/potentialHappyMHVEvaluator.cpp
+        src/DataStructures/Evaluator/potentialHappyMHVEvaluator.h
         src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/PassiveForgetNodeHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h
         src/Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/PassiveLeafNodeHandler.cpp
@@ -58,8 +58,8 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/ExperimentalAnalysis/experimentalAnalysis.h
         src/ExperimentalAnalysis/Experiment.h
         src/IO/ReaderExperiment.cpp
-        src/DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.cpp
-        src/DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.h
+        src/DataStructures/Evaluator/GrowthMHVEvaluator.cpp
+        src/DataStructures/Evaluator/GrowthMHVEvaluator.h
         src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/GreedyColourBagJoinNodeHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/GrowthColourBagJoinNodeHandler.cpp
         src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/UseChildColoursJoinNodeHandler.cpp
@@ -81,4 +81,4 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHVSolutionIterator.h
         src/Solvers/ExactTreeDecompositionSolverBase.h
         src/Solvers/ExactTreeDecompositionSolverBase.cpp
-        src/IO/ReadG6File.cpp src/rng.h src/IO/readEvaluator.cpp src/IO/readLeafNodeHandler.cpp src/IO/readIntroduceNodeHandler.cpp src/IO/readForgetNodeHandler.cpp src/IO/readJoinNodeHandler.cpp src/IO/readColouringVector.cpp src/Solvers/SolversUtility/ColouringIterator.cpp src/Solvers/SolversUtility/ColouringIterator.h src/Solvers/SolversUtility/SolutionIterator.h src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.cpp src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.h src/ConstructingTreeDecompositions/Constructor.cpp src/ConstructingTreeDecompositions/Constructor.h src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/BestColourForgetNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/PairwiseCombineJoinHandler.cpp)
+        src/IO/ReadG6File.cpp src/rng.h src/IO/readEvaluator.cpp src/IO/readLeafNodeHandler.cpp src/IO/readIntroduceNodeHandler.cpp src/IO/readForgetNodeHandler.cpp src/IO/readJoinNodeHandler.cpp src/IO/readColouringVector.cpp src/Solvers/SolversUtility/ColouringIterator.cpp src/Solvers/SolversUtility/ColouringIterator.h src/Solvers/SolversUtility/SolutionIterator.h src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.cpp src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.h src/ConstructingTreeDecompositions/Constructor.cpp src/ConstructingTreeDecompositions/Constructor.h src/Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/BestColourForgetNodeHandler.cpp src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/PairwiseCombineJoinHandler.cpp src/DataStructures/Evaluator/Evaluator.cpp)

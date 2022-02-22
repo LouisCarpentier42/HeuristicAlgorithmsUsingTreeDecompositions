@@ -26,7 +26,7 @@ void Solvers::BestColourForgetNodeHandler::handleForgetVertexBag(DataStructures:
                 DataStructures::ColourAssignments assignments = entry->getColourAssignments();
                 assignments.assignColour(node->getForgottenVertex(), colour);
                 table.push(new DataStructures::TableEntry{
-                    evaluator->evaluate(node->getForgottenVertex(), assignments, graph, entry->getEvaluation()),
+                    evaluator->evaluate(node->getForgottenVertex(), entry->getColourAssignments(), assignments, graph, entry->getEvaluation()),
                     assignments
                 });
             }

@@ -8,6 +8,8 @@
 #include "../Graph/Graph.h"
 #include "../DynamicProgramming/TableEntry.h"
 
+#include <set>
+
 namespace DataStructures
 {
     class Evaluator
@@ -22,30 +24,42 @@ namespace DataStructures
          */
         [[nodiscard]] virtual int evaluate(const DataStructures::Graph* graph) const = 0;
 
-        /**
-         * Evaluate the given colour assignment for the given graph by computing the score of the
-         * vertices that have been recoloured, focussing on only a subset of the graph.
-         *
-         * @param recolouredVertices The vertices that have been recoloured and thus could influence the evaluation.
-         * @param colourAssignments The colour assignments of all vertices.
-         * @param graph The graph that's used as context for the colourings.
-         * @param startEvaluation The evaluation value to start from.
-         *
-         * @return A value indicating how well a given colour map is. A better colouring must receive
-         *         a higher evaluation value.
-         */
         [[nodiscard]] virtual int evaluate(
             const std::vector<DataStructures::VertexType>& recolouredVertices,
-            const DataStructures::ColourAssignments& colourAssignments,
+            const std::vector<DataStructures::ColourAssignments>& oldColourAssignments,
+            const DataStructures::ColourAssignments& newColourAssignments,
             const DataStructures::Graph* graph,
             int startEvaluation
         ) const = 0;
-        [[nodiscard]] int evaluate(
-            const DataStructures::VertexType& recolouredVertex,
-            const DataStructures::ColourAssignments& colourAssignments,
+        [[nodiscard]] virtual int evaluate(
+            const std::vector<DataStructures::VertexType>& recolouredVertices,
+            const DataStructures::ColourAssignments& oldColourAssignments,
+            const DataStructures::ColourAssignments& newColourAssignments,
             const DataStructures::Graph* graph,
-            int startEvaluation) const
-        { return evaluate(std::vector<VertexType>{recolouredVertex}, colourAssignments, graph, startEvaluation); }
+            int startEvaluation
+        ) const;
+        [[nodiscard]] virtual int evaluate(
+            const DataStructures::VertexType& recolouredVertex,
+            const std::vector<DataStructures::ColourAssignments>& oldColourAssignments,
+            const DataStructures::ColourAssignments& newColourAssignments,
+            const DataStructures::Graph* graph,
+            int startEvaluation
+        ) const;
+        [[nodiscard]] virtual int evaluate(
+            const DataStructures::VertexType& recolouredVertex,
+            const DataStructures::ColourAssignments& oldColourAssignments,
+            const DataStructures::ColourAssignments& newColourAssignments,
+            const DataStructures::Graph* graph,
+            int startEvaluation
+        ) const;
+
+    protected:
+        [[nodiscard]] static std::set<DataStructures::VertexType> verticesAtDistance(
+            size_t distance,
+            const std::vector<DataStructures::VertexType>& vertices,
+            const DataStructures::Graph* graph
+        );
+
     };
 }
 

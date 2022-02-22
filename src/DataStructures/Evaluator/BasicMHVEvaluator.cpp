@@ -2,9 +2,8 @@
 // Created by louis on 14/11/2021.
 //
 
+#include <algorithm>
 #include "BasicMHVEvaluator.h"
-
-#include <set>
 
 int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* graph) const
 {
@@ -12,10 +11,11 @@ int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* gra
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
         if (!graph->isColoured(vertex)) continue;
+
         bool vertexIsHappy{true};
         for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
         {
-            if (!graph->isColoured(vertex) || graph->getColour(neighbour) != graph->getColour(vertex))
+            if (graph->getColour(neighbour) != graph->getColour(vertex))
             {
                 vertexIsHappy = false;
                 break;
@@ -29,63 +29,48 @@ int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* gra
     return nbHappyVertices;
 }
 
-
 int DataStructures::BasicMHVEvaluator::evaluate(
         const std::vector<DataStructures::VertexType>& recolouredVertices,
-        const DataStructures::ColourAssignments& colourAssignments,
-        const DataStructures::Graph *graph,
+        const std::vector<DataStructures::ColourAssignments>& oldColourAssignments,
+        const DataStructures::ColourAssignments& newColourAssignments,
+        const DataStructures::Graph* graph,
         int startEvaluation) const
 {
     int evaluation{startEvaluation};
-    // TODO probably not needed with checkedNeighboursArray -> needed but why?
-    //  try to remove this set + also in the other evaluators
-    std::set<DataStructures::VertexType> newlyHappyVertices{};
-    std::set<DataStructures::VertexType> checkedNeighbours{recolouredVertices.begin(), recolouredVertices.end()};
+    std::set<DataStructures::VertexType> potentiallyChangedVertices = verticesAtDistance(1, recolouredVertices, graph);
 
-    for (DataStructures::VertexType vertex : recolouredVertices)
+    // Check for all vertices how their happiness has changed
+    for (DataStructures::VertexType vertex : potentiallyChangedVertices)
     {
-        bool vertexIsHappy{true};
-        for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
+        // Remove the happy vertices from the old colour assignments
+        for (const DataStructures::ColourAssignments& oldColourAssignment : oldColourAssignments)
         {
-            if (!colourAssignments.isColoured(neighbour))
-            {
-                vertexIsHappy = false;
-                continue;
-            }
-
-            if (checkedNeighbours.find(neighbour) == checkedNeighbours.end())
-            {
-                bool neighbourIsHappy{true};
-                for (DataStructures::VertexType neighbourOfNeighbour : graph->getNeighbours(neighbour))
-                {
-                    if (!colourAssignments.isColoured(neighbourOfNeighbour)
-                        || colourAssignments.getColour(neighbourOfNeighbour) != colourAssignments.getColour(neighbour))
-                    {
-                        neighbourIsHappy = false;
-                        break;
-                    }
-                }
-                if (neighbourIsHappy)
-                {
-                    newlyHappyVertices.insert(neighbour);
-//                    evaluation++;
-                }
-                checkedNeighbours.insert(neighbour);
-            }
-
-            if (colourAssignments.getColour(neighbour) != colourAssignments.getColour(vertex))
-            {
-                vertexIsHappy = false;
-            }
+            if (isHappy(vertex, oldColourAssignment, graph))
+                evaluation -= 1;
         }
 
-        if (vertexIsHappy)
-        {
-            newlyHappyVertices.insert(vertex);
-//            evaluation++;
-        }
+        // Check if the vertex is happy in the new colour assignment
+        if (isHappy(vertex, newColourAssignments, graph))
+            evaluation += 1;
+
     }
 
-//    return evaluation;
-    return startEvaluation + newlyHappyVertices.size();
+    // Return the adjusted evaluation
+    return evaluation;
+}
+
+bool DataStructures::BasicMHVEvaluator::isHappy(
+        DataStructures::VertexType vertex,
+        const DataStructures::ColourAssignments& colourAssignments,
+        const DataStructures::Graph *graph)
+{
+    return (
+        colourAssignments.isColoured(vertex)
+        &&
+        std::all_of(
+           graph->getNeighbours(vertex).begin(),
+           graph->getNeighbours(vertex).end(),
+           [colourAssignments, vertex](auto neighbour){ return colourAssignments.getColour(vertex) == colourAssignments.getColour(neighbour); }
+        )
+    );
 }

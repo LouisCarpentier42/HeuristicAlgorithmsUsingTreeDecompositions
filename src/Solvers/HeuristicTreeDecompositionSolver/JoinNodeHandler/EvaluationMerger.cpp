@@ -20,3 +20,13 @@ int Solvers::MinimumEvaluationMerger::mergeEvaluations(int evaluation1, int eval
 {
     return std::min(evaluation1, evaluation2);
 }
+
+int Solvers::SumEvaluationMerger::mergeEvaluations(int evaluation1, int evaluation2) const
+{
+    return evaluation1 + evaluation2;
+}
+
+int Solvers::ProductEvaluationMerger::mergeEvaluations(int evaluation1, int evaluation2) const
+{
+    return evaluation1 * evaluation2;
+}

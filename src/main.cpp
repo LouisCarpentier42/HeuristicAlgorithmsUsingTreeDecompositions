@@ -3,7 +3,7 @@
 #include "IO/Reader.h"
 #include "ExperimentalAnalysis/Experiment.h"
 #include "ExperimentalAnalysis/experimentalAnalysis.h"
-#include "DataStructures/Evaluator/PotentialHappyUncolouredMHVEvaluator.h"
+#include "DataStructures/Evaluator/GrowthMHVEvaluator.h"
 
 #include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHVSolutionIterator.h"
 #include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h"

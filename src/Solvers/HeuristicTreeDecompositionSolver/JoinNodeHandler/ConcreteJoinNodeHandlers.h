@@ -7,11 +7,6 @@
 
 #include "../HeuristicTreeDecompositionSolver.h"
 
-
-// TODO ideas for join bag:
-//  - when merging the colourings, when they differ to much better to skip them
-//  - if left colour and right colour give equal evaluation, try to maintain both -> for static order
-
 namespace Solvers
 {
     class PairwiseCombineJoinHandler : public JoinNodeHandler

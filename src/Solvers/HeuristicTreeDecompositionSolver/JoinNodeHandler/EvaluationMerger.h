@@ -30,6 +30,18 @@ namespace Solvers
     public:
         [[nodiscard]] int mergeEvaluations(int evaluation1, int evaluation2) const override;
     };
+
+    class SumEvaluationMerger : public EvaluationMerger
+    {
+    public:
+        [[nodiscard]] int mergeEvaluations(int evaluation1, int evaluation2) const override;
+    };
+
+    class ProductEvaluationMerger : public EvaluationMerger
+    {
+    public:
+        [[nodiscard]] int mergeEvaluations(int evaluation1, int evaluation2) const override;
+    };
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EVALUATIONMERGER_H
