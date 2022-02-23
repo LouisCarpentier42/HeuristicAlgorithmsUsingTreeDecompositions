@@ -39,9 +39,39 @@ int main(int argc, char** argv)
     if (argc == 1)
     {
         std::string solverFile{"initial_solvers.sol"};
-        std::string experimentFile{"initial_experiment.exp"};
+        std::string experimentFile{"pace_small.exp"};
         ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
         ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
+    }
+    else if (strcmp(argv[1], "generate-td") == 0)
+    {
+        std::ifstream generationInstances{defaultExperimentFilesDir + "generation_file.txt"};
+        if (!generationInstances)
+            throw std::runtime_error("No generation file found at '" + defaultExperimentFilesDir + "generation_file.txt'!");
+
+        std::string line;
+        std::getline(generationInstances, line);
+        std::vector<std::string> tokens = IO::Reader::tokenize(line);
+
+        while (generationInstances)
+        {
+            try
+            {
+                std::cout << "Constructing '" << tokens[0] << "' in " << tokens[1] << " seconds.\n";
+                defaultConstructor.constructNice(
+                    ConstructTreeDecompositions::ConstructionAlgorithm::FlowCutter,
+                    tokens[0],
+                    std::stod(tokens[1])
+                );
+            }
+            catch (const std::exception& e)
+            {
+                std::cout << "An exception occurred at line '" << line << "': " << e.what() << ", the line is ignored.\n";
+            }
+
+            std::getline(generationInstances, line);
+            tokens = IO::Reader::tokenize(line);
+        }
     }
     else if (strcmp(argv[1], "stress-test") == 0)
     {
