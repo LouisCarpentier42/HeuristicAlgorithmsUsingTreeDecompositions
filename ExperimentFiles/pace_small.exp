@@ -1,4 +1,0 @@
-experiment PACE_exact/ex003.gr PACE_exact/ex003_nice.tw random(2,0.051,3) exactTD(false,false)
-c experiment PACE_exact/ex003.gr PACE_exact/ex003_nice.tw random(4,0.173,3) exactTD(false,false)
-c experiment PACE_exact/ex003.gr PACE_exact/ex003_nice.tw random(13,0.0,3) exactTD(false,false)
-c experiment PACE_exact/ex004.gr PACE_exact/ex004_nice.tw random(35,0.041,3) exactTD(false,false)

@@ -54,14 +54,6 @@ void DataStructures::Graph::setColour(DataStructures::VertexType vertexType, Dat
     }
 }
 
-void DataStructures::Graph::setInitialColours(const std::vector<DataStructures::ColourType>& colours)
-{
-    removeInitialColours();
-    for (int i{0}; i < colours.size(); i++)
-        if (colours[i] != 0)
-            setInitialColour(i, colours[i]);
-}
-
 void DataStructures::Graph::setInitialColour(DataStructures::VertexType vertex, DataStructures::ColourType colour)
 {
     vertices[vertex].colour = colour;

@@ -19,12 +19,13 @@ DataStructures::Graph* IO::Reader::readGraph(const std::string &filename) const
     }
 
     std::vector<std::string> tokens = tokenize(line);
+    std::string id{tokens[1]};
     int nbVertices{convertToInt(tokens[2])};
     int nbEdges{convertToInt(tokens[3])};
 
     std::vector<DataStructures::Vertex> vertices;
-    for (DataStructures::VertexType vertexType{0}; vertexType < nbVertices; vertexType++)
-        vertices.emplace_back(DataStructures::Vertex{vertexType});
+    for (DataStructures::VertexType vertexId{0}; vertexId < nbVertices; vertexId++)
+        vertices.emplace_back(DataStructures::Vertex{vertexId});
 
     std::getline(file, line);
     tokens = tokenize(line);
@@ -32,14 +33,44 @@ DataStructures::Graph* IO::Reader::readGraph(const std::string &filename) const
     {
         if (!(tokens.empty() || tokens[0] == "c"))
         {
-            int vertex1{convertToInt(tokens[0])-1};
-            int vertex2{convertToInt(tokens[1])-1};
+            if (id == "tw")
+            {
+                int vertex1{convertToInt(tokens[0])-1};
+                int vertex2{convertToInt(tokens[1])-1};
 
-            vertices[vertex1].degree++;
-            vertices[vertex1].neighbours.push_back(vertex2);
+                vertices[vertex1].degree++;
+                vertices[vertex1].neighbours.push_back(vertex2);
 
-            vertices[vertex2].degree++;
-            vertices[vertex2].neighbours.push_back(vertex1);
+                vertices[vertex2].degree++;
+                vertices[vertex2].neighbours.push_back(vertex1);
+            }
+            else if (id == "edge")
+            {
+                if (tokens[0] == "e") // New edge
+                {
+                    int vertex1{convertToInt(tokens[1])-1};
+                    int vertex2{convertToInt(tokens[2])-1};
+
+                    vertices[vertex1].degree++;
+                    vertices[vertex1].neighbours.push_back(vertex2);
+
+                    vertices[vertex2].degree++;
+                    vertices[vertex2].neighbours.push_back(vertex1);
+                }
+                else if(tokens[0] == "n") // Colour vertex
+                {
+                    int vertex{convertToInt(tokens[1])-1};
+                    int colour{convertToInt(tokens[2])};
+
+                    vertices[vertex].colour = colour;
+                    vertices[vertex].isPrecoloured = true;
+                    vertices[vertex].isColoured = true;
+                }
+            }
+            else
+            {
+                throw std::runtime_error("Illegal for id graph '" + id + "'!");
+            }
         }
         std::getline(file, line);
         tokens = tokenize(line);

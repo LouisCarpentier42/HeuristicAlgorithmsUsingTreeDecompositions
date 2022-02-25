@@ -16,6 +16,7 @@ Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(
 
 void Solvers::StaticOrderJoinNodeHandler::setGraph(const DataStructures::Graph* graphToSolve)
 {
+    vertexOrder.clear();
     NodeHandler::setGraph(graphToSolve);
 
     std::vector<DataStructures::VertexType> orderToColourVertices(graphToSolve->getNbVertices());

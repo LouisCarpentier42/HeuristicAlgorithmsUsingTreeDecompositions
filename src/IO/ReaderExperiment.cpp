@@ -91,7 +91,7 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
                             graph,
                             tokens[1],
                             tokens[2],
-                            readColouringVector(tokens[3], graph),
+                            colourGraph(tokens[3], graph),
                             false,
                             false
                     }
@@ -107,7 +107,7 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
                                 graph,
                                 tokens[1],
                                 tokens[2],
-                                readColouringVector(tokens[3], graph),
+                                colourGraph(tokens[3], graph),
                             parameters[1] == "true",
                             parameters[2] == "true"
                         }

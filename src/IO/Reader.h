@@ -60,8 +60,8 @@ namespace IO
         [[nodiscard]] static Solvers::JoinNodeHandler* readJoinNodeHandler(const std::string& str);
         [[nodiscard]] static Solvers::JoinNodeHandler* readJoinNodeHandler(int argc, char** argv);
         [[nodiscard]] static Solvers::EvaluationMerger* getEvaluationMerger(const std::string& str);
-        [[nodiscard]] static std::map<std::string, std::vector<DataStructures::ColourType>> readColouringVector(const std::string& str, const DataStructures::Graph* graph);
-        [[nodiscard]] static std::vector<DataStructures::ColourType> readColouringVector(int argc, char** argv, const DataStructures::Graph* graph);
+        [[nodiscard]] static std::string colourGraph(const std::string& str, DataStructures::Graph* graph);
+        [[nodiscard]] static std::string colourGraph(int argc, char** argv, DataStructures::Graph* graph);
 
         static std::string getParameter(int argc, char** argv, const std::string& paramName, bool isObligatedParam);
         static std::vector<std::string> tokenize(const std::string& line);

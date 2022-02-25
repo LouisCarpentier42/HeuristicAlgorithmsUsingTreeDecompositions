@@ -38,10 +38,10 @@ int main(int argc, char** argv)
 
     if (argc == 1)
     {
-        std::string solverFile{"initial_solvers.sol"};
-        std::string experimentFile{"pace_small.exp"};
-        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
-        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
+//        std::string solverFile{"initial_solvers.sol"};
+//        std::string experimentFile{"initial_experiment.exp"};
+//        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
+//        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
     }
     else if (strcmp(argv[1], "generate-td") == 0)
     {
@@ -119,28 +119,20 @@ int main(int argc, char** argv)
 
                 DataStructures::Graph* graph = defaultReader.readGraph(tokens[0]);
                 DataStructures::NiceTreeDecomposition niceTreeDecomposition = defaultReader.readNiceTreeDecomposition(tokens[1]);
+                std::string colourType = IO::Reader::colourGraph("random(" + tokens[2] + "," + tokens[3] + ")", graph);
 
-                std::string colourString = "random(" + tokens[2] + "," + tokens[3] + ",1)";
-                std::map<std::string, std::vector<DataStructures::ColourType>> colourVectors = IO::Reader::readColouringVector(colourString, graph);
+                exactBruteForceSolver->solve(graph);
+                int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
+                graph->removeColours();
 
-                for (auto const& [name, colourVector] : colourVectors)
+                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, &niceTreeDecomposition)};
+                graph->removeColours();
+
+                std::cout << "[brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "]\n";
+                if (bruteForceEvaluation != tdEvaluation)
                 {
-                    graph->removeInitialColours();
-                    graph->setInitialColours(colourVector);
-
-                    exactBruteForceSolver->solve(graph);
-                    int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
-                    graph->removeColours();
-
-                    int tdEvaluation{exactTreeDecompositionSolver->solve(graph, &niceTreeDecomposition)};
-                    graph->removeColours();
-
-                    std::cout << "[brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "]\n";
-                    if (bruteForceEvaluation != tdEvaluation)
-                    {
-                        std::cerr << "[ERROR] - line: '" << line << "'\n";
-                        nbMistakes++;
-                    }
+                    std::cerr << "[ERROR] - line: '" << line << "'\n";
+                    nbMistakes++;
                 }
 
                 if (counter % 50 == 0)
@@ -192,7 +184,7 @@ int main(int argc, char** argv)
         };
 
         DataStructures::Graph* graph = reader.readGraph(IO::Reader::getParameter(argc, argv, "--graphFile", true));
-        graph->setInitialColours(IO::Reader::readColouringVector(argc, argv, graph));
+        std::string colourType = IO::Reader::colourGraph(argc, argv, graph);
         DataStructures::NiceTreeDecomposition treeDecomposition = reader.readNiceTreeDecomposition(IO::Reader::getParameter(argc, argv, "--treeDecompositionFile", true));
 
         solver.solve(graph, &treeDecomposition);

@@ -19,7 +19,7 @@ namespace ExperimentalAnalysis
         DataStructures::Graph* graph;
         const std::string graphName;
         const std::string treeDecompositionName;
-        const std::map<std::string, std::vector<DataStructures::ColourType>> colourings;
+        const std::string colourGeneration;
         const bool executeExactTD;
         const bool compareExactTD;
     };
