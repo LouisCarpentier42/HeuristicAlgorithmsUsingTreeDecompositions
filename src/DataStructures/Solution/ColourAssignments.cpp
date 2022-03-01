@@ -7,6 +7,7 @@
 
 DataStructures::ColourAssignments::ColourAssignments(const DataStructures::Graph* graph)
     : assignments{std::vector<DataStructures::ColourType>(graph->getNbVertices(), 0)},
+      vertexKnownToBeUncoloured{std::vector<bool>(graph->getNbVertices(), false)},
       childAssignments{}
 { }
 
@@ -14,6 +15,7 @@ DataStructures::ColourAssignments::ColourAssignments(
         const DataStructures::Node* node,
         DataStructures::ColourAssignments* other)
     : assignments{std::vector<DataStructures::ColourType>(other->assignments.size(), 0)},
+      vertexKnownToBeUncoloured{std::vector<bool>(other->assignments.size(), false)},
       childAssignments{other}
 {
     for (DataStructures::VertexType vertex : node->getBagContent())
@@ -25,6 +27,7 @@ DataStructures::ColourAssignments::ColourAssignments(
         DataStructures::ColourAssignments* primaryColourAssignment,
         DataStructures::ColourAssignments* secondaryColourAssignment)
     : assignments{std::vector<DataStructures::ColourType>(primaryColourAssignment->assignments.size(), 0)},
+      vertexKnownToBeUncoloured{std::vector<bool>(primaryColourAssignment->assignments.size(), false)},
       childAssignments{primaryColourAssignment, secondaryColourAssignment}
 {
     for (DataStructures::VertexType vertex : node->getBagContent())
@@ -36,6 +39,9 @@ DataStructures::VertexType DataStructures::ColourAssignments::getColour(DataStru
     if (assignments[vertex] != 0)
         return assignments[vertex];
 
+    if (vertexKnownToBeUncoloured[vertex])
+        return 0;
+
     for (DataStructures::ColourAssignments* childAssignment : childAssignments)
     {
         DataStructures::ColourType colourInChild = childAssignment->getColour(vertex);
@@ -45,7 +51,9 @@ DataStructures::VertexType DataStructures::ColourAssignments::getColour(DataStru
             return colourInChild;
         }
     }
-    return 0; // TODO maybe remember that is uncoloured in child?
+
+    vertexKnownToBeUncoloured[vertex] = true;
+    return 0;
 }
 
 bool DataStructures::ColourAssignments::isColoured(DataStructures::VertexType vertex)

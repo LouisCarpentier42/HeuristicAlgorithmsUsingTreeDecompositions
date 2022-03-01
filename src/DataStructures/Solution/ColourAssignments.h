@@ -19,6 +19,7 @@ namespace DataStructures
     {
     private:
         std::vector<DataStructures::ColourType> assignments;
+        std::vector<bool> vertexKnownToBeUncoloured;
         const std::vector<DataStructures::ColourAssignments*> childAssignments;
 
     public:
