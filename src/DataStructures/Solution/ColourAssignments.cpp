@@ -5,29 +5,52 @@
 #include "ColourAssignments.h"
 #include "HappyVerticesAssignments.h"
 
-DataStructures::ColourAssignments::ColourAssignments(const DataStructures::Graph *graph)
-    : assignments(graph->getNbVertices()) {}
+DataStructures::ColourAssignments::ColourAssignments(const DataStructures::Graph* graph)
+    : assignments{std::vector<DataStructures::ColourType>(graph->getNbVertices(), 0)},
+      childAssignments{}
+{ }
 
 DataStructures::ColourAssignments::ColourAssignments(
-        const DataStructures::ColourAssignments& primaryColourAssignment,
-        const DataStructures::ColourAssignments& secondaryColourAssignment)
-    : assignments{secondaryColourAssignment.assignments}
+        const DataStructures::Node* node,
+        DataStructures::ColourAssignments* other)
+    : assignments{std::vector<DataStructures::ColourType>(other->assignments.size(), 0)},
+      childAssignments{other}
 {
-    for (DataStructures::VertexType vertex{0}; vertex < primaryColourAssignment.assignments.size(); vertex++)
+    for (DataStructures::VertexType vertex : node->getBagContent())
+        assignments[vertex] = other->getColour(vertex);
+}
+
+DataStructures::ColourAssignments::ColourAssignments(
+        const DataStructures::Node* node,
+        DataStructures::ColourAssignments* primaryColourAssignment,
+        DataStructures::ColourAssignments* secondaryColourAssignment)
+    : assignments{std::vector<DataStructures::ColourType>(primaryColourAssignment->assignments.size(), 0)},
+      childAssignments{primaryColourAssignment, secondaryColourAssignment}
+{
+    for (DataStructures::VertexType vertex : node->getBagContent())
+        assignments[vertex] = primaryColourAssignment->getColour(vertex);
+}
+
+DataStructures::VertexType DataStructures::ColourAssignments::getColour(DataStructures::VertexType vertex)
+{
+    if (assignments[vertex] != 0)
+        return assignments[vertex];
+
+    for (DataStructures::ColourAssignments* childAssignment : childAssignments)
     {
-        if (primaryColourAssignment.isColoured(vertex))
-            assignColour(vertex, primaryColourAssignment.getColour(vertex));
+        DataStructures::ColourType colourInChild = childAssignment->getColour(vertex);
+        if (colourInChild != 0)
+        {
+            assignments[vertex] = colourInChild; // Cache the colour of the vertex
+            return colourInChild;
+        }
     }
+    return 0; // TODO maybe remember that is uncoloured in child?
 }
 
-DataStructures::VertexType DataStructures::ColourAssignments::getColour(DataStructures::VertexType vertex) const
+bool DataStructures::ColourAssignments::isColoured(DataStructures::VertexType vertex)
 {
-    return assignments[vertex];
-}
-
-bool DataStructures::ColourAssignments::isColoured(DataStructures::VertexType vertex) const
-{
-    return assignments[vertex] != 0;
+    return getColour(vertex) != 0;
 }
 
 void DataStructures::ColourAssignments::assignColour(DataStructures::VertexType vertex, DataStructures::ColourType colour)
@@ -51,10 +74,12 @@ bool DataStructures::operator<(const DataStructures::ColourAssignments& c1, cons
     return c1.assignments < c2.assignments;
 }
 
-std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures::ColourAssignments& assignments)
+std::ostream& DataStructures::operator<<(std::ostream& out, DataStructures::ColourAssignments& assignments)
 {
     out << "[" << assignments.getColour(0);
     for (int i{1}; i < assignments.assignments.size(); i++)
         out << ", " << assignments.getColour(i);
     return out << "]";
 }
+
+

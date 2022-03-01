@@ -18,7 +18,7 @@ void MaximumHappyVertices::ExactBruteForceMHV::solve(DataStructures::Graph* grap
     Solvers::ColouringIterator iterator{verticesToConsider, graph};
 
     int bestEvaluation{-1};
-    DataStructures::ColourAssignments bestColourAssignments{graph};
+    std::vector<DataStructures::ColourType> colours(graph->getNbVertices(), 0);
     do {
         DataStructures::ColourAssignments colourAssignments = iterator.getValue();
         for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
@@ -28,12 +28,13 @@ void MaximumHappyVertices::ExactBruteForceMHV::solve(DataStructures::Graph* grap
         if (evaluation > bestEvaluation)
         {
             bestEvaluation = evaluation;
-            bestColourAssignments = colourAssignments;
+            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+                colours[vertex] = colourAssignments.getColour(vertex);
         }
     } while (iterator.next());
 
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-        graph->setColour(vertex, bestColourAssignments.getColour(vertex));
+        graph->setColour(vertex, colours[vertex]);
 }
 
 

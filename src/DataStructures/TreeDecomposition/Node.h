@@ -8,11 +8,11 @@
 #include "../Graph/Graph.h"
 
 #include <iostream>
-#include <vector>
+#include <set>
 
 namespace DataStructures
 {
-    using BagContent = std::vector<DataStructures::VertexType>;
+    using BagContent = std::set<DataStructures::VertexType>;
 
     class Node
     {

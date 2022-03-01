@@ -36,9 +36,9 @@ namespace DataStructures
         [[nodiscard]] int evaluate(const DataStructures::Graph* graph) const override;
 
         [[nodiscard]] int evaluate(
-            const std::vector<DataStructures::VertexType>& recolouredVertices,
-            const std::vector<DataStructures::ColourAssignments>& oldColourAssignments,
-            const DataStructures::ColourAssignments& newColourAssignments,
+            const std::set<DataStructures::VertexType>& recolouredVertices,
+            std::vector<DataStructures::ColourAssignments*> oldColourAssignments,
+            DataStructures::ColourAssignments* newColourAssignments,
             const DataStructures::Graph* graph,
             int startEvaluation
         ) const override;
@@ -47,7 +47,7 @@ namespace DataStructures
     private:
         [[nodiscard]] static std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> getGrowthMHVTypes(
             const std::set<DataStructures::VertexType>& vertices,
-            const DataStructures::ColourAssignments& colourAssignments,
+            DataStructures::ColourAssignments* colourAssignments,
             const DataStructures::Graph* graph
         );
         [[nodiscard]] int getVertexWeight(

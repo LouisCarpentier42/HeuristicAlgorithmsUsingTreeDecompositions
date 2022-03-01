@@ -25,30 +25,30 @@ namespace DataStructures
         [[nodiscard]] virtual int evaluate(const DataStructures::Graph* graph) const = 0;
 
         [[nodiscard]] virtual int evaluate(
-            const std::vector<DataStructures::VertexType>& recolouredVertices,
-            const std::vector<DataStructures::ColourAssignments>& oldColourAssignments,
-            const DataStructures::ColourAssignments& newColourAssignments,
+            const std::set<DataStructures::VertexType>& recolouredVertices,
+            std::vector<DataStructures::ColourAssignments*> oldColourAssignments,
+            DataStructures::ColourAssignments* newColourAssignments,
             const DataStructures::Graph* graph,
             int startEvaluation
         ) const = 0;
         [[nodiscard]] virtual int evaluate(
-            const std::vector<DataStructures::VertexType>& recolouredVertices,
-            const DataStructures::ColourAssignments& oldColourAssignments,
-            const DataStructures::ColourAssignments& newColourAssignments,
+                const std::set<DataStructures::VertexType>& recolouredVertices,
+                ColourAssignments* oldColourAssignments,
+                DataStructures::ColourAssignments* newColourAssignments,
+                const DataStructures::Graph* graph,
+                int startEvaluation
+        ) const;
+        [[nodiscard]] virtual int evaluate(
+            const DataStructures::VertexType& recolouredVertex,
+            std::vector<DataStructures::ColourAssignments*>& oldColourAssignments,
+            DataStructures::ColourAssignments* newColourAssignments,
             const DataStructures::Graph* graph,
             int startEvaluation
         ) const;
         [[nodiscard]] virtual int evaluate(
             const DataStructures::VertexType& recolouredVertex,
-            const std::vector<DataStructures::ColourAssignments>& oldColourAssignments,
-            const DataStructures::ColourAssignments& newColourAssignments,
-            const DataStructures::Graph* graph,
-            int startEvaluation
-        ) const;
-        [[nodiscard]] virtual int evaluate(
-            const DataStructures::VertexType& recolouredVertex,
-            const DataStructures::ColourAssignments& oldColourAssignments,
-            const DataStructures::ColourAssignments& newColourAssignments,
+            DataStructures::ColourAssignments* oldColourAssignments,
+            DataStructures::ColourAssignments* newColourAssignments,
             const DataStructures::Graph* graph,
             int startEvaluation
         ) const;
@@ -56,7 +56,7 @@ namespace DataStructures
     protected:
         [[nodiscard]] static std::set<DataStructures::VertexType> verticesAtDistance(
             size_t distance,
-            const std::vector<DataStructures::VertexType>& vertices,
+            const std::set<DataStructures::VertexType>& vertices,
             const DataStructures::Graph* graph
         );
 

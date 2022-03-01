@@ -21,11 +21,11 @@ void Solvers::GreedyIntroduceNodeHandler::handleIntroduceNode(DataStructures::In
         {
             for (DataStructures::ColourType colour{1}; colour <= graph->getNbColours(); colour++)
             {
-                DataStructures::ColourAssignments assignments = entry->getColourAssignments();
+                DataStructures::ColourAssignments assignments{node, entry->getColourAssignments()};
                 assignments.assignColour(node->getIntroducedVertex(), colour);
                 node->getTable()->push(
                     new DataStructures::TableEntry{
-                        evaluator->evaluate(node->getIntroducedVertex(), entry->getColourAssignments(), assignments, graph, entry->getEvaluation()),
+                        evaluator->evaluate(node->getIntroducedVertex(), entry->getColourAssignments(), &assignments, graph, entry->getEvaluation()),
                         assignments
                     }
                 );

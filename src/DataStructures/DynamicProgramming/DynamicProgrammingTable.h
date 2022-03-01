@@ -19,7 +19,7 @@ namespace DataStructures
     private:
         struct table_entry_pointer_comparator
         {
-            bool operator()(const TableEntry* entry1, const TableEntry* entry2) const
+            bool operator()(TableEntry* entry1, TableEntry* entry2) const
             {
                 return *entry1 < *entry2;
             }

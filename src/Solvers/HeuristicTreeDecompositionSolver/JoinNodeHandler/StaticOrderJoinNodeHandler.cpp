@@ -50,22 +50,23 @@ void Solvers::StaticOrderJoinNodeHandler::setVerticesToColour(DataStructures::Jo
     verticesToColour.clear();
     for (DataStructures::VertexType vertex : vertexOrder)
     {
-        if (!graph->isPrecoloured(vertex) && std::find(node->getBagContent().begin(), node->getBagContent().end(), vertex) != node->getBagContent().end())
+        if (!graph->isPrecoloured(vertex) && node->getBagContent().find(vertex) != node->getBagContent().end())
             verticesToColour.push_back(vertex);
     }
 }
 
 void Solvers::StaticOrderJoinNodeHandler::addMergedEntries(
         DataStructures::JoinNode* node,
-       const DataStructures::TableEntry* leftEntry,
-       const DataStructures::TableEntry* rightEntry) const
+        DataStructures::TableEntry* leftEntry,
+        DataStructures::TableEntry* rightEntry) const
 {
     // The colour assignments used to construct a new assignment
-    std::vector<DataStructures::ColourAssignments> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
+    std::vector<DataStructures::ColourAssignments*> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
 
     // Create a colour assignment
     DataStructures::ColourAssignments assignments
     {
+        node,
         leftEntry->getColourAssignments(),
         rightEntry->getColourAssignments()
     };
@@ -81,24 +82,24 @@ void Solvers::StaticOrderJoinNodeHandler::addMergedEntries(
     for (DataStructures::VertexType vertex : verticesToColour)
     {
         // You only need to check the colour of vertices that are in the bag, thus those that are coloured in both entries
-        if (leftEntry->getColourAssignments().isColoured(vertex) && rightEntry->getColourAssignments().isColoured(vertex))
+        if (leftEntry->getColourAssignments()->isColoured(vertex) && rightEntry->getColourAssignments()->isColoured(vertex))
         {
             // If the vertices have the same colour, then you only need to re-evaluate once
-            if (leftEntry->getColourAssignments().getColour(vertex) == rightEntry->getColourAssignments().getColour(vertex))
+            if (leftEntry->getColourAssignments()->getColour(vertex) == rightEntry->getColourAssignments()->getColour(vertex))
             {
-                assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
-                previousEvaluation = evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation);
+                assignments.assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
+                previousEvaluation = evaluator->evaluate(vertex, oldColourAssignments, &assignments, graph, previousEvaluation);
             }
             else
             {
-                assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
-                int leftEvaluation{evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation)};
-                assignments.assignColour(vertex, rightEntry->getColourAssignments().getColour(vertex));
-                int rightEvaluation{evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation)};
+                assignments.assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
+                int leftEvaluation{evaluator->evaluate(vertex, oldColourAssignments, &assignments, graph, previousEvaluation)};
+                assignments.assignColour(vertex, rightEntry->getColourAssignments()->getColour(vertex));
+                int rightEvaluation{evaluator->evaluate(vertex, oldColourAssignments, &assignments, graph, previousEvaluation)};
 
                 if (leftEvaluation > rightEvaluation)
                 {
-                    assignments.assignColour(vertex, leftEntry->getColourAssignments().getColour(vertex));
+                    assignments.assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
                     previousEvaluation = leftEvaluation;
                 }
                 else

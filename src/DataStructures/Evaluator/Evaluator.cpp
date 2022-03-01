@@ -5,15 +5,15 @@
 #include "Evaluator.h"
 
 int DataStructures::Evaluator::evaluate(
-        const std::vector<DataStructures::VertexType>& recolouredVertices,
-        const DataStructures::ColourAssignments& oldColourAssignments,
-        const DataStructures::ColourAssignments& newColourAssignments,
+        const std::set<DataStructures::VertexType>& recolouredVertices,
+        ColourAssignments* oldColourAssignments,
+        DataStructures::ColourAssignments* newColourAssignments,
         const DataStructures::Graph* graph,
         int startEvaluation) const
 {
     return evaluate(
             recolouredVertices,
-            std::vector<DataStructures::ColourAssignments>{oldColourAssignments},
+            std::vector<DataStructures::ColourAssignments*>{oldColourAssignments},
             newColourAssignments,
             graph,
             startEvaluation);
@@ -21,13 +21,13 @@ int DataStructures::Evaluator::evaluate(
 
 int DataStructures::Evaluator::evaluate(
         const DataStructures::VertexType& recolouredVertex,
-        const std::vector<DataStructures::ColourAssignments>& oldColourAssignments,
-        const DataStructures::ColourAssignments& newColourAssignments,
+        std::vector<DataStructures::ColourAssignments*>& oldColourAssignments,
+        DataStructures::ColourAssignments* newColourAssignments,
         const DataStructures::Graph* graph,
         int startEvaluation) const
 {
     return evaluate(
-            std::vector<VertexType>{recolouredVertex},
+            std::set<VertexType>{recolouredVertex},
             oldColourAssignments,
             newColourAssignments,
             graph,
@@ -36,14 +36,14 @@ int DataStructures::Evaluator::evaluate(
 
 int DataStructures::Evaluator::evaluate(
         const DataStructures::VertexType& recolouredVertex,
-        const DataStructures::ColourAssignments& oldColourAssignments,
-        const DataStructures::ColourAssignments& newColourAssignments,
+        DataStructures::ColourAssignments* oldColourAssignments,
+        DataStructures::ColourAssignments* newColourAssignments,
         const DataStructures::Graph* graph,
         int startEvaluation) const
 {
     return evaluate(
-            std::vector<VertexType>{recolouredVertex},
-            std::vector<DataStructures::ColourAssignments>{oldColourAssignments},
+            std::set<VertexType>{recolouredVertex},
+            std::vector<DataStructures::ColourAssignments*>{oldColourAssignments},
             newColourAssignments,
             graph,
             startEvaluation);
@@ -51,7 +51,7 @@ int DataStructures::Evaluator::evaluate(
 
 std::set<DataStructures::VertexType> DataStructures::Evaluator::verticesAtDistance(
         size_t distance,
-        const std::vector<DataStructures::VertexType>& vertices,
+        const std::set<DataStructures::VertexType>& vertices,
         const DataStructures::Graph* graph)
 {
     // Initialise variables

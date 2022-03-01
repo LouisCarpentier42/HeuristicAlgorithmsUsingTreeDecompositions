@@ -41,11 +41,11 @@ DataStructures::TreeDecomposition IO::Reader::readTreeDecomposition(const std::s
     {
         if (tokens[0] != "c") {
             int bagId{convertToInt(tokens[1])};
-            size_t bagSize{tokens.size()-2};
-            std::vector<DataStructures::VertexType> vertices(bagSize);
-            for (int i = 0; i < vertices.size(); i++)
+            size_t bagSize{tokens.size()-2}; // Minus 2 because first token is 'b' and second token is bag id
+            std::set<DataStructures::VertexType> vertices{};
+            for (int i = 2; i < tokens.size(); i++)
             {
-                vertices[i] = convertToInt(tokens[i+2])-1;
+                vertices.insert(convertToInt(tokens[i])-1);
             }
             bags[bagId-1] = new DataStructures::StandardNode{bagId, bagSize, vertices};
         }

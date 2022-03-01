@@ -87,9 +87,8 @@ std::ostream& DataStructures::Node::prettyPrint(std::ostream& out, std::string& 
     out << "b(" << id << "): " << "{";
     if (bagSize > 0)
     {
-        for (int i = 0; i < bagSize - 1; i++)
-            out << bagContent[i] << ", ";
-        out << bagContent[bagSize - 1];
+        for (auto value : bagContent)
+            out << value << ",";
     }
     out << "} " << getTypeString() << "\n";
 

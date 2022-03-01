@@ -30,7 +30,6 @@ void Solvers::PairwiseCombineJoinHandler::handleJoinNode(DataStructures::JoinNod
     setVerticesToColour(node);
 
     int nbThatMustBeEqual{static_cast<int>(std::ceil(node->getBagSize() * percentMustBeEqual))};
-
     for (DataStructures::TableEntry* leftEntry : *node->getLeftChild()->getTable())
     {
         for (DataStructures::TableEntry* rightEntry : *node->getRightChild()->getTable())
@@ -38,7 +37,7 @@ void Solvers::PairwiseCombineJoinHandler::handleJoinNode(DataStructures::JoinNod
             int nbEqualColouredVertices{0};
             for (DataStructures::VertexType vertex : node->getBagContent())
             {
-                if (leftEntry->getColourAssignments().getColour(vertex) == rightEntry->getColourAssignments().getColour(vertex))
+                if (leftEntry->getColourAssignments()->getColour(vertex) == rightEntry->getColourAssignments()->getColour(vertex))
                 {
                     nbEqualColouredVertices++;
                     if (nbEqualColouredVertices >= nbThatMustBeEqual)

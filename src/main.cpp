@@ -38,10 +38,10 @@ int main(int argc, char** argv)
 
     if (argc == 1)
     {
-//        std::string solverFile{"initial_solvers.sol"};
-//        std::string experimentFile{"initial_experiment.exp"};
-//        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
-//        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
+        std::string solverFile{"initial_solvers.sol"};
+        std::string experimentFile{"initial_experiment.exp"};
+        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
+        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
     }
     else if (strcmp(argv[1], "generate-td") == 0)
     {

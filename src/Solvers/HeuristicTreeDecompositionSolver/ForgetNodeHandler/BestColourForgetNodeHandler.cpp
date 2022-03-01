@@ -23,10 +23,10 @@ void Solvers::BestColourForgetNodeHandler::handleForgetVertexBag(DataStructures:
             DataStructures::DynamicProgrammingTable table{graph->getNbColours()};
             for (DataStructures::ColourType colour{1}; colour <= graph->getNbColours(); colour++)
             {
-                DataStructures::ColourAssignments assignments = entry->getColourAssignments();
+                DataStructures::ColourAssignments assignments{node, entry->getColourAssignments()};
                 assignments.assignColour(node->getForgottenVertex(), colour);
                 table.push(new DataStructures::TableEntry{
-                    evaluator->evaluate(node->getForgottenVertex(), entry->getColourAssignments(), assignments, graph, entry->getEvaluation()),
+                    evaluator->evaluate(node->getForgottenVertex(), entry->getColourAssignments(), &assignments, graph, entry->getEvaluation()),
                     assignments
                 });
             }

@@ -46,9 +46,9 @@ int DataStructures::potentialHappyMHVEvaluator::evaluate(const DataStructures::G
 }
 
 int DataStructures::potentialHappyMHVEvaluator::evaluate(
-        const std::vector<DataStructures::VertexType>& recolouredVertices,
-        const std::vector<DataStructures::ColourAssignments>& oldColourAssignments,
-        const DataStructures::ColourAssignments& newColourAssignments,
+        const std::set<DataStructures::VertexType>& recolouredVertices,
+        std::vector<DataStructures::ColourAssignments*> oldColourAssignments,
+        DataStructures::ColourAssignments* newColourAssignments,
         const DataStructures::Graph* graph,
         int startEvaluation) const
 {
@@ -59,7 +59,7 @@ int DataStructures::potentialHappyMHVEvaluator::evaluate(
     for (DataStructures::VertexType vertex : potentiallyChangedVertices)
     {
         // Remove the evaluation from the old colour assignment
-        for (const DataStructures::ColourAssignments& oldColourAssignment : oldColourAssignments)
+        for (DataStructures::ColourAssignments* oldColourAssignment : oldColourAssignments)
             evaluation -= getVertexWeight(vertex, oldColourAssignment, graph);
 
         // Add the evaluation from the new colour assignment
@@ -71,26 +71,26 @@ int DataStructures::potentialHappyMHVEvaluator::evaluate(
 
 int DataStructures::potentialHappyMHVEvaluator::getVertexWeight(
         DataStructures::VertexType vertex,
-        const DataStructures::ColourAssignments& colourAssignments,
+        DataStructures::ColourAssignments* colourAssignments,
         const DataStructures::Graph* graph) const
 {
-    if (!colourAssignments.isColoured(vertex))
+    if (!colourAssignments->isColoured(vertex))
     {
         ColourType oldColourNeighbours{0};
         bool hadColouredNeighbours{false};
         bool vertexWasUnhappy{false};
         for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
         {
-            if (!colourAssignments.isColoured(neighbour))
+            if (!colourAssignments->isColoured(neighbour))
             {
                 // Nothing needs to happen for an uncoloured neighbour of an uncoloured vertex
             }
             else if (oldColourNeighbours == 0)
             {
-                oldColourNeighbours = colourAssignments.getColour(neighbour);
+                oldColourNeighbours = colourAssignments->getColour(neighbour);
                 hadColouredNeighbours = true;
             }
-            else if (colourAssignments.getColour(neighbour) != oldColourNeighbours)
+            else if (colourAssignments->getColour(neighbour) != oldColourNeighbours)
             {
                 vertexWasUnhappy = true;
                 break;
@@ -110,11 +110,11 @@ int DataStructures::potentialHappyMHVEvaluator::getVertexWeight(
         bool hadUncolouredNeighbour{false};
         for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
         {
-            if (!colourAssignments.isColoured(neighbour))
+            if (!colourAssignments->isColoured(neighbour))
             {
                 hadUncolouredNeighbour = true;
             }
-            else if (colourAssignments.getColour(neighbour) != colourAssignments.getColour(vertex))
+            else if (colourAssignments->getColour(neighbour) != colourAssignments->getColour(vertex))
             {
                 vertexWasUnhappy = true;
                 break;

@@ -27,11 +27,11 @@ int DataStructures::GrowthMHVEvaluator::evaluate(const DataStructures::Graph* gr
     int evaluation{0};
 
     std::set<DataStructures::VertexType> allVertices{};
-    DataStructures::ColourAssignments colourAssignments{graph};
+    auto* colourAssignments = new DataStructures::ColourAssignments{graph};
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
         allVertices.emplace_hint(allVertices.end(), vertex);
-        colourAssignments.assignColour(vertex, graph->getColour(vertex));
+        colourAssignments->assignColour(vertex, graph->getColour(vertex));
     }
     std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> vertexTypes = getGrowthMHVTypes(
             allVertices, colourAssignments, graph);
@@ -44,9 +44,9 @@ int DataStructures::GrowthMHVEvaluator::evaluate(const DataStructures::Graph* gr
 }
 
 int DataStructures::GrowthMHVEvaluator::evaluate(
-        const std::vector<DataStructures::VertexType>& recolouredVertices,
-        const std::vector<DataStructures::ColourAssignments>& oldColourAssignments,
-        const DataStructures::ColourAssignments& newColourAssignments,
+        const std::set<DataStructures::VertexType>& recolouredVertices,
+        std::vector<DataStructures::ColourAssignments*> oldColourAssignments,
+        DataStructures::ColourAssignments* newColourAssignments,
         const DataStructures::Graph* graph,
         int startEvaluation) const
 {
@@ -56,7 +56,7 @@ int DataStructures::GrowthMHVEvaluator::evaluate(
     // Compute the types of the vertices that can have potentially a different type
     std::vector<std::vector<MaximumHappyVertices::GrowthMHV::GrowthType>> oldTypes{};
     oldTypes.reserve(oldColourAssignments.size());
-    for (const DataStructures::ColourAssignments& oldColourAssignment : oldColourAssignments)
+    for (DataStructures::ColourAssignments* oldColourAssignment : oldColourAssignments)
         oldTypes.emplace_back(getGrowthMHVTypes(potentiallyChangedVertices, oldColourAssignment, graph));
 
     std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> newTypes = getGrowthMHVTypes(
@@ -78,7 +78,7 @@ int DataStructures::GrowthMHVEvaluator::evaluate(
 
 std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> DataStructures::GrowthMHVEvaluator::getGrowthMHVTypes(
         const std::set<DataStructures::VertexType>& vertices,
-        const DataStructures::ColourAssignments& colourAssignments,
+        DataStructures::ColourAssignments* colourAssignments,
         const DataStructures::Graph* graph)
 {
     std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> vertexTypes(
@@ -90,7 +90,7 @@ std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> DataStructures::GrowthM
     std::deque<DataStructures::VertexType> uncolouredVertices{};
     for (DataStructures::VertexType vertex : vertices)
     {
-        if (colourAssignments.isColoured(vertex))
+        if (colourAssignments->isColoured(vertex))
             colouredVertices.push_back(vertex);
         else
             uncolouredVertices.push_back(vertex);
@@ -105,11 +105,11 @@ std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> DataStructures::GrowthM
         bool hasUncolouredNeighbour{false};
         for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
         {
-            if (!colourAssignments.isColoured(neighbour))
+            if (!colourAssignments->isColoured(neighbour))
             {
                 hasUncolouredNeighbour = true;
             }
-            else if (colourAssignments.getColour(neighbour) != colourAssignments.getColour(vertex))
+            else if (colourAssignments->getColour(neighbour) != colourAssignments->getColour(vertex))
             {
                 vertexIsUnhappy = true;
                 break;
@@ -145,11 +145,11 @@ std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> DataStructures::GrowthM
                 hasPNeighbour = true;
                 break;
             }
-            else if (colourNeighbours == 0 && colourAssignments.isColoured(neighbour))
+            else if (colourNeighbours == 0 && colourAssignments->isColoured(neighbour))
             {
-                colourNeighbours = colourAssignments.getColour(neighbour);
+                colourNeighbours = colourAssignments->getColour(neighbour);
             }
-            else if (colourNeighbours != 0 && colourAssignments.isColoured(neighbour) && colourAssignments.getColour(neighbour) != colourNeighbours)
+            else if (colourNeighbours != 0 && colourAssignments->isColoured(neighbour) && colourAssignments->getColour(neighbour) != colourNeighbours)
             {
                 isUnhappy = true;
             }

@@ -59,13 +59,13 @@ void computeComparisonScores(
     int i{0};
     for (DataStructures::TableEntry* entry : *table)
     {
-        for (const DataStructures::ColourAssignments& relevantColourAssignment : allRelevantColourAssignments)
+        for (DataStructures::ColourAssignments& relevantColourAssignment : allRelevantColourAssignments)
         {
             // TODO somehow look at all colours for deciding if it is relevant or not
             bool currentColourAssignmentIsRelevant{true};
             for (DataStructures::VertexType vertex : node->getBagContent())
             {
-                if (relevantColourAssignment.getColour(vertex) != entry->getColourAssignments().getColour(vertex))
+                if (relevantColourAssignment.getColour(vertex) != entry->getColourAssignments()->getColour(vertex))
                 {
                     currentColourAssignmentIsRelevant = false;
                     break;
@@ -141,12 +141,12 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
         resultFile << "evaluation run " << (i+1) << ",time (µs) run " << (i+1) << ",";
     resultFile << "mean evaluation,mean time(µs)";
 
-    size_t maxNbColours = std::max_element(
-        experiment.testInstances.begin(),
-        experiment.testInstances.end(),
-        [](const TestInstance& instance1, const TestInstance& instance2)
-            { return instance1.graph->getNbColours() > instance2.graph->getNbColours(); }
-    )->graph->getNbColours();
+    size_t maxNbColours{0};
+    for (const auto& instance : experiment.testInstances)
+    {
+        if (instance.graph->getNbColours() > maxNbColours)
+            maxNbColours = instance.graph->getNbColours();
+    }
     for (DataStructures::ColourType colour{1}; colour <= maxNbColours; colour++)
         resultFile << ",% colour " << colour;
     resultFile << "\n";
@@ -186,7 +186,7 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
             resultFile << "\n";
         }
 
-        // Test the solvers
+        // Test the tree decomposition solvers
         if (!experiment.treeDecompositionSolvers.empty())
         {
             DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(testInstance.treeDecompositionName);

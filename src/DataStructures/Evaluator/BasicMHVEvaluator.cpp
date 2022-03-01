@@ -30,9 +30,9 @@ int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* gra
 }
 
 int DataStructures::BasicMHVEvaluator::evaluate(
-        const std::vector<DataStructures::VertexType>& recolouredVertices,
-        const std::vector<DataStructures::ColourAssignments>& oldColourAssignments,
-        const DataStructures::ColourAssignments& newColourAssignments,
+        const std::set<DataStructures::VertexType>& recolouredVertices,
+        std::vector<DataStructures::ColourAssignments*> oldColourAssignments,
+        DataStructures::ColourAssignments* newColourAssignments,
         const DataStructures::Graph* graph,
         int startEvaluation) const
 {
@@ -43,7 +43,7 @@ int DataStructures::BasicMHVEvaluator::evaluate(
     for (DataStructures::VertexType vertex : potentiallyChangedVertices)
     {
         // Remove the happy vertices from the old colour assignments
-        for (const DataStructures::ColourAssignments& oldColourAssignment : oldColourAssignments)
+        for (DataStructures::ColourAssignments* oldColourAssignment : oldColourAssignments)
         {
             if (isHappy(vertex, oldColourAssignment, graph))
                 evaluation -= 1;
@@ -61,16 +61,16 @@ int DataStructures::BasicMHVEvaluator::evaluate(
 
 bool DataStructures::BasicMHVEvaluator::isHappy(
         DataStructures::VertexType vertex,
-        const DataStructures::ColourAssignments& colourAssignments,
+        DataStructures::ColourAssignments* colourAssignments,
         const DataStructures::Graph *graph)
 {
     return (
-        colourAssignments.isColoured(vertex)
+        colourAssignments->isColoured(vertex)
         &&
         std::all_of(
            graph->getNeighbours(vertex).begin(),
            graph->getNeighbours(vertex).end(),
-           [colourAssignments, vertex](auto neighbour){ return colourAssignments.getColour(vertex) == colourAssignments.getColour(neighbour); }
+           [colourAssignments, vertex](auto neighbour){ return colourAssignments->getColour(vertex) == colourAssignments->getColour(neighbour); }
         )
     );
 }

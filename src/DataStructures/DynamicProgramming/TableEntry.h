@@ -18,23 +18,23 @@ namespace DataStructures
     {
     private:
         const int evaluation;
-        const ColourAssignments colourAssignments;
+        ColourAssignments colourAssignments;
 
     public:
         TableEntry(
             int evaluation,
-            const ColourAssignments& colourAssignments
+            ColourAssignments& colourAssignments
         );
 
         [[nodiscard]] int getEvaluation() const;
-        [[nodiscard]] ColourAssignments getColourAssignments() const;
+        [[nodiscard]] ColourAssignments* getColourAssignments();
 
-        void colourGraph(DataStructures::Graph* graph) const;
+        void colourGraph(DataStructures::Graph* graph);
 
-        friend bool operator<(const TableEntry& entry1, const TableEntry& entry2);
+        friend bool operator<(TableEntry& entry1, TableEntry& entry2);
     };
 
-    bool operator<(const TableEntry& entry1, const TableEntry& entry2);
+    bool operator<(TableEntry& entry1, TableEntry& entry2);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TABLEENTRY_H

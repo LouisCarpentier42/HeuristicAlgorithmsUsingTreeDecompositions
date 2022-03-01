@@ -23,8 +23,8 @@ namespace Solvers
         virtual void setVerticesToColour(DataStructures::JoinNode* node);
         virtual void addMergedEntries(
             DataStructures::JoinNode* node,
-            const DataStructures::TableEntry* leftEntry,
-            const DataStructures::TableEntry* rightEntry
+            DataStructures::TableEntry* leftEntry,
+            DataStructures::TableEntry* rightEntry
         ) const = 0;
     };
 
@@ -46,8 +46,8 @@ namespace Solvers
         void setVerticesToColour(DataStructures::JoinNode* node) override;
         void addMergedEntries(
             DataStructures::JoinNode* node,
-            const DataStructures::TableEntry* leftEntry,
-            const DataStructures::TableEntry* rightEntry
+            DataStructures::TableEntry* leftEntry,
+            DataStructures::TableEntry* rightEntry
         ) const override;
     };
 
@@ -68,18 +68,18 @@ namespace Solvers
             [[nodiscard]] virtual DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
                 const DataStructures::Graph* graph,
-                const DataStructures::ColourAssignments& assignments
+                DataStructures::ColourAssignments* assignments
             ) const = 0;
         protected:
             [[nodiscard]] static int getNbColouredNeighbours(
                 DataStructures::VertexType vertex,
                 const DataStructures::Graph* graph,
-                const DataStructures::ColourAssignments& assignments
+                DataStructures::ColourAssignments* assignments
             );
             [[nodiscard]] static int getNbPotentialHappyNeighbours(
                 DataStructures::VertexType vertex,
                 const DataStructures::Graph* graph,
-                const DataStructures::ColourAssignments& assignments
+                DataStructures::ColourAssignments* assignments
             );
         };
         const VertexSelector* vertexSelector;
@@ -88,8 +88,8 @@ namespace Solvers
         DynamicOrderJoinNodeHandler(const EvaluationMerger *evaluationMerger, double percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order order);
         void addMergedEntries(
             DataStructures::JoinNode* node,
-            const DataStructures::TableEntry* leftEntry,
-            const DataStructures::TableEntry* rightEntry
+            DataStructures::TableEntry* leftEntry,
+            DataStructures::TableEntry* rightEntry
         ) const override;
 
     private:
@@ -99,7 +99,7 @@ namespace Solvers
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
                 const DataStructures::Graph* graph,
-                const DataStructures::ColourAssignments& assignments
+                DataStructures::ColourAssignments* assignments
             ) const override;
         };
 
@@ -109,7 +109,7 @@ namespace Solvers
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
                 const DataStructures::Graph* graph,
-                const DataStructures::ColourAssignments& assignments
+                DataStructures::ColourAssignments* assignments
             ) const override;
         };
 
@@ -119,7 +119,7 @@ namespace Solvers
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
                 const DataStructures::Graph* graph,
-                const DataStructures::ColourAssignments& assignments
+                DataStructures::ColourAssignments* assignments
             ) const override;
         };
 
@@ -129,7 +129,7 @@ namespace Solvers
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
                 const DataStructures::Graph* graph,
-                const DataStructures::ColourAssignments& assignments
+                DataStructures::ColourAssignments* assignments
             ) const override;
         };
     };
@@ -141,8 +141,8 @@ namespace Solvers
 //        void handleJoinNode(DataStructures::JoinNode* node) const override;
         void addMergedEntries(
             DataStructures::JoinNode* node,
-            const DataStructures::TableEntry* leftEntry,
-            const DataStructures::TableEntry* rightEntry
+            DataStructures::TableEntry* leftEntry,
+            DataStructures::TableEntry* rightEntry
         ) const override;
     };
 
@@ -152,8 +152,8 @@ namespace Solvers
         explicit GrowthColourBagJoinNodeHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual);
         void addMergedEntries(
             DataStructures::JoinNode* node,
-            const DataStructures::TableEntry* leftEntry,
-            const DataStructures::TableEntry* rightEntry
+            DataStructures::TableEntry* leftEntry,
+            DataStructures::TableEntry* rightEntry
         ) const override;
     };
 
@@ -163,8 +163,8 @@ namespace Solvers
         explicit UseChildColoursJoinNodeHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual);
         void addMergedEntries(
             DataStructures::JoinNode* node,
-            const DataStructures::TableEntry* leftEntry,
-            const DataStructures::TableEntry* rightEntry
+            DataStructures::TableEntry* leftEntry,
+            DataStructures::TableEntry* rightEntry
         ) const override;
     };
 }
