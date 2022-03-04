@@ -6,7 +6,7 @@
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONSOLVERBASE_H
 
 #include "../DataStructures/Graph/Graph.h"
-#include "SolversUtility/ExactTreeDecompositionRanking.h"
+#include "MaximumHappyVertices/ExactTreeDecompositionRankingMHV.h"
 #include "../DataStructures/TreeDecomposition/TreeDecomposition.h"
 #include "../DataStructures/TreeDecomposition/LeafNode.h"
 #include "../DataStructures/TreeDecomposition/IntroduceNode.h"
@@ -22,28 +22,28 @@ namespace Solvers
             DataStructures::Graph* graph,
             DataStructures::NiceTreeDecomposition* treeDecomposition
         );
-        ExactTreeDecompositionRanking solveAtNode(
+        ExactTreeDecompositionRankingMHV solveAtNode(
             DataStructures::NiceNode* node,
-            std::vector<ExactTreeDecompositionRanking> rankingsChildren = {}
+            std::vector<ExactTreeDecompositionRankingMHV> rankingsChildren = {}
         ) const;
         virtual void setProperties(DataStructures::Graph* graph) = 0;
 
     private:
-        virtual Solvers::ExactTreeDecompositionRanking handleLeafNode(
+        virtual Solvers::ExactTreeDecompositionRankingMHV handleLeafNode(
             DataStructures::LeafNode* node
         ) const = 0;
-        virtual Solvers::ExactTreeDecompositionRanking handleIntroduceNode(
+        virtual Solvers::ExactTreeDecompositionRankingMHV handleIntroduceNode(
             DataStructures::IntroduceNode* node,
-            const ExactTreeDecompositionRanking& rankingChild
+            const ExactTreeDecompositionRankingMHV& rankingChild
         ) const = 0;
-        virtual Solvers::ExactTreeDecompositionRanking handleForgetNode(
+        virtual Solvers::ExactTreeDecompositionRankingMHV handleForgetNode(
             DataStructures::ForgetNode* node,
-            const ExactTreeDecompositionRanking& rankingChild
+            const ExactTreeDecompositionRankingMHV& rankingChild
         ) const = 0;
-        virtual Solvers::ExactTreeDecompositionRanking handleJoinNode(
+        virtual Solvers::ExactTreeDecompositionRankingMHV handleJoinNode(
             DataStructures::JoinNode* node,
-            const ExactTreeDecompositionRanking& rankingLeftChild,
-            const ExactTreeDecompositionRanking& rankingRightChild
+            const ExactTreeDecompositionRankingMHV& rankingLeftChild,
+            const ExactTreeDecompositionRankingMHV& rankingRightChild
         ) const = 0;
     };
 }

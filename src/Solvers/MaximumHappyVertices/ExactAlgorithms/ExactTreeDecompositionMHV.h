@@ -11,7 +11,7 @@
 #include "../../../DataStructures/TreeDecomposition/IntroduceNode.h"
 #include "../../../DataStructures/TreeDecomposition/ForgetNode.h"
 #include "../../../DataStructures/TreeDecomposition/JoinNode.h"
-#include "../../SolversUtility/ExactTreeDecompositionRanking.h"
+#include "../ExactTreeDecompositionRankingMHV.h"
 #include "../../ExactTreeDecompositionSolverBase.h"
 
 #include <set>
@@ -28,21 +28,21 @@ namespace MaximumHappyVertices
         void setProperties(DataStructures::Graph* graph) override;
 
     private:
-        Solvers::ExactTreeDecompositionRanking handleLeafNode(
+        Solvers::ExactTreeDecompositionRankingMHV handleLeafNode(
             DataStructures::LeafNode* node
         ) const override;
-        Solvers::ExactTreeDecompositionRanking handleIntroduceNode(
+        Solvers::ExactTreeDecompositionRankingMHV handleIntroduceNode(
             DataStructures::IntroduceNode* node,
-            const Solvers::ExactTreeDecompositionRanking& rankingChild
+            const Solvers::ExactTreeDecompositionRankingMHV& rankingChild
         ) const override;
-        Solvers::ExactTreeDecompositionRanking handleForgetNode(
+        Solvers::ExactTreeDecompositionRankingMHV handleForgetNode(
             DataStructures::ForgetNode* node,
-            const Solvers::ExactTreeDecompositionRanking& rankingChild
+            const Solvers::ExactTreeDecompositionRankingMHV& rankingChild
         ) const override;
-        Solvers::ExactTreeDecompositionRanking handleJoinNode(
+        Solvers::ExactTreeDecompositionRankingMHV handleJoinNode(
             DataStructures::JoinNode* node,
-            const Solvers::ExactTreeDecompositionRanking& rankingLeftChild,
-            const Solvers::ExactTreeDecompositionRanking& rankingRightChild
+            const Solvers::ExactTreeDecompositionRankingMHV& rankingLeftChild,
+            const Solvers::ExactTreeDecompositionRankingMHV& rankingRightChild
         ) const override;
     };
 }

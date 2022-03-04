@@ -4,21 +4,22 @@
 #include "Reader.h"
 
 #include <cstring>
+#include <utility>
 #include <sys/stat.h>
 
 
 IO::Reader::Reader(
-        const std::string& graphFilesDir,
-        const std::string& g6GraphFilesDir,
-        const std::string& treeDecompositionFilesDir,
-        const std::string& experimentFilesDir,
-        const std::string& resultFilesDir)
-    : graphFilesDir{graphFilesDir},
-      g6GraphFilesDir{g6GraphFilesDir},
-      treeDecompositionFilesDir{treeDecompositionFilesDir},
-      experimentFilesDir{experimentFilesDir},
-      resultFilesDir{resultFilesDir}
-{}
+        std::string graphFilesDir,
+        std::string g6GraphFilesDir,
+        std::string treeDecompositionFilesDir,
+        std::string experimentFilesDir,
+        std::string resultFilesDir)
+    : graphFilesDir{std::move(graphFilesDir)},
+      g6GraphFilesDir{std::move(g6GraphFilesDir)},
+      treeDecompositionFilesDir{std::move(treeDecompositionFilesDir)},
+      experimentFilesDir{std::move(experimentFilesDir)},
+      resultFilesDir{std::move(resultFilesDir)}
+{ }
 
 
 std::string IO::Reader::getParameter(int argc, char** argv, const std::string& paramName, bool isObligatedParam)

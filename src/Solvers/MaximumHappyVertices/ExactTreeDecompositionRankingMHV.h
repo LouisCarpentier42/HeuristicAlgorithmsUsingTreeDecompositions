@@ -2,8 +2,8 @@
 // Created by louis on 06/02/2022.
 //
 
-#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONRANKING_H
-#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONRANKING_H
+#ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONRANKINGMHV_H
+#define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONRANKINGMHV_H
 
 #include "../../DataStructures/Solution/ColourAssignments.h"
 #include "../../DataStructures/Solution/HappyVerticesAssignments.h"
@@ -13,7 +13,7 @@
 
 namespace Solvers
 {
-    class ExactTreeDecompositionRanking
+    class ExactTreeDecompositionRankingMHV
     {
     public:
         static const int NEGATIVE_INFINITY = std::numeric_limits<int>::min();
@@ -21,7 +21,7 @@ namespace Solvers
         using ExactTreeDecompositionRankingIterator = const std::_Rb_tree_const_iterator<std::pair<const ExactTreeDecompositionSolution , int>>;
 
     private:
-        std::map<ExactTreeDecompositionSolution, int> solutions{};
+        std::map<ExactTreeDecompositionSolution, int> solutions;
 
     public:
         void addSolution(
@@ -35,12 +35,14 @@ namespace Solvers
             const DataStructures::ColourAssignments& colourAssignments,
             const DataStructures::HappyVerticesAssignments& happyVerticesAssignments
         ) const;
+        [[nodiscard]] const DataStructures::ColourAssignments& getConcreteAssignment(
+            const DataStructures::ColourAssignments& colourAssignments,
+            const DataStructures::HappyVerticesAssignments& happyVerticesAssignments
+        ) const;
 
         [[nodiscard]] ExactTreeDecompositionRankingIterator begin() const;
         [[nodiscard]] ExactTreeDecompositionRankingIterator end() const;
     };
 }
 
-
-
-#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONRANKING_H
+#endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONRANKINGMHV_H

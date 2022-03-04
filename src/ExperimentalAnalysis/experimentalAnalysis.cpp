@@ -8,7 +8,7 @@
 
 
 void computeRankingsExactAlgorithm(
-        std::map<DataStructures::NiceNode*, Solvers::ExactTreeDecompositionRanking>& rankings,
+        std::map<DataStructures::NiceNode*, Solvers::ExactTreeDecompositionRankingMHV>& rankings,
         DataStructures::NiceNode* node,
         Solvers::ExactTreeDecompositionSolverBase* exactTD)
 {
@@ -16,27 +16,27 @@ void computeRankingsExactAlgorithm(
         rankings[node] = exactTD->solveAtNode(node);
     else
     {
-        std::vector<Solvers::ExactTreeDecompositionRanking> rankingsChildren{};
+        std::vector<Solvers::ExactTreeDecompositionRankingMHV> rankingsChildren{};
         for (auto it{node->beginChildrenIterator()}; it < node->endChildrenIterator(); it++)
         {
             auto* child = dynamic_cast<DataStructures::NiceNode*>(*it);
             computeRankingsExactAlgorithm(rankings, child, exactTD);
             rankingsChildren.push_back(rankings[child]);
         }
-        Solvers::ExactTreeDecompositionRanking rankingNode = exactTD->solveAtNode(node, rankingsChildren);
+        Solvers::ExactTreeDecompositionRankingMHV rankingNode = exactTD->solveAtNode(node, rankingsChildren);
         rankings[node] = rankingNode;
     }
 }
 
 void computeComparisonScores(
         std::map<DataStructures::NiceNode*, double>& scores,
-        const std::map<DataStructures::NiceNode*, Solvers::ExactTreeDecompositionRanking>& rankings,
+        const std::map<DataStructures::NiceNode*, Solvers::ExactTreeDecompositionRankingMHV>& rankings,
         DataStructures::NiceNode* node)
 {
     for (auto it{node->beginChildrenIterator()}; it < node->endChildrenIterator(); it++)
         computeComparisonScores(scores, rankings, dynamic_cast<DataStructures::NiceNode*>(*it));
 
-    const Solvers::ExactTreeDecompositionRanking& rankingNode = rankings.at(node);
+    const Solvers::ExactTreeDecompositionRankingMHV& rankingNode = rankings.at(node);
     DataStructures::DynamicProgrammingTable* table = node->getTable();
 
     std::vector<int> evaluationsExactRanking{};
@@ -111,7 +111,7 @@ std::map<std::string, std::map<DataStructures::NiceNode*, double>> compareHeuris
         Solvers::ExactTreeDecompositionSolverBase* exactTD,
         const std::map<std::string, Solvers::HeuristicTreeDecompositionSolver*>& treeDecompositionSolvers)
 {
-    std::map<DataStructures::NiceNode*, Solvers::ExactTreeDecompositionRanking> rankingsExactAlgorithm{};
+    std::map<DataStructures::NiceNode*, Solvers::ExactTreeDecompositionRankingMHV> rankingsExactAlgorithm{};
     exactTD->setProperties(graph);
     computeRankingsExactAlgorithm(rankingsExactAlgorithm, treeDecomposition->getRoot(), exactTD);
 
@@ -189,7 +189,9 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
         // Test the tree decomposition solvers
         if (!experiment.treeDecompositionSolvers.empty())
         {
+
             DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
+
 
             for (auto const& [name, solver] : experiment.treeDecompositionSolvers)
             {

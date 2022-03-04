@@ -8,14 +8,15 @@
 #include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHVSolutionIterator.h"
 #include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h"
 #include "Solvers/MaximumHappyVertices/ExactAlgorithms/ExactBruteForceMHV.h"
-#include "Solvers/SolversUtility/ColouringIterator.h"
 #include "ConstructingTreeDecompositions/Constructor.h"
 
 #include <cstring>
 
 int main(int argc, char** argv)
 {
-    std::string defaultRootDir = "../../";
+    std::string defaultRootDir = IO::Reader::getParameter(argc, argv, "--rootDir", false);
+    if (defaultRootDir.empty())
+        defaultRootDir = "../../";
     std::string defaultGraphFilesDir = defaultRootDir + "GraphFiles/";
     std::string defaultG6GraphFilesDir = defaultGraphFilesDir + "g6GraphFiles/";
     std::string defaultTreeDecompositionFilesDir = defaultRootDir + "TreeDecompositionFiles/";
@@ -38,40 +39,88 @@ int main(int argc, char** argv)
 
     if (argc == 1)
     {
-        std::string solverFile{"initial_solvers.sol"};
-        std::string experimentFile{"initial_experiment.exp"};
-        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
-        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
-    }
-    else if (strcmp(argv[1], "generate-td") == 0)
-    {
-        std::ifstream generationInstances{defaultExperimentFilesDir + "generation_file.txt"};
-        if (!generationInstances)
-            throw std::runtime_error("No generation file found at '" + defaultExperimentFilesDir + "generation_file.txt'!");
+        DataStructures::Evaluator* problemEvaluator;
+        Solvers::SolverBase* exactBruteForceSolver;
+        Solvers::ExactTreeDecompositionSolverBase* exactTreeDecompositionSolver;
+        problemEvaluator = new DataStructures::BasicMHVEvaluator{};
+        exactBruteForceSolver = new MaximumHappyVertices::ExactBruteForceMHV{};
+        exactTreeDecompositionSolver = new MaximumHappyVertices::ExactTreeDecompositionMHV{};
+
+        std::ifstream stressTests{defaultExperimentFilesDir + "stress_test.txt"};
+        if (!stressTests)
+            throw std::runtime_error("No stress-test file found at '" + defaultExperimentFilesDir + "stress_test.txt'!");
 
         std::string line;
-        std::getline(generationInstances, line);
+        std::getline(stressTests, line);
         std::vector<std::string> tokens = IO::Reader::tokenize(line);
 
-        while (generationInstances)
+        int counter{0};
+        int nbMistakes{0};
+        while (stressTests)
         {
-            try
+            counter++;
+
+            if (tokens.size() != 4)
             {
-                std::cout << "Constructing '" << tokens[0] << "' in " << tokens[1] << " seconds.\n";
-                defaultConstructor.constructNice(
-                    ConstructTreeDecompositions::ConstructionAlgorithm::FlowCutter,
-                    tokens[0],
-                    std::stod(tokens[1])
-                );
+                std::cerr << "The line '" << line << "' does not contain 4 arguments and is ignored.\n";
             }
-            catch (const std::exception& e)
+            else
             {
-                std::cout << "An exception occurred at line '" << line << "': " << e.what() << ", the line is ignored.\n";
+                if (!IO::Reader::pathExists(defaultReader.treeDecompositionFilesDir + tokens[1]))
+                {
+                    tokens[1] = defaultConstructor.constructNice(
+                            ConstructTreeDecompositions::ConstructionAlgorithm::FlowCutter,
+                            tokens[0],
+                            0.1);
+                }
+
+                DataStructures::Graph* graph = defaultReader.readGraph(tokens[0]);
+                DataStructures::NiceTreeDecomposition niceTreeDecomposition = defaultReader.readNiceTreeDecomposition(tokens[1]);
+                std::string colourType = IO::Reader::colourGraph("random(" + tokens[2] + "," + tokens[3] + ")", graph);
+
+                exactBruteForceSolver->solve(graph);
+                int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
+                graph->removeColours();
+
+                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, &niceTreeDecomposition)};
+                graph->removeColours();
+
+                std::cout << "[brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "]\n";
+                if (bruteForceEvaluation != tdEvaluation)
+                {
+                    std::cerr << "[ERROR] - line: '" << line << "'\n";
+                    nbMistakes++;
+                }
+
+                if (counter % 50 == 0)
+                {
+                    std::cout << "Done with stress test " << counter << "\n";
+                }
             }
 
-            std::getline(generationInstances, line);
+            std::getline(stressTests, line);
             tokens = IO::Reader::tokenize(line);
         }
+
+        if (nbMistakes == 0)
+        {
+            std::cout << "All stress tests succeeded!\n";
+        }
+        else
+        {
+            std::cout << nbMistakes << " stress tests failed!\n";
+        }
+//        std::string solverFile{"initial_solvers.sol"};
+//        std::string experimentFile{"first_lewis_generated.exp"};
+//        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
+//        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
+    }
+    else if (strcmp(argv[1], "construct-nice") == 0)
+    {
+        auto flowCutter = ConstructTreeDecompositions::ConstructionAlgorithm::FlowCutter;
+        std::string graphFile = IO::Reader::getParameter(argc, argv, "--graph", true);
+        double time = std::stod(IO::Reader::getParameter(argc, argv, "--time", true));
+        std::string file = defaultConstructor.construct(flowCutter, graphFile, time); // TOOD set to nice again
     }
     else if (strcmp(argv[1], "stress-test") == 0)
     {
@@ -114,7 +163,7 @@ int main(int argc, char** argv)
                     tokens[1] = defaultConstructor.constructNice(
                                     ConstructTreeDecompositions::ConstructionAlgorithm::FlowCutter,
                                     tokens[0],
-                                    0.5);
+                                    0.1);
                 }
 
                 DataStructures::Graph* graph = defaultReader.readGraph(tokens[0]);

@@ -20,7 +20,7 @@ namespace DataStructures
     private:
         std::vector<DataStructures::ColourType> assignments;
         std::vector<bool> vertexKnownToBeUncoloured;
-        const std::vector<DataStructures::ColourAssignments*> childAssignments;
+        std::vector<DataStructures::ColourAssignments*> childAssignments;
 
     public:
         explicit ColourAssignments(const DataStructures::Graph* graph);
@@ -28,11 +28,12 @@ namespace DataStructures
         ColourAssignments(const DataStructures::Node* node, ColourAssignments* primaryColourAssignment, ColourAssignments* secondaryColourAssignment);
 
         [[nodiscard]] DataStructures::VertexType getColour(DataStructures::VertexType vertex);
+        [[nodiscard]] DataStructures::VertexType getColour(const DataStructures::VertexType& vertex) const;
         [[nodiscard]] bool isColoured(DataStructures::VertexType vertex);
         void assignColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
         void removeColour(DataStructures::VertexType vertex);
 
-        friend bool operator==(const ColourAssignments& c1, const ColourAssignments& c2);
+        friend bool operator==(const ColourAssignments& c1, const ColourAssignments& c2); // TODO mag probs weg (+ functie hieronder) (+ in happy vertex assignment)
         friend bool operator<(const ColourAssignments& c1, const ColourAssignments& c2);
         friend std::ostream& operator<<(std::ostream& out, ColourAssignments& assignments);
     };

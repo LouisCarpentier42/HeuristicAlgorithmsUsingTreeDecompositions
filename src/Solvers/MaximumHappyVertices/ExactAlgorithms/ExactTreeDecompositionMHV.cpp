@@ -25,7 +25,7 @@ void MaximumHappyVertices::ExactTreeDecompositionMHV::setProperties(DataStructur
     }
 }
 
-Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecompositionMHV::handleLeafNode(
+Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompositionMHV::handleLeafNode(
         DataStructures::LeafNode* node) const
 {
     // Find the set of vertices that are happy
@@ -43,7 +43,7 @@ Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecomposit
     }
 
     // Variable to push all the solutions to
-    Solvers::ExactTreeDecompositionRanking ranking{};
+    Solvers::ExactTreeDecompositionRankingMHV ranking{};
 
     // Iterate over all the possible combinations of assigning the vertices in S to H
     std::vector<DataStructures::VertexType> S_vector{S.begin(), S.end()};
@@ -92,9 +92,9 @@ Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecomposit
     return ranking;
 }
 
-Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecompositionMHV::handleIntroduceNode(
+Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompositionMHV::handleIntroduceNode(
         DataStructures::IntroduceNode* node,
-        const Solvers::ExactTreeDecompositionRanking& rankingChild) const
+        const Solvers::ExactTreeDecompositionRankingMHV& rankingChild) const
 {
     if (S.find(node->getIntroducedVertex()) != S.end())
         return rankingChild;
@@ -105,7 +105,7 @@ Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecomposit
         verticesToConsider.insert(vertex);
 
     // Iterate over all the solutions
-    Solvers::ExactTreeDecompositionRanking ranking{};
+    Solvers::ExactTreeDecompositionRankingMHV ranking{};
     ExactTreeDecompositionMHVSolutionIterator iterator{verticesToConsider, graph};
     while (iterator.next())
     {
@@ -144,8 +144,15 @@ Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecomposit
         happyVerticesAssignmentsChild.makeUnhappy(node->getIntroducedVertex());
 
         int evaluationChild{rankingChild.getEvaluation(colourAssignmentsChild, happyVerticesAssignmentsChild)};
-        if (evaluationChild == Solvers::ExactTreeDecompositionRanking::NEGATIVE_INFINITY)
+        if (evaluationChild == Solvers::ExactTreeDecompositionRankingMHV::NEGATIVE_INFINITY)
             continue;
+
+//        // Set the colour assignment as the best child colouring and search the concrete child colouring in the child ranking
+//        const DataStructures::ColourAssignments& concreteChildColouring = rankingChild.getConcreteAssignment(colourAssignmentsChild, happyVerticesAssignments);
+//        for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+//        {
+//            colourAssignments.assignColour(vertex, concreteChildColouring.getColour(vertex));
+//        }
 
         if (happyVerticesAssignments.isHappy(node->getIntroducedVertex()))
         {
@@ -159,9 +166,9 @@ Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecomposit
     return ranking;
 }
 
-Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecompositionMHV::handleForgetNode(
+Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompositionMHV::handleForgetNode(
         DataStructures::ForgetNode* node,
-        const Solvers::ExactTreeDecompositionRanking& rankingChild) const
+        const Solvers::ExactTreeDecompositionRankingMHV& rankingChild) const
 {
     if (S.find(node->getForgottenVertex()) != S.end())
         return rankingChild;
@@ -172,13 +179,14 @@ Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecomposit
         verticesToConsider.insert(vertex);
 
     // Iterate over all the solutions
-    Solvers::ExactTreeDecompositionRanking ranking{};
+    Solvers::ExactTreeDecompositionRankingMHV ranking{};
     ExactTreeDecompositionMHVSolutionIterator iterator{verticesToConsider, graph};
     while (iterator.next())
     {
         DataStructures::ColourAssignments colourAssignments{iterator.getColourAssignments()};
         DataStructures::HappyVerticesAssignments happyVerticesAssignments{iterator.getHappyVerticesAssignments()};
-        int evaluation{Solvers::ExactTreeDecompositionRanking::NEGATIVE_INFINITY};
+        int evaluation{Solvers::ExactTreeDecompositionRankingMHV::NEGATIVE_INFINITY};
+        DataStructures::ColourType colourInBestChild{0};
         for (DataStructures::ColourType colour{1}; colour <= graph->getNbColours(); colour++)
         {
             colourAssignments.assignColour(node->getForgottenVertex(), colour);
@@ -186,17 +194,31 @@ Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecomposit
             happyVerticesAssignments.makeHappy(node->getForgottenVertex());
             int evaluationHappy{rankingChild.getEvaluation(colourAssignments, happyVerticesAssignments)};
             if (evaluationHappy > evaluation)
+            {
                 evaluation = evaluationHappy;
+                colourInBestChild = colour;
+            }
 
             happyVerticesAssignments.makeUnhappy(node->getForgottenVertex());
             int evaluationUnhappy{rankingChild.getEvaluation(colourAssignments, happyVerticesAssignments)};
             if (evaluationUnhappy > evaluation)
+            {
                 evaluation = evaluationUnhappy;
+                colourInBestChild = colour;
+            }
         }
+
+//        // Set the colour assignment as the best child colouring and search the concrete child colouring in the child ranking
+//        colourAssignments.assignColour(node->getForgottenVertex(), colourInBestChild);
+//        const DataStructures::ColourAssignments& concreteChildColouring = rankingChild.getConcreteAssignment(colourAssignments, happyVerticesAssignments);
+//        for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+//        {
+//            colourAssignments.assignColour(vertex, concreteChildColouring.getColour(vertex));
+//        }
 
         colourAssignments.removeColour(node->getForgottenVertex());
         happyVerticesAssignments.makeUnhappy(node->getForgottenVertex());
-        if (evaluation > Solvers::ExactTreeDecompositionRanking::NEGATIVE_INFINITY)
+        if (evaluation > Solvers::ExactTreeDecompositionRankingMHV::NEGATIVE_INFINITY)
         {
             ranking.addSolution(evaluation, colourAssignments, happyVerticesAssignments);
         }
@@ -204,10 +226,10 @@ Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecomposit
     return ranking;
 }
 
-Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecompositionMHV::handleJoinNode(
+Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompositionMHV::handleJoinNode(
         DataStructures::JoinNode* node,
-        const Solvers::ExactTreeDecompositionRanking& rankingLeftChild,
-        const Solvers::ExactTreeDecompositionRanking& rankingRightChild) const
+        const Solvers::ExactTreeDecompositionRankingMHV& rankingLeftChild,
+        const Solvers::ExactTreeDecompositionRankingMHV& rankingRightChild) const
 {
     // Gather all vertices that should be coloured, that is the vertices in S and the vertices in the bag
     std::set<DataStructures::VertexType> verticesToConsider{S};
@@ -215,7 +237,7 @@ Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecomposit
         verticesToConsider.insert(vertex);
 
     // Iterate over all the solutions
-    Solvers::ExactTreeDecompositionRanking ranking{};
+    Solvers::ExactTreeDecompositionRankingMHV ranking{};
     ExactTreeDecompositionMHVSolutionIterator iterator{verticesToConsider, graph};
     while (iterator.next())
     {
@@ -223,11 +245,11 @@ Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecomposit
         DataStructures::HappyVerticesAssignments happyVerticesAssignments{iterator.getHappyVerticesAssignments()};
 
         int evaluationLeftChild{rankingLeftChild.getEvaluation(colourAssignments, happyVerticesAssignments)};
-        if (evaluationLeftChild == Solvers::ExactTreeDecompositionRanking::NEGATIVE_INFINITY)
+        if (evaluationLeftChild == Solvers::ExactTreeDecompositionRankingMHV::NEGATIVE_INFINITY)
             continue;
 
         int evaluationRightChild{rankingRightChild.getEvaluation(colourAssignments, happyVerticesAssignments)};
-        if (evaluationRightChild == Solvers::ExactTreeDecompositionRanking::NEGATIVE_INFINITY)
+        if (evaluationRightChild == Solvers::ExactTreeDecompositionRankingMHV::NEGATIVE_INFINITY)
             continue;
 
         int nbVerticesCountedDouble{0};
@@ -236,6 +258,14 @@ Solvers::ExactTreeDecompositionRanking MaximumHappyVertices::ExactTreeDecomposit
             if (happyVerticesAssignments.isHappy(vertex))
                 nbVerticesCountedDouble++;
         }
+
+//        const DataStructures::ColourAssignments& concreteLeftChildColouring = rankingLeftChild.getConcreteAssignment(colourAssignments, happyVerticesAssignments);
+//        const DataStructures::ColourAssignments& concreteRightChildColouring = rankingLeftChild.getConcreteAssignment(colourAssignments, happyVerticesAssignments);
+//        for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+//        {
+//            colourAssignments.assignColour(vertex, concreteLeftChildColouring.getColour(vertex));
+//            colourAssignments.assignColour(vertex, concreteRightChildColouring.getColour(vertex));
+//        }
 
         ranking.addSolution(
             evaluationLeftChild + evaluationRightChild - nbVerticesCountedDouble,

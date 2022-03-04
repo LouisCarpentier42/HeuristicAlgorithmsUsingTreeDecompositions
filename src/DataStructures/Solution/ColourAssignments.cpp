@@ -3,6 +3,8 @@
 //
 
 #include "ColourAssignments.h"
+
+#include <utility>
 #include "HappyVerticesAssignments.h"
 
 DataStructures::ColourAssignments::ColourAssignments(const DataStructures::Graph* graph)
@@ -56,6 +58,25 @@ DataStructures::VertexType DataStructures::ColourAssignments::getColour(DataStru
     return 0;
 }
 
+DataStructures::VertexType DataStructures::ColourAssignments::getColour(const DataStructures::VertexType& vertex) const
+{
+    if (assignments[vertex] != 0)
+        return assignments[vertex];
+
+    if (vertexKnownToBeUncoloured[vertex])
+        return 0;
+
+    for (DataStructures::ColourAssignments* childAssignment : childAssignments)
+    {
+        DataStructures::ColourType colourInChild = childAssignment->getColour(vertex);
+        if (colourInChild != 0)
+        {
+            return colourInChild;
+        }
+    }
+    return assignments[vertex];
+}
+
 bool DataStructures::ColourAssignments::isColoured(DataStructures::VertexType vertex)
 {
     return getColour(vertex) != 0;
@@ -70,7 +91,6 @@ void DataStructures::ColourAssignments::removeColour(DataStructures::VertexType 
 {
     assignments[vertex] = 0;
 }
-
 
 bool DataStructures::operator==(const DataStructures::ColourAssignments& c1, const DataStructures::ColourAssignments& c2)
 {
@@ -89,5 +109,4 @@ std::ostream& DataStructures::operator<<(std::ostream& out, DataStructures::Colo
         out << ", " << assignments.getColour(i);
     return out << "]";
 }
-
 

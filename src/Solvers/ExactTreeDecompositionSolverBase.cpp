@@ -9,13 +9,13 @@ int Solvers::ExactTreeDecompositionSolverBase::solve(
         DataStructures::NiceTreeDecomposition* treeDecomposition)
 {
     setProperties(graph);
-    Solvers::ExactTreeDecompositionRanking rankingRoot = solveAtNode(treeDecomposition->getRoot());
+    Solvers::ExactTreeDecompositionRankingMHV rankingRoot = solveAtNode(treeDecomposition->getRoot());
     return rankingRoot.getBestEvaluation();
 }
 
-Solvers::ExactTreeDecompositionRanking Solvers::ExactTreeDecompositionSolverBase::solveAtNode(
+Solvers::ExactTreeDecompositionRankingMHV Solvers::ExactTreeDecompositionSolverBase::solveAtNode(
         DataStructures::NiceNode* node,
-        std::vector<ExactTreeDecompositionRanking> rankingsChildren) const
+        std::vector<ExactTreeDecompositionRankingMHV> rankingsChildren) const
 {
     switch(node->getNodeType())
     {

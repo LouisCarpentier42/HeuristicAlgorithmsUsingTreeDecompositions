@@ -53,6 +53,10 @@ std::string IO::Reader::colourGraph(int argc, char** argv, DataStructures::Graph
         );
         return "random";
     }
+    else if (colouring == "genereted")
+    {
+        return "generated";
+    }
 
     throw std::runtime_error("Invalid colouring identifier is given: " + colouring + "!");
 }

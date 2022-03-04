@@ -7,8 +7,14 @@
 #include <algorithm>
 
 DataStructures::Graph::Graph(std::vector<Vertex> vertices)
-    : nbVertices{vertices.size()}, vertices{std::move(vertices)}
-{}
+    : nbVertices{vertices.size()}, vertices{std::move(vertices)}, nbColours{0}
+{
+    for (const DataStructures::Vertex& vertex : this->vertices)
+    {
+        if (nbColours < vertex.colour)
+            nbColours = vertex.colour;
+    }
+}
 
 size_t DataStructures::Graph::getNbColours() const
 {
