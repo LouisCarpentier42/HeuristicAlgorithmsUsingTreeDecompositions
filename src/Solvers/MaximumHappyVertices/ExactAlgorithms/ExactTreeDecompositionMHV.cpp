@@ -4,7 +4,6 @@
 
 #include "ExactTreeDecompositionMHV.h"
 #include "ExactTreeDecompositionMHVSolutionIterator.h"
-#include "../../../DataStructures/Evaluator/BasicMHVEvaluator.h" // TODO remove
 
 #include <algorithm>
 #include <cmath>

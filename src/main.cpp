@@ -40,7 +40,7 @@ int main(int argc, char** argv)
     if (argc == 1)
     {
         std::string solverFile{"initial_solvers.sol"};
-        std::string experimentFile{"first_lewis_generated.exp"};
+        std::string experimentFile{"initial_experiment.exp"};
         ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
         ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
     }

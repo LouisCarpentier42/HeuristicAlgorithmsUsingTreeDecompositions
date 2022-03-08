@@ -33,6 +33,7 @@ void computeComparisonScores(
         const std::map<DataStructures::NiceNode*, Solvers::ExactTreeDecompositionRankingMHV>& rankings,
         DataStructures::NiceNode* node)
 {
+    // Compute the comparison score for the children
     for (auto it{node->beginChildrenIterator()}; it < node->endChildrenIterator(); it++)
         computeComparisonScores(scores, rankings, dynamic_cast<DataStructures::NiceNode*>(*it));
 
@@ -59,25 +60,9 @@ void computeComparisonScores(
     int i{0};
     for (DataStructures::TableEntry* entry : *table)
     {
-        for (DataStructures::ColourAssignments& relevantColourAssignment : allRelevantColourAssignments)
-        {
-            // TODO somehow look at all colours for deciding if it is relevant or not
-            bool currentColourAssignmentIsRelevant{true};
-            for (DataStructures::VertexType vertex : node->getBagContent())
-            {
-                if (relevantColourAssignment.getColour(vertex) != entry->getColourAssignments()->getColour(vertex))
-                {
-                    currentColourAssignmentIsRelevant = false;
-                    break;
-                }
-            }
-            if (currentColourAssignmentIsRelevant)
-            {
-                isRelevant[i] = true;
-                break;
-            }
-        }
         evaluations[i] = entry->getEvaluation();
+        for (DataStructures::ColourAssignments& relevantColourAssignment : allRelevantColourAssignments)
+            isRelevant[i] = (*entry->getColourAssignments() == relevantColourAssignment);
         i++;
     }
 
@@ -103,6 +88,8 @@ void computeComparisonScores(
     }
     if (nbRelevant > 0)
         scores[node] = (accuracy/nbRelevant);
+    else
+        scores[node] = 0;
 }
 
 std::map<std::string, std::map<DataStructures::NiceNode*, double>> compareHeuristicTDsWithExactTD(
@@ -111,10 +98,12 @@ std::map<std::string, std::map<DataStructures::NiceNode*, double>> compareHeuris
         Solvers::ExactTreeDecompositionSolverBase* exactTD,
         const std::map<std::string, Solvers::HeuristicTreeDecompositionSolver*>& treeDecompositionSolvers)
 {
+    // Compute the ranking of the exact algorithm for each of the nodes in the tree decomposition
     std::map<DataStructures::NiceNode*, Solvers::ExactTreeDecompositionRankingMHV> rankingsExactAlgorithm{};
     exactTD->setProperties(graph);
     computeRankingsExactAlgorithm(rankingsExactAlgorithm, treeDecomposition->getRoot(), exactTD);
 
+    // Compare with the evaluation of every heuristic algorithm
     std::map<std::string, std::map<DataStructures::NiceNode*, double>> results;
     for (auto const& [name, heuristicSolver] : treeDecompositionSolvers)
     {
@@ -182,16 +171,14 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
             for (int count : nbVerticesInColour)
                 resultFile << "," << (double)count / (double)(testInstance.graph->getNbVertices() * experiment.nbRepetitionsPerInstance);
             for (size_t i{testInstance.graph->getNbColours()}; i < maxNbColours; i++)
-                resultFile << ",/";
+                resultFile << ",";
             resultFile << "\n";
         }
 
         // Test the tree decomposition solvers
         if (!experiment.treeDecompositionSolvers.empty())
         {
-
             DataStructures::NiceTreeDecomposition niceTreeDecomposition = reader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
-
 
             for (auto const& [name, solver] : experiment.treeDecompositionSolvers)
             {
@@ -216,7 +203,7 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
                 for (int count : nbVerticesInColour)
                     resultFile << "," << (double)count / (double)(testInstance.graph->getNbVertices() * experiment.nbRepetitionsPerInstance);
                 for (size_t i{testInstance.graph->getNbColours()}; i < maxNbColours; i++)
-                    resultFile << ",/";
+                    resultFile << ",";
                 resultFile << "\n";
             }
 
@@ -287,7 +274,15 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
                 int evaluation = experiment.exactTreeDecompositionSolver->solve(testInstance.graph, &niceTreeDecomposition);
                 auto stop = std::chrono::high_resolution_clock::now();
                 for (int i{0}; i < experiment.nbRepetitionsPerInstance; i++) resultFile << ",,";
-                resultFile << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "\n";
+                resultFile << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
+                std::vector<int> nbVerticesInColour(testInstance.graph->getNbColours());
+                for (DataStructures::VertexType vertex{0}; vertex < testInstance.graph->getNbVertices(); vertex++)
+                    nbVerticesInColour[testInstance.graph->getColour(vertex) - 1]++;
+                for (int count : nbVerticesInColour)
+                    resultFile << "," << (double)count / (double)(testInstance.graph->getNbVertices());
+                for (size_t i{testInstance.graph->getNbColours()}; i < maxNbColours; i++)
+                    resultFile << ",";
+                resultFile << "\n";
             }
         }
     }
