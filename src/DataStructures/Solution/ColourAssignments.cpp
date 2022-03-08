@@ -7,10 +7,15 @@
 #include <utility>
 #include "HappyVerticesAssignments.h"
 
+
+DataStructures::ColourAssignments::ColourAssignments(size_t size)
+    : assignments{std::vector<DataStructures::ColourType>(size, 0)},
+     vertexKnownToBeUncoloured{std::vector<bool>(size, false)},
+     childAssignments{}
+{ }
+
 DataStructures::ColourAssignments::ColourAssignments(const DataStructures::Graph* graph)
-    : assignments{std::vector<DataStructures::ColourType>(graph->getNbVertices(), 0)},
-      vertexKnownToBeUncoloured{std::vector<bool>(graph->getNbVertices(), false)},
-      childAssignments{}
+    : ColourAssignments(graph->getNbVertices())
 { }
 
 DataStructures::ColourAssignments::ColourAssignments(
@@ -36,7 +41,13 @@ DataStructures::ColourAssignments::ColourAssignments(
         assignments[vertex] = primaryColourAssignment->getColour(vertex);
 }
 
-DataStructures::VertexType DataStructures::ColourAssignments::getColour(DataStructures::VertexType vertex)
+
+size_t DataStructures::ColourAssignments::getSize() const
+{
+    return assignments.size();
+}
+
+DataStructures::ColourType DataStructures::ColourAssignments::getColour(DataStructures::VertexType vertex)
 {
     if (assignments[vertex] != 0)
         return assignments[vertex];
@@ -58,7 +69,7 @@ DataStructures::VertexType DataStructures::ColourAssignments::getColour(DataStru
     return 0;
 }
 
-DataStructures::VertexType DataStructures::ColourAssignments::getColour(const DataStructures::VertexType& vertex) const
+DataStructures::ColourType DataStructures::ColourAssignments::getColour(const DataStructures::VertexType& vertex) const
 {
     if (assignments[vertex] != 0)
         return assignments[vertex];
@@ -78,6 +89,11 @@ DataStructures::VertexType DataStructures::ColourAssignments::getColour(const Da
 }
 
 bool DataStructures::ColourAssignments::isColoured(DataStructures::VertexType vertex)
+{
+    return getColour(vertex) != 0;
+}
+
+bool DataStructures::ColourAssignments::isColoured(DataStructures::VertexType vertex) const
 {
     return getColour(vertex) != 0;
 }
@@ -102,7 +118,7 @@ bool DataStructures::operator<(const DataStructures::ColourAssignments& c1, cons
     return c1.assignments < c2.assignments;
 }
 
-std::ostream& DataStructures::operator<<(std::ostream& out, DataStructures::ColourAssignments& assignments)
+std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures::ColourAssignments& assignments)
 {
     out << "[" << assignments.getColour(0);
     for (int i{1}; i < assignments.assignments.size(); i++)

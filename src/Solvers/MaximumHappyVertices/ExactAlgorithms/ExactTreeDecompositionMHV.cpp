@@ -4,6 +4,7 @@
 
 #include "ExactTreeDecompositionMHV.h"
 #include "ExactTreeDecompositionMHVSolutionIterator.h"
+#include "../../../DataStructures/Evaluator/BasicMHVEvaluator.h" // TODO remove
 
 #include <algorithm>
 #include <cmath>
@@ -85,9 +86,8 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
 
         if (!illegalHappyVertexAssignment)
         {
-            ranking.addSolution(nbHappyVerticesAssignedHappy, colourAssignments, happyVerticesAssignments);
+            ranking.addSolution(nbHappyVerticesAssignedHappy, colourAssignments, happyVerticesAssignments, {});
         }
-
     }
     return ranking;
 }
@@ -147,20 +147,14 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
         if (evaluationChild == Solvers::ExactTreeDecompositionRankingMHV::NEGATIVE_INFINITY)
             continue;
 
-//        // Set the colour assignment as the best child colouring and search the concrete child colouring in the child ranking
-//        const DataStructures::ColourAssignments& concreteChildColouring = rankingChild.getConcreteAssignment(colourAssignmentsChild, happyVerticesAssignments);
-//        for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-//        {
-//            colourAssignments.assignColour(vertex, concreteChildColouring.getColour(vertex));
-//        }
-
+        const DataStructures::ColourAssignments* fullColouringChild = rankingChild.getFullColouring(colourAssignmentsChild, happyVerticesAssignmentsChild);
         if (happyVerticesAssignments.isHappy(node->getIntroducedVertex()))
         {
-            ranking.addSolution(evaluationChild + 1, colourAssignments, happyVerticesAssignments);
+            ranking.addSolution(evaluationChild + 1, colourAssignments, happyVerticesAssignments, {fullColouringChild});
         }
         else
         {
-            ranking.addSolution(evaluationChild, colourAssignments, happyVerticesAssignments);
+            ranking.addSolution(evaluationChild, colourAssignments, happyVerticesAssignments, {fullColouringChild});
         }
     }
     return ranking;
@@ -187,6 +181,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
         DataStructures::HappyVerticesAssignments happyVerticesAssignments{iterator.getHappyVerticesAssignments()};
         int evaluation{Solvers::ExactTreeDecompositionRankingMHV::NEGATIVE_INFINITY};
         DataStructures::ColourType colourInBestChild{0};
+        bool isHappyInBestChild{false};
         for (DataStructures::ColourType colour{1}; colour <= graph->getNbColours(); colour++)
         {
             colourAssignments.assignColour(node->getForgottenVertex(), colour);
@@ -197,6 +192,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
             {
                 evaluation = evaluationHappy;
                 colourInBestChild = colour;
+                isHappyInBestChild = true;
             }
 
             happyVerticesAssignments.makeUnhappy(node->getForgottenVertex());
@@ -205,22 +201,24 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
             {
                 evaluation = evaluationUnhappy;
                 colourInBestChild = colour;
+                isHappyInBestChild = false;
             }
         }
 
-//        // Set the colour assignment as the best child colouring and search the concrete child colouring in the child ranking
-//        colourAssignments.assignColour(node->getForgottenVertex(), colourInBestChild);
-//        const DataStructures::ColourAssignments& concreteChildColouring = rankingChild.getConcreteAssignment(colourAssignments, happyVerticesAssignments);
-//        for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-//        {
-//            colourAssignments.assignColour(vertex, concreteChildColouring.getColour(vertex));
-//        }
-
-        colourAssignments.removeColour(node->getForgottenVertex());
-        happyVerticesAssignments.makeUnhappy(node->getForgottenVertex());
         if (evaluation > Solvers::ExactTreeDecompositionRankingMHV::NEGATIVE_INFINITY)
         {
-            ranking.addSolution(evaluation, colourAssignments, happyVerticesAssignments);
+            colourAssignments.assignColour(node->getForgottenVertex(), colourInBestChild);
+            if (isHappyInBestChild)
+                happyVerticesAssignments.makeHappy(node->getForgottenVertex());
+            else
+                happyVerticesAssignments.makeUnhappy(node->getForgottenVertex());
+            const DataStructures::ColourAssignments* fullColouringChild = rankingChild.getFullColouring(colourAssignments, happyVerticesAssignments);
+
+            // Remove the colour of the forgotten node
+            colourAssignments.removeColour(node->getForgottenVertex());
+            happyVerticesAssignments.makeUnhappy(node->getForgottenVertex());
+
+            ranking.addSolution(evaluation, colourAssignments, happyVerticesAssignments, {fullColouringChild});
         }
     }
     return ranking;
@@ -259,18 +257,14 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
                 nbVerticesCountedDouble++;
         }
 
-//        const DataStructures::ColourAssignments& concreteLeftChildColouring = rankingLeftChild.getConcreteAssignment(colourAssignments, happyVerticesAssignments);
-//        const DataStructures::ColourAssignments& concreteRightChildColouring = rankingLeftChild.getConcreteAssignment(colourAssignments, happyVerticesAssignments);
-//        for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-//        {
-//            colourAssignments.assignColour(vertex, concreteLeftChildColouring.getColour(vertex));
-//            colourAssignments.assignColour(vertex, concreteRightChildColouring.getColour(vertex));
-//        }
+        const DataStructures::ColourAssignments* fullColouringLeftChild = rankingLeftChild.getFullColouring(colourAssignments, happyVerticesAssignments);
+        const DataStructures::ColourAssignments* fullColouringRightChild = rankingRightChild.getFullColouring(colourAssignments, happyVerticesAssignments);
 
         ranking.addSolution(
             evaluationLeftChild + evaluationRightChild - nbVerticesCountedDouble,
             colourAssignments,
-            happyVerticesAssignments
+            happyVerticesAssignments,
+            {fullColouringLeftChild, fullColouringRightChild}
         );
     }
     return ranking;

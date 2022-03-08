@@ -23,24 +23,27 @@ namespace DataStructures
         std::vector<DataStructures::ColourAssignments*> childAssignments;
 
     public:
+        explicit ColourAssignments(size_t size);
         explicit ColourAssignments(const DataStructures::Graph* graph);
         ColourAssignments(const DataStructures::Node* node, ColourAssignments* other);
         ColourAssignments(const DataStructures::Node* node, ColourAssignments* primaryColourAssignment, ColourAssignments* secondaryColourAssignment);
 
-        [[nodiscard]] DataStructures::VertexType getColour(DataStructures::VertexType vertex);
-        [[nodiscard]] DataStructures::VertexType getColour(const DataStructures::VertexType& vertex) const;
+        [[nodiscard]] size_t getSize() const;
+        [[nodiscard]] DataStructures::ColourType getColour(DataStructures::VertexType vertex);
+        [[nodiscard]] DataStructures::ColourType getColour(const DataStructures::VertexType& vertex) const;
         [[nodiscard]] bool isColoured(DataStructures::VertexType vertex);
+        [[nodiscard]] bool isColoured(DataStructures::VertexType vertex) const;
         void assignColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
         void removeColour(DataStructures::VertexType vertex);
 
-        friend bool operator==(const ColourAssignments& c1, const ColourAssignments& c2); // TODO mag probs weg (+ functie hieronder) (+ in happy vertex assignment)
+        friend bool operator==(const ColourAssignments& c1, const ColourAssignments& c2);
         friend bool operator<(const ColourAssignments& c1, const ColourAssignments& c2);
-        friend std::ostream& operator<<(std::ostream& out, ColourAssignments& assignments);
+        friend std::ostream& operator<<(std::ostream& out, const ColourAssignments& assignments);
     };
 
     bool operator==(const ColourAssignments& c1, const ColourAssignments& c2);
     bool operator<(const ColourAssignments& c1, const ColourAssignments& c2);
-    std::ostream& operator<<(std::ostream& out, ColourAssignments& assignments);
+    std::ostream& operator<<(std::ostream& out, const ColourAssignments& assignments);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_COLOURASSIGNMENTS_H

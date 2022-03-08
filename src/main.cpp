@@ -39,81 +39,10 @@ int main(int argc, char** argv)
 
     if (argc == 1)
     {
-        DataStructures::Evaluator* problemEvaluator;
-        Solvers::SolverBase* exactBruteForceSolver;
-        Solvers::ExactTreeDecompositionSolverBase* exactTreeDecompositionSolver;
-        problemEvaluator = new DataStructures::BasicMHVEvaluator{};
-        exactBruteForceSolver = new MaximumHappyVertices::ExactBruteForceMHV{};
-        exactTreeDecompositionSolver = new MaximumHappyVertices::ExactTreeDecompositionMHV{};
-
-        std::ifstream stressTests{defaultExperimentFilesDir + "stress_test.txt"};
-        if (!stressTests)
-            throw std::runtime_error("No stress-test file found at '" + defaultExperimentFilesDir + "stress_test.txt'!");
-
-        std::string line;
-        std::getline(stressTests, line);
-        std::vector<std::string> tokens = IO::Reader::tokenize(line);
-
-        int counter{0};
-        int nbMistakes{0};
-        while (stressTests)
-        {
-            counter++;
-
-            if (tokens.size() != 4)
-            {
-                std::cerr << "The line '" << line << "' does not contain 4 arguments and is ignored.\n";
-            }
-            else
-            {
-                if (!IO::Reader::pathExists(defaultReader.treeDecompositionFilesDir + tokens[1]))
-                {
-                    tokens[1] = defaultConstructor.constructNice(
-                            ConstructTreeDecompositions::ConstructionAlgorithm::FlowCutter,
-                            tokens[0],
-                            0.1);
-                }
-
-                DataStructures::Graph* graph = defaultReader.readGraph(tokens[0]);
-                DataStructures::NiceTreeDecomposition niceTreeDecomposition = defaultReader.readNiceTreeDecomposition(tokens[1]);
-                std::string colourType = IO::Reader::colourGraph("random(" + tokens[2] + "," + tokens[3] + ")", graph);
-
-                exactBruteForceSolver->solve(graph);
-                int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
-                graph->removeColours();
-
-                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, &niceTreeDecomposition)};
-                graph->removeColours();
-
-                std::cout << "[brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "]\n";
-                if (bruteForceEvaluation != tdEvaluation)
-                {
-                    std::cerr << "[ERROR] - line: '" << line << "'\n";
-                    nbMistakes++;
-                }
-
-                if (counter % 50 == 0)
-                {
-                    std::cout << "Done with stress test " << counter << "\n";
-                }
-            }
-
-            std::getline(stressTests, line);
-            tokens = IO::Reader::tokenize(line);
-        }
-
-        if (nbMistakes == 0)
-        {
-            std::cout << "All stress tests succeeded!\n";
-        }
-        else
-        {
-            std::cout << nbMistakes << " stress tests failed!\n";
-        }
-//        std::string solverFile{"initial_solvers.sol"};
-//        std::string experimentFile{"first_lewis_generated.exp"};
-//        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
-//        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
+        std::string solverFile{"initial_solvers.sol"};
+        std::string experimentFile{"first_lewis_generated.exp"};
+        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
+        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
     }
     else if (strcmp(argv[1], "construct-nice") == 0)
     {
@@ -175,12 +104,19 @@ int main(int argc, char** argv)
                 graph->removeColours();
 
                 int tdEvaluation{exactTreeDecompositionSolver->solve(graph, &niceTreeDecomposition)};
+                int tdColouringEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
                 std::cout << "[brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "]\n";
                 if (bruteForceEvaluation != tdEvaluation)
                 {
-                    std::cerr << "[ERROR] - line: '" << line << "'\n";
+                    std::cout << "[ERROR] line: '" << line << "': brute force and td have different evaluation \n";
+                    nbMistakes++;
+                }
+
+                if (tdColouringEvaluation != tdEvaluation)
+                {
+                    std::cout << "[ERROR] evaluation graph differs from evaluation td algorithm: [" << tdEvaluation << ", " << tdColouringEvaluation << "]\n";
                     nbMistakes++;
                 }
 

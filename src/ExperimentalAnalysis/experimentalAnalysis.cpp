@@ -41,14 +41,14 @@ void computeComparisonScores(
 
     std::vector<int> evaluationsExactRanking{};
     for (const auto& entry : rankingNode)
-        evaluationsExactRanking.push_back(entry.second);
+        evaluationsExactRanking.push_back(entry.second.first);
     std::sort(evaluationsExactRanking.begin(), evaluationsExactRanking.end());
     std::reverse(evaluationsExactRanking.begin(), evaluationsExactRanking.end());
     int relevantThreshold{evaluationsExactRanking[table->getNbEntries()-1]};
     std::vector<DataStructures::ColourAssignments> allRelevantColourAssignments{};
     for (const auto& entry : rankingNode)
     {
-        if (entry.second >= relevantThreshold)
+        if (entry.second.first >= relevantThreshold)
         {
             allRelevantColourAssignments.push_back(entry.first.first);
         }

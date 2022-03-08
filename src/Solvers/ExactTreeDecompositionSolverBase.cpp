@@ -10,6 +10,14 @@ int Solvers::ExactTreeDecompositionSolverBase::solve(
 {
     setProperties(graph);
     Solvers::ExactTreeDecompositionRankingMHV rankingRoot = solveAtNode(treeDecomposition->getRoot());
+
+    const DataStructures::ColourAssignments* bestColouring = rankingRoot.getBestFullColouring();
+    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+    {
+        if (!graph->isPrecoloured(vertex))
+            graph->setColour(vertex, bestColouring->getColour(vertex));
+    }
+
     return rankingRoot.getBestEvaluation();
 }
 
