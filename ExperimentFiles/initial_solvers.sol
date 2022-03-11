@@ -27,5 +27,5 @@ baseline greedyMHV
 baseline growthMHV
 nbRepetitions 1
 heuristicTD basic 8 basicMHVEvaluator passive bestColour bestColour staticOrder(avg,0.01,gdf)
-c heuristicTD potential 8 potentialHappyMHVEvaluator(6,2,-1) passive bestColour bestColour dynamicOrder(avg,0.01,mostColouredNeighbours)
-c heuristicTD growth 8 growthMHVEvaluator(6,-1,4,2,2,-1,0) passive bestColour bestColour greedyColourBag(avg,0.01)
+c heuristicTD potential 16 potentialHappyMHVEvaluator(6,2,-1) passive bestColour bestColour staticOrder(avg,0.01,gdf)
+c heuristicTD growth 16 growthMHVEvaluator(6,-1,4,2,2,-1,0) passive bestColour bestColour staticOrder(avg,0.01,gdf)

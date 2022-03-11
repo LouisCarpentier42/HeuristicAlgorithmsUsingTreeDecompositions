@@ -79,3 +79,8 @@ Solvers::ExactTreeDecompositionRankingMHV::ExactTreeDecompositionRankingIterator
 {
     return solutions.end();
 }
+//
+//Solvers::ExactTreeDecompositionRankingMHV::~ExactTreeDecompositionRankingMHV()
+//{
+//
+//}

@@ -14,4 +14,4 @@ experiment my_first_graph.gr my_first_graph_nice.tw random(2,0.01) exactTD(true,
 experiment graph5c/graph1.gr graph5c/graph1_nice.tw random(2,0.01) exactTD(true,true)
 
 c A bigger graph
-experiment PACE_exact/ex001.gr PACE_exact/ex001_nice.tw random(8,0.065) exactTD(false,false)
+c experiment PACE_exact/ex001.gr PACE_exact/ex001_nice.tw random(8,0.1) exactTD(false,false)

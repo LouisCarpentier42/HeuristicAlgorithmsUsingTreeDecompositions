@@ -32,7 +32,6 @@
 *.app
 
 # My additions
-cmake-build-debug
 .idea
 GraphFiles
 TreeDecompositionFiles

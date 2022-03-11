@@ -12,6 +12,7 @@
 
 #include <cstring>
 
+//  valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./HeuristicAlgorithmsUsingTreeDecompositions
 int main(int argc, char** argv)
 {
     std::string defaultRootDir = IO::Reader::getParameter(argc, argv, "--rootDir", false);
@@ -41,15 +42,19 @@ int main(int argc, char** argv)
     {
         std::string solverFile{"initial_solvers.sol"};
         std::string experimentFile{"initial_experiment.exp"};
+//        std::string experimentFile{"lewis_random_10.exp"};
         ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
         ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
     }
-    else if (strcmp(argv[1], "construct-nice") == 0)
+    else if (strcmp(argv[1], "construct") == 0 || strcmp(argv[1], "construct-nice") == 0)
     {
         auto flowCutter = ConstructTreeDecompositions::ConstructionAlgorithm::FlowCutter;
         std::string graphFile = IO::Reader::getParameter(argc, argv, "--graph", true);
         double time = std::stod(IO::Reader::getParameter(argc, argv, "--time", true));
-        std::string file = defaultConstructor.construct(flowCutter, graphFile, time); // TOOD set to nice again
+        if (strcmp(argv[1], "construct") == 0)
+            std::string file = defaultConstructor.construct(flowCutter, graphFile, time);
+        else
+            std::string file = defaultConstructor.constructNice(flowCutter, graphFile, time);
     }
     else if (strcmp(argv[1], "stress-test") == 0)
     {

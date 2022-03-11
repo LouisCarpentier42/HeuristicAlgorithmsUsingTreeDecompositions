@@ -113,6 +113,12 @@ std::map<std::string, std::map<DataStructures::NiceNode*, double>> compareHeuris
         computeComparisonScores(scores, rankingsExactAlgorithm, treeDecomposition->getRoot());
         results[name] = scores;
     }
+
+    for (auto const& [node, ranking] : rankingsExactAlgorithm)
+    {
+
+    }
+
     return results;
 }
 
@@ -125,10 +131,18 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
     }
     std::ofstream resultFile;
     resultFile.open(experiment.resultFileName + ".csv");
-    resultFile << "Solver name,graph name,tree decomposition name,initial colouring name,";
-    for (int i{0}; i < experiment.nbRepetitionsPerInstance; i++)
-        resultFile << "evaluation run " << (i+1) << ",time (µs) run " << (i+1) << ",";
-    resultFile << "mean evaluation,mean time(µs)";
+    resultFile << "Solver name,graph name,#vertices,tree decomposition name,initial colouring,";
+    bool showIndividualResults{experiment.nbRepetitionsPerInstance > 1};
+    if (showIndividualResults)
+    {
+        for (int i{0}; i < experiment.nbRepetitionsPerInstance; i++)
+            resultFile << "evaluation run " << (i+1) << ",time (µs) run " << (i+1) << ",";
+        resultFile << "mean evaluation,mean time(µs)";
+    }
+    else
+    {
+        resultFile << "evaluation,time(µs)";
+    }
 
     size_t maxNbColours{0};
     for (const auto& instance : experiment.testInstances)
@@ -150,26 +164,22 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
         // Test the baselines
         for (auto const& [name, baseline] : experiment.baselines)
         {
-            resultFile << name << "," << testInstance.graphName << "," << testInstance.treeDecompositionName << "," << testInstance.colourGeneration << ",";
-            std::chrono::microseconds duration{0};
-            int evaluation{0};
-            std::vector<int> nbVerticesInColour(testInstance.graph->getNbColours());
-            for (int repetition{0}; repetition < experiment.nbRepetitionsPerInstance; repetition++)
+            resultFile << name << "," << testInstance.graphName << "," << testInstance.graph->getNbVertices() << "," << testInstance.treeDecompositionName << "," << testInstance.colourGeneration << ",";
+            testInstance.graph->removeColours();
+            auto start = std::chrono::high_resolution_clock::now();
+            baseline->solve(testInstance.graph);
+            auto stop = std::chrono::high_resolution_clock::now();
+            int evaluation{experiment.evaluator->evaluate(testInstance.graph)};
+            if (showIndividualResults)
             {
-                testInstance.graph->removeColours();
-                auto start = std::chrono::high_resolution_clock::now();
-                baseline->solve(testInstance.graph);
-                auto stop = std::chrono::high_resolution_clock::now();
-                int newEvaluation{experiment.evaluator->evaluate(testInstance.graph)};
-                evaluation += newEvaluation;
-                duration += std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-                for (DataStructures::VertexType vertex{0}; vertex < testInstance.graph->getNbVertices(); vertex++)
-                    nbVerticesInColour[testInstance.graph->getColour(vertex) - 1]++;
-                resultFile << newEvaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << ",";
+                for (int i{0}; i < experiment.nbRepetitionsPerInstance; i++) resultFile << ",,";
             }
-            resultFile << evaluation/experiment.nbRepetitionsPerInstance << "," << duration.count()/experiment.nbRepetitionsPerInstance;
+            resultFile << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
+            std::vector<int> nbVerticesInColour(testInstance.graph->getNbColours());
+            for (DataStructures::VertexType vertex{0}; vertex < testInstance.graph->getNbVertices(); vertex++)
+                nbVerticesInColour[testInstance.graph->getColour(vertex) - 1]++;
             for (int count : nbVerticesInColour)
-                resultFile << "," << (double)count / (double)(testInstance.graph->getNbVertices() * experiment.nbRepetitionsPerInstance);
+                resultFile << "," << (double)count / (double)(testInstance.graph->getNbVertices());
             for (size_t i{testInstance.graph->getNbColours()}; i < maxNbColours; i++)
                 resultFile << ",";
             resultFile << "\n";
@@ -182,7 +192,7 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
 
             for (auto const& [name, solver] : experiment.treeDecompositionSolvers)
             {
-                resultFile << name << "," << testInstance.graphName << "," << testInstance.treeDecompositionName << "," << testInstance.colourGeneration << ",";
+                resultFile << name << "," << testInstance.graphName << "," << testInstance.graph->getNbVertices() << "," << testInstance.treeDecompositionName << "," << testInstance.colourGeneration << ",";
                 std::chrono::microseconds duration{0};
                 int evaluation{0};
                 std::vector<int> nbVerticesInColour(testInstance.graph->getNbColours());
@@ -197,7 +207,10 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
                     duration += std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
                     for (DataStructures::VertexType vertex{0}; vertex < testInstance.graph->getNbVertices(); vertex++)
                         nbVerticesInColour[testInstance.graph->getColour(vertex) - 1]++;
-                    resultFile << newEvaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << ",";
+                    if (showIndividualResults)
+                    {
+                        resultFile << newEvaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << ",";
+                    }
                 }
                 resultFile << evaluation/experiment.nbRepetitionsPerInstance << "," << duration.count()/experiment.nbRepetitionsPerInstance;
                 for (int count : nbVerticesInColour)
@@ -216,7 +229,7 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
                     std::string fileName{testInstance.treeDecompositionName.substr(0, testInstance.treeDecompositionName.size()-3) + ".csv"};
                     std::replace(fileName.begin(), fileName.end(), '/', '-');
                     accuracyFiles[testInstance.treeDecompositionName].open(treeDecompositionResultsDir + fileName);
-                    accuracyFiles[testInstance.treeDecompositionName] << "Solver name,graph name,initial colouring name,";
+                    accuracyFiles[testInstance.treeDecompositionName] << "Solver name,graph name,#vertices,initial colouring name,";
 
                     accuracyFiles[testInstance.treeDecompositionName] << "MAP,";
                     accuracyFiles[testInstance.treeDecompositionName] << "MAP leaf,MAP introduce,MAP forget,MAP join,";
@@ -232,7 +245,7 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
 
                 for (auto const& [algorithm, accuracies] : results)
                 {
-                    file << algorithm << "," << testInstance.graphName << "," << testInstance.colourGeneration << ",";
+                    file << algorithm << "," << testInstance.graphName << "," << testInstance.graph->getNbVertices() << "," << testInstance.colourGeneration << ",";
                     double totalAccuracy{0};
                     int totalNbNodes{0};
                     std::vector<double> accuracyAtHeight(treeHeight+1, 0.0);
@@ -269,11 +282,15 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, Experiment& exp
 
             if (experiment.exactTreeDecompositionSolver != nullptr && testInstance.executeExactTD)
             {
-                resultFile << "exact-td," << testInstance.graphName << "," << testInstance.treeDecompositionName << "," << testInstance.colourGeneration << ",";
+                resultFile << "exact-td," << testInstance.graphName << "," << testInstance.graph->getNbVertices() << "," << testInstance.treeDecompositionName << "," << testInstance.colourGeneration << ",";
+                testInstance.graph->removeColours();
                 auto start = std::chrono::high_resolution_clock::now();
                 int evaluation = experiment.exactTreeDecompositionSolver->solve(testInstance.graph, &niceTreeDecomposition);
                 auto stop = std::chrono::high_resolution_clock::now();
-                for (int i{0}; i < experiment.nbRepetitionsPerInstance; i++) resultFile << ",,";
+                if (showIndividualResults)
+                {
+                    for (int i{0}; i < experiment.nbRepetitionsPerInstance; i++) resultFile << ",,";
+                }
                 resultFile << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
                 std::vector<int> nbVerticesInColour(testInstance.graph->getNbColours());
                 for (DataStructures::VertexType vertex{0}; vertex < testInstance.graph->getNbVertices(); vertex++)

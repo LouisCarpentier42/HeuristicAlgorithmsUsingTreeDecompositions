@@ -30,7 +30,7 @@ std::string ConstructTreeDecompositions::Constructor::constructNice(Construction
 
     // Create the nice tree decomposition
     system((
-        "java -jar " + jdrasilDir + "JdrasilAdapter.jar \"nice_decomposition\"" +
+        "java  -Xmx12g -jar " + jdrasilDir + "JdrasilAdapter.jar \"nice_decomposition\"" +
         " " + reader.graphFilesDir + graphFile +
         " " + reader.treeDecompositionFilesDir + treeDecompositionFileName + ".tw"
     ).c_str());
