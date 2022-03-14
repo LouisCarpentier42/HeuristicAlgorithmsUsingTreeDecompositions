@@ -18,13 +18,13 @@ namespace Solvers
         std::vector<DataStructures::VertexType> verticesToColour;
 
     public:
-        explicit PairwiseCombineJoinHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual);
-        void handleJoinNode(DataStructures::JoinNode* node) override;
-        virtual void setVerticesToColour(DataStructures::JoinNode* node);
+        explicit PairwiseCombineJoinHandler(std::shared_ptr<const EvaluationMerger>& evaluationMerger, double percentMustBeEqual);
+        void handleJoinNode(std::shared_ptr<DataStructures::JoinNode>& node) override;
+        virtual void setVerticesToColour(std::shared_ptr<DataStructures::JoinNode>& node);
         virtual void addMergedEntries(
-            DataStructures::JoinNode* node,
-            DataStructures::TableEntry* leftEntry,
-            DataStructures::TableEntry* rightEntry
+            std::shared_ptr<DataStructures::JoinNode>& node,
+            const std::shared_ptr<DataStructures::TableEntry>& leftEntry,
+            const std::shared_ptr<DataStructures::TableEntry>& rightEntry
         ) const = 0;
     };
 
@@ -41,13 +41,13 @@ namespace Solvers
         const Order order;
         std::vector<DataStructures::VertexType> vertexOrder;
     public:
-        StaticOrderJoinNodeHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual, Order order);
-        void setGraph(const DataStructures::Graph* graphToSolve) override;
-        void setVerticesToColour(DataStructures::JoinNode* node) override;
+        StaticOrderJoinNodeHandler(std::shared_ptr<const EvaluationMerger>& evaluationMerger, double percentMustBeEqual, Order order);
+        void setGraph(std::shared_ptr<DataStructures::Graph>& graphToSolve) override;
+        void setVerticesToColour(std::shared_ptr<DataStructures::JoinNode>& node) override;
         void addMergedEntries(
-            DataStructures::JoinNode* node,
-            DataStructures::TableEntry* leftEntry,
-            DataStructures::TableEntry* rightEntry
+            std::shared_ptr<DataStructures::JoinNode>& node,
+            const std::shared_ptr<DataStructures::TableEntry>& leftEntry,
+            const std::shared_ptr<DataStructures::TableEntry>& rightEntry
         ) const override;
     };
 
@@ -67,29 +67,29 @@ namespace Solvers
         public:
             [[nodiscard]] virtual DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
-                const DataStructures::Graph* graph,
-                DataStructures::ColourAssignments* assignments
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                std::shared_ptr<DataStructures::ColourAssignment>& assignments
             ) const = 0;
         protected:
             [[nodiscard]] static int getNbColouredNeighbours(
                 DataStructures::VertexType vertex,
-                const DataStructures::Graph* graph,
-                DataStructures::ColourAssignments* assignments
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                std::shared_ptr<DataStructures::ColourAssignment>& assignments
             );
             [[nodiscard]] static int getNbPotentialHappyNeighbours(
                 DataStructures::VertexType vertex,
-                const DataStructures::Graph* graph,
-                DataStructures::ColourAssignments* assignments
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                std::shared_ptr<DataStructures::ColourAssignment>& assignments
             );
         };
         const VertexSelector* vertexSelector;
 
     public:
-        DynamicOrderJoinNodeHandler(const EvaluationMerger *evaluationMerger, double percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order order);
+        DynamicOrderJoinNodeHandler(std::shared_ptr<const EvaluationMerger>& evaluationMerger, double percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order order);
         void addMergedEntries(
-            DataStructures::JoinNode* node,
-            DataStructures::TableEntry* leftEntry,
-            DataStructures::TableEntry* rightEntry
+            std::shared_ptr<DataStructures::JoinNode>& node,
+            const std::shared_ptr<DataStructures::TableEntry>& leftEntry,
+            const std::shared_ptr<DataStructures::TableEntry>& rightEntry
         ) const override;
 
     private:
@@ -98,8 +98,8 @@ namespace Solvers
         public:
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
-                const DataStructures::Graph* graph,
-                DataStructures::ColourAssignments* assignments
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                std::shared_ptr<DataStructures::ColourAssignment>& assignments
             ) const override;
         };
 
@@ -108,8 +108,8 @@ namespace Solvers
         public:
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
-                const DataStructures::Graph* graph,
-                DataStructures::ColourAssignments* assignments
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                std::shared_ptr<DataStructures::ColourAssignment>& assignments
             ) const override;
         };
 
@@ -118,8 +118,8 @@ namespace Solvers
         public:
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
-                const DataStructures::Graph* graph,
-                DataStructures::ColourAssignments* assignments
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                std::shared_ptr<DataStructures::ColourAssignment>& assignments
             ) const override;
         };
 
@@ -128,8 +128,8 @@ namespace Solvers
         public:
             [[nodiscard]] DataStructures::BagContent::iterator select(
                 DataStructures::BagContent& bagContent,
-                const DataStructures::Graph* graph,
-                DataStructures::ColourAssignments* assignments
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                std::shared_ptr<DataStructures::ColourAssignment>& assignments
             ) const override;
         };
     };
@@ -137,34 +137,33 @@ namespace Solvers
     class GreedyColourBagJoinNodeHandler : public PairwiseCombineJoinHandler
     {
     public:
-        explicit GreedyColourBagJoinNodeHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual);
-//        void handleJoinNode(DataStructures::JoinNode* node) const override;
+        explicit GreedyColourBagJoinNodeHandler(std::shared_ptr<const EvaluationMerger>& evaluationMerger, double percentMustBeEqual);
         void addMergedEntries(
-            DataStructures::JoinNode* node,
-            DataStructures::TableEntry* leftEntry,
-            DataStructures::TableEntry* rightEntry
+            std::shared_ptr<DataStructures::JoinNode>& node,
+            const std::shared_ptr<DataStructures::TableEntry>& leftEntry,
+            const std::shared_ptr<DataStructures::TableEntry>& rightEntry
         ) const override;
     };
 
     class GrowthColourBagJoinNodeHandler : public PairwiseCombineJoinHandler
     {
     public:
-        explicit GrowthColourBagJoinNodeHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual);
+        explicit GrowthColourBagJoinNodeHandler(std::shared_ptr<const EvaluationMerger>& evaluationMerger, double percentMustBeEqual);
         void addMergedEntries(
-            DataStructures::JoinNode* node,
-            DataStructures::TableEntry* leftEntry,
-            DataStructures::TableEntry* rightEntry
+            std::shared_ptr<DataStructures::JoinNode>& node,
+            const std::shared_ptr<DataStructures::TableEntry>& leftEntry,
+            const std::shared_ptr<DataStructures::TableEntry>& rightEntry
         ) const override;
     };
 
     class UseChildColoursJoinNodeHandler : public PairwiseCombineJoinHandler
     {
     public:
-        explicit UseChildColoursJoinNodeHandler(const EvaluationMerger* evaluationMerger, double percentMustBeEqual);
+        explicit UseChildColoursJoinNodeHandler(std::shared_ptr<const EvaluationMerger>& evaluationMerger, double percentMustBeEqual);
         void addMergedEntries(
-            DataStructures::JoinNode* node,
-            DataStructures::TableEntry* leftEntry,
-            DataStructures::TableEntry* rightEntry
+            std::shared_ptr<DataStructures::JoinNode>& node,
+            const std::shared_ptr<DataStructures::TableEntry>& leftEntry,
+            const std::shared_ptr<DataStructures::TableEntry>& rightEntry
         ) const override;
     };
 }

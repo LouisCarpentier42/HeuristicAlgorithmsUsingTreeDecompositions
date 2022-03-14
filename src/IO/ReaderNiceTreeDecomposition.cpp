@@ -7,28 +7,24 @@
 bool containSameElements(DataStructures::BagContent& bag1, DataStructures::BagContent& bag2)
 {
     if (bag1.size() != bag2.size()) return false;
-
-    for (DataStructures::VertexType vertex : bag1)
-    {
-        if (std::find(bag2.begin(), bag2.end(), vertex) == bag2.end())
-        {
-            return false;
-        }
-    }
-    return true;
+    return std::all_of(
+            bag1.begin(),
+            bag1.end(),
+            [bag2](DataStructures::VertexType vertex){ return std::find(bag2.begin(), bag2.end(), vertex) != bag2.end(); }
+        );
 }
 
-DataStructures::NiceNode* transformToNiceBag(const DataStructures::Node* bag)
+std::shared_ptr<DataStructures::NiceNode> transformToNiceBag(const std::shared_ptr<DataStructures::Node>& bag)
 {
     if (bag->isLeaf())
     {
         if (!bag->isEmpty()) throw std::invalid_argument("A leaf bag in a nice tree decomposition must be empty!");
-        return new DataStructures::LeafNode{bag->getId()};
+        return std::make_shared<DataStructures::LeafNode>(bag->getId());
     }
 
     else if (bag->getNbChildren() == 1)
     {
-        DataStructures::Node* child = *bag->beginChildrenIterator();
+        std::shared_ptr<DataStructures::Node> child = *bag->beginChildrenIterator();
         DataStructures::BagContent parentContent = bag->getBagContent();
         DataStructures::BagContent childContent = child->getBagContent();
 
@@ -46,13 +42,14 @@ DataStructures::NiceNode* transformToNiceBag(const DataStructures::Node* bag)
 
             if (forgottenVertex.empty()) throw std::invalid_argument("A vertex must be forgotten in forget node!");
 
-            return new DataStructures::ForgetNode{
+            auto niceChildForget = transformToNiceBag(child);
+            return std::make_shared<DataStructures::ForgetNode>(
                 bag->getId(),
                 bag->getBagSize(),
                 bag->getBagContent(),
-                transformToNiceBag(child),
+                niceChildForget,
                 forgottenVertex[0]
-            };
+            );
         }
         else if (bag->getBagSize() == child->getBagSize() + 1) // Introduce node
         {
@@ -68,13 +65,14 @@ DataStructures::NiceNode* transformToNiceBag(const DataStructures::Node* bag)
 
             if (introducedVertex.empty()) throw std::invalid_argument("A vertex must be introduced in an introduce node!");
 
-            return new DataStructures::IntroduceNode{
+            auto niceChildIntroduce = transformToNiceBag(child);
+            return std::make_shared<DataStructures::IntroduceNode>(
                 bag->getId(),
                 bag->getBagSize(),
                 bag->getBagContent(),
-                transformToNiceBag(child),
+                niceChildIntroduce,
                 introducedVertex[0]
-            };
+            );
         }
         else
         {
@@ -84,8 +82,8 @@ DataStructures::NiceNode* transformToNiceBag(const DataStructures::Node* bag)
 
     else if (bag->getNbChildren() == 2)
     {
-        DataStructures::Node* leftChild = *bag->beginChildrenIterator();
-        DataStructures::Node* rightChild = *(bag->beginChildrenIterator()+1);
+        std::shared_ptr<DataStructures::Node> leftChild = *bag->beginChildrenIterator();
+        std::shared_ptr<DataStructures::Node> rightChild = *(bag->beginChildrenIterator()+1);
 
         DataStructures::BagContent parentContent = bag->getBagContent();
         DataStructures::BagContent leftChildContent = leftChild->getBagContent();
@@ -94,17 +92,39 @@ DataStructures::NiceNode* transformToNiceBag(const DataStructures::Node* bag)
         if (!containSameElements(parentContent, leftChildContent) ||
             !containSameElements(parentContent, rightChildContent))
         {
-            std::cout << "ID: " << bag->getId() << '\n';
+            std::cout << "ID parent: " << bag->getId() << '\n';
+            std::cout << "Content parent: ";
+            for (auto x : parentContent)
+                std::cout << x << " ";
+            std::cout << "\n";
+
+            std::cout << "ID left: " << leftChild->getId() << '\n';
+            std::cout << "Content left: ";
+            for (auto x : leftChildContent)
+                std::cout << x << " ";
+            std::cout << "\n";
+
+            std::cout << "ID right: " << rightChild->getId() << '\n';
+            std::cout << "Content right: ";
+            for (auto x : rightChildContent)
+                std::cout << x << " ";
+            std::cout << "\n";
+
+
+
             throw std::invalid_argument("Children of a join bag must have the same content as the parent bag!");
         }
 
-        return new DataStructures::JoinNode{
+        auto niceLeftChildJoin = transformToNiceBag(leftChild);
+        auto niceRightChildJoin = transformToNiceBag(rightChild);
+        auto j = DataStructures::JoinNode{bag->getId(), bag->getBagSize(), bag->getBagContent(), niceLeftChildJoin, niceRightChildJoin};
+        return std::make_shared<DataStructures::JoinNode>(
             bag->getId(),
             bag->getBagSize(),
             bag->getBagContent(),
-            transformToNiceBag(leftChild),
-            transformToNiceBag(rightChild)
-        };
+            niceLeftChildJoin,
+            niceRightChildJoin
+        );
     }
 
     else
@@ -113,12 +133,12 @@ DataStructures::NiceNode* transformToNiceBag(const DataStructures::Node* bag)
     }
 }
 
-DataStructures::NiceTreeDecomposition IO::Reader::readNiceTreeDecomposition(const std::string &filename) const
+std::shared_ptr<DataStructures::NiceTreeDecomposition> IO::Reader::readNiceTreeDecomposition(const std::string &filename) const
 {
-    DataStructures::TreeDecomposition treeDecomposition = readTreeDecomposition(filename);
+    std::shared_ptr<DataStructures::TreeDecomposition> treeDecomposition = readTreeDecomposition(filename);
 
-    return DataStructures::NiceTreeDecomposition{
-        treeDecomposition.getTreeWidth(),
-        transformToNiceBag(treeDecomposition.getRoot())
-    };
+    return std::make_shared<DataStructures::NiceTreeDecomposition>(
+        treeDecomposition->getTreeWidth(),
+        transformToNiceBag(treeDecomposition->getRoot())
+    );
 }

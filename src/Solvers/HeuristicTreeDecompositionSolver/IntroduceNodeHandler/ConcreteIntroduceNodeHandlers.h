@@ -12,13 +12,13 @@ namespace Solvers
     class GreedyIntroduceNodeHandler : public IntroduceNodeHandler
     {
     public:
-        void handleIntroduceNode(DataStructures::IntroduceNode* node) const override;
+        void handleIntroduceNode(std::shared_ptr<DataStructures::IntroduceNode>& node) const override;
     };
 
     class BestColourIntroduceNodeHandler : public IntroduceNodeHandler
     {
     public:
-        void handleIntroduceNode(DataStructures::IntroduceNode* node) const override;
+        void handleIntroduceNode(std::shared_ptr<DataStructures::IntroduceNode>& node) const override;
     };
 }
 

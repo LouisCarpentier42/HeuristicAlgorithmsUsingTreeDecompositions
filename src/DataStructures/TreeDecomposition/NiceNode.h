@@ -20,15 +20,15 @@ namespace DataStructures
     class NiceNode : public Node
     {
     private:
-        DynamicProgrammingTable table{0};
+        std::unique_ptr<DynamicProgrammingTable> table{new DynamicProgrammingTable{0}};
         const NodeType bagType;
 
     protected:
-        NiceNode(int id, size_t size, BagContent bagContent, std::vector<Node*> childVector, NodeType bagType);
+        NiceNode(int id, size_t size, BagContent bagContent, std::vector<std::shared_ptr<Node>> childVector, NodeType bagType);
 
     public:
         [[nodiscard]] NodeType getNodeType() const;
-        [[nodiscard]] DynamicProgrammingTable* getTable();
+        [[nodiscard]] DynamicProgrammingTable& getTable();
     };
 }
 

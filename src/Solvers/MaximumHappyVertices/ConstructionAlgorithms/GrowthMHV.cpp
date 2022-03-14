@@ -33,11 +33,11 @@ static std::set<DataStructures::VertexType, Comparator> LU_vertices(Comparator{}
 static std::set<DataStructures::VertexType, Comparator> LF_vertices(Comparator{});
 
 
-void MaximumHappyVertices::GrowthMHV::solve(DataStructures::Graph* graph) const
+void MaximumHappyVertices::GrowthMHV::solve(std::shared_ptr<DataStructures::Graph>& graph) const
 {
     vertexTypes.clear();
     vertexTypes.resize(graph->getNbVertices());
-    Comparator::graph = graph;
+    Comparator::graph = graph.get();
     P_vertices.clear();
     LP_vertices.clear();
     LH_vertices.clear();
@@ -124,7 +124,7 @@ void MaximumHappyVertices::GrowthMHV::solve(DataStructures::Graph* graph) const
 
 void MaximumHappyVertices::GrowthMHV::setGrowthTypes(
         std::deque<DataStructures::VertexType>& verticesToUpdate,
-        const DataStructures::Graph* graph)
+        const std::shared_ptr<DataStructures::Graph>& graph)
 {
     std::deque<DataStructures::VertexType> colouredVerticesToUpdate{};
     std::deque<DataStructures::VertexType> uncolouredVerticesToUpdate{};
@@ -224,7 +224,7 @@ void MaximumHappyVertices::GrowthMHV::setGrowthTypes(
 std::deque<DataStructures::VertexType> MaximumHappyVertices::GrowthMHV::verticesAtDistance(
         size_t distance,
         DataStructures::VertexType vertex,
-        const DataStructures::Graph* graph)
+        const std::shared_ptr<DataStructures::Graph>& graph)
 {
     // Initialise variables
     std::set<DataStructures::VertexType> neighbourhood{};

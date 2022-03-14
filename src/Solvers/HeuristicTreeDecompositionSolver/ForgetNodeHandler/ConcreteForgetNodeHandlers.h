@@ -12,13 +12,13 @@ namespace Solvers
     class PassiveForgetNodeHandler : public ForgetNodeHandler
     {
     public:
-        void handleForgetVertexBag(DataStructures::ForgetNode* node) const override;
+        void handleForgetVertexBag(std::shared_ptr<DataStructures::ForgetNode>& node) const override;
     };
 
     class BestColourForgetNodeHandler : public ForgetNodeHandler
     {
     public:
-        void handleForgetVertexBag(DataStructures::ForgetNode* node) const override;
+        void handleForgetVertexBag(std::shared_ptr<DataStructures::ForgetNode>& node) const override;
     };
 }
 

@@ -4,7 +4,7 @@
 
 #include "HappyVerticesAssignments.h"
 
-DataStructures::HappyVerticesAssignments::HappyVerticesAssignments(const DataStructures::Graph* graph)
+DataStructures::HappyVerticesAssignments::HappyVerticesAssignments(const std::shared_ptr<Graph>& graph)
     : vertexIsHappy(graph->getNbVertices(), false)
 {}
 

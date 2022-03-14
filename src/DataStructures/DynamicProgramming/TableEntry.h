@@ -7,10 +7,11 @@
 
 #include "../DataStructuresAliases.h"
 #include "../Graph/Graph.h"
-#include "../Solution/ColourAssignments.h"
+#include "../Solution/ColourAssignment.h"
 
 #include <map>
 #include <vector>
+#include <memory>
 
 namespace DataStructures
 {
@@ -18,23 +19,23 @@ namespace DataStructures
     {
     private:
         const int evaluation;
-        ColourAssignments colourAssignments;
+        std::shared_ptr<ColourAssignment> colourAssignments;
 
     public:
         TableEntry(
             int evaluation,
-            ColourAssignments& colourAssignments
+            std::shared_ptr<ColourAssignment>& colourAssignments
         );
 
         [[nodiscard]] int getEvaluation() const;
-        [[nodiscard]] ColourAssignments* getColourAssignments();
+        [[nodiscard]] std::shared_ptr<ColourAssignment> getColourAssignments();
 
-        void colourGraph(DataStructures::Graph* graph);
+        void colourGraph(std::shared_ptr<Graph>& graph);
 
-        friend bool operator<(TableEntry& entry1, TableEntry& entry2);
+        friend bool operator<(const TableEntry& entry1, const TableEntry& entry2);
     };
 
-    bool operator<(TableEntry& entry1, TableEntry& entry2);
+    bool operator<(const TableEntry& entry1, const TableEntry& entry2);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TABLEENTRY_H

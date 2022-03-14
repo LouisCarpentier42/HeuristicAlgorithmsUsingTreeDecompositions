@@ -5,11 +5,11 @@
 
 Solvers::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositionSolver(
         size_t nbSolutionsToKeep,
-        const DataStructures::Evaluator* evaluator,
-        Solvers::LeafNodeHandler* leafNodeHandler,
-        Solvers::IntroduceNodeHandler* introduceNodeHandler,
-        Solvers::ForgetNodeHandler* forgetNodeHandler,
-        Solvers::JoinNodeHandler* joinNodeHandler)
+        std::shared_ptr<DataStructures::Evaluator> evaluator,
+        std::shared_ptr<LeafNodeHandler>& leafNodeHandler,
+        std::shared_ptr<IntroduceNodeHandler>& introduceNodeHandler,
+        std::shared_ptr<ForgetNodeHandler>& forgetNodeHandler,
+        std::shared_ptr<JoinNodeHandler>& joinNodeHandler)
     : nbSolutionsToKeep{nbSolutionsToKeep},
       leafNodeHandler{leafNodeHandler},
       introduceNodeHandler{introduceNodeHandler},
@@ -23,42 +23,55 @@ Solvers::HeuristicTreeDecompositionSolver::HeuristicTreeDecompositionSolver(
 }
 
 void Solvers::HeuristicTreeDecompositionSolver::solve(
-        DataStructures::Graph* graph,
-        DataStructures::NiceTreeDecomposition* treeDecomposition) const
+        std::shared_ptr<DataStructures::Graph>& graph,
+        std::shared_ptr<DataStructures::NiceTreeDecomposition>& treeDecomposition) const
 {
     leafNodeHandler->setInputInstanceProperties(graph);
     introduceNodeHandler->setInputInstanceProperties(graph);
     forgetNodeHandler->setInputInstanceProperties(graph);
     joinNodeHandler->setInputInstanceProperties(graph);
 
-    solveAtNode(treeDecomposition->getRoot());
+    std::shared_ptr<DataStructures::NiceNode> root = treeDecomposition->getRoot();
+    solveAtNode(root);
 
-    treeDecomposition->getRoot()->getTable()->getBestEntry()->colourGraph(graph);
+    treeDecomposition->getRoot()->getTable().getBestEntry()->colourGraph(graph);
 }
 
-void Solvers::HeuristicTreeDecompositionSolver::solveAtNode(DataStructures::NiceNode* node) const
+void Solvers::HeuristicTreeDecompositionSolver::solveAtNode(std::shared_ptr<DataStructures::NiceNode>& node) const
 {
-    node->getTable()->setCapacity(nbSolutionsToKeep);
+    node->getTable().setCapacity(nbSolutionsToKeep);
     switch(node->getNodeType())
     {
         case DataStructures::NodeType::LeafNode:
-            leafNodeHandler->handleLeafNode(dynamic_cast<DataStructures::LeafNode*>(node));
+        {
+            auto leafNode = std::dynamic_pointer_cast<DataStructures::LeafNode>(node);
+            leafNodeHandler->handleLeafNode(leafNode);
             break;
+        }
         case DataStructures::NodeType::IntroduceNode:
-            introduceNodeHandler->handleIntroduceNode(dynamic_cast<DataStructures::IntroduceNode*>(node));
+        {
+            auto introduceNode = std::dynamic_pointer_cast<DataStructures::IntroduceNode>(node);
+            introduceNodeHandler->handleIntroduceNode(introduceNode);
             break;
+        }
         case DataStructures::NodeType::ForgetNode:
-            forgetNodeHandler->handleForgetVertexBag(dynamic_cast<DataStructures::ForgetNode*>(node));
+        {
+            auto forgetNode = std::dynamic_pointer_cast<DataStructures::ForgetNode>(node);
+            forgetNodeHandler->handleForgetVertexBag(forgetNode);
             break;
+        }
         case DataStructures::NodeType::JoinNode:
-            joinNodeHandler->handleJoinNode(dynamic_cast<DataStructures::JoinNode*>(node));
+        {
+            auto joinNode = std::dynamic_pointer_cast<DataStructures::JoinNode>(node);
+            joinNodeHandler->handleJoinNode(joinNode);
             break;
+        }
     }
 }
 
 void Solvers::NodeHandler::setSolverProperties(
-        const DataStructures::Evaluator* newEvaluator,
-        const Solvers::HeuristicTreeDecompositionSolver* newSolver)
+        std::shared_ptr<DataStructures::Evaluator>& newEvaluator,
+        HeuristicTreeDecompositionSolver* newSolver)
 {
     if (this->evaluator == nullptr || this->solver == nullptr)
     {
@@ -67,22 +80,22 @@ void Solvers::NodeHandler::setSolverProperties(
     }
 }
 
-void Solvers::NodeHandler::setInputInstanceProperties(const DataStructures::Graph* graphToSolve)
+void Solvers::NodeHandler::setInputInstanceProperties(std::shared_ptr<DataStructures::Graph>& graphToSolve)
 {
     setGraph(graphToSolve);
 }
 
-void Solvers::NodeHandler::setEvaluator(const DataStructures::Evaluator* newEvaluator)
+void Solvers::NodeHandler::setEvaluator(std::shared_ptr<DataStructures::Evaluator>& newEvaluator)
 {
     this->evaluator = newEvaluator;
 }
 
-void Solvers::NodeHandler::setSolver(const Solvers::HeuristicTreeDecompositionSolver* newSolver)
+void Solvers::NodeHandler::setSolver(HeuristicTreeDecompositionSolver* newSolver)
 {
     this->solver = newSolver;
 }
 
-void Solvers::NodeHandler::setGraph(const DataStructures::Graph* graphToSolve)
+void Solvers::NodeHandler::setGraph(std::shared_ptr<DataStructures::Graph>& graphToSolve)
 {
     this->graph = graphToSolve;
 }

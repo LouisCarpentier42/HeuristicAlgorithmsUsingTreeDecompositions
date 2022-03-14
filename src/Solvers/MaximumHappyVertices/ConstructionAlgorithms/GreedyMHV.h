@@ -15,11 +15,11 @@ namespace MaximumHappyVertices
     {
     public:
         GreedyMHV() = default;
-        void solve(DataStructures::Graph* graph) const override;
+        void solve(std::shared_ptr<DataStructures::Graph>& graph) const override;
 
     private:
         static void colourAllVertices(
-            DataStructures::Graph* graph,
+            std::shared_ptr<DataStructures::Graph>& graph,
             DataStructures::ColourType colour
         ) ;
     };

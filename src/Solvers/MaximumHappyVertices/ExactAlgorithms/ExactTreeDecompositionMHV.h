@@ -21,26 +21,26 @@ namespace MaximumHappyVertices
     class ExactTreeDecompositionMHV : public Solvers::ExactTreeDecompositionSolverBase
     {
     private:
-        DataStructures::Graph* graph;
+        std::shared_ptr<DataStructures::Graph> graph;
         std::set<DataStructures::VertexType> S{};
 
     public:
-        void setProperties(DataStructures::Graph* graph) override;
+        void setProperties(std::shared_ptr<DataStructures::Graph>& graph) override;
 
     private:
         Solvers::ExactTreeDecompositionRankingMHV handleLeafNode(
-            DataStructures::LeafNode* node
+                std::shared_ptr<DataStructures::LeafNode>& node
         ) const override;
         Solvers::ExactTreeDecompositionRankingMHV handleIntroduceNode(
-            DataStructures::IntroduceNode* node,
+            std::shared_ptr<DataStructures::IntroduceNode>& node,
             const Solvers::ExactTreeDecompositionRankingMHV& rankingChild
         ) const override;
         Solvers::ExactTreeDecompositionRankingMHV handleForgetNode(
-            DataStructures::ForgetNode* node,
+            std::shared_ptr<DataStructures::ForgetNode>& node,
             const Solvers::ExactTreeDecompositionRankingMHV& rankingChild
         ) const override;
         Solvers::ExactTreeDecompositionRankingMHV handleJoinNode(
-            DataStructures::JoinNode* node,
+            std::shared_ptr<DataStructures::JoinNode>& node,
             const Solvers::ExactTreeDecompositionRankingMHV& rankingLeftChild,
             const Solvers::ExactTreeDecompositionRankingMHV& rankingRightChild
         ) const override;

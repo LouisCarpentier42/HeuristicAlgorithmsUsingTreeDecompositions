@@ -9,6 +9,7 @@
 
 #include <ostream>
 #include <vector>
+#include <memory>
 
 
 namespace DataStructures
@@ -20,11 +21,11 @@ namespace DataStructures
 
     public:
         HappyVerticesAssignments(const HappyVerticesAssignments& other) = default;
-        explicit HappyVerticesAssignments(const DataStructures::Graph* graph);
+        explicit HappyVerticesAssignments(const std::shared_ptr<Graph>& graph);
 
-        void makeHappy(DataStructures::VertexType vertex);
-        void makeUnhappy(DataStructures::VertexType vertex);
-        [[nodiscard]] bool isHappy(DataStructures::VertexType vertex) const;
+        void makeHappy(VertexType vertex);
+        void makeUnhappy(VertexType vertex);
+        [[nodiscard]] bool isHappy(VertexType vertex) const;
 
         friend bool operator==(const HappyVerticesAssignments& h1, const HappyVerticesAssignments& h2);
         friend bool operator<(const HappyVerticesAssignments& h1, const HappyVerticesAssignments& h2);

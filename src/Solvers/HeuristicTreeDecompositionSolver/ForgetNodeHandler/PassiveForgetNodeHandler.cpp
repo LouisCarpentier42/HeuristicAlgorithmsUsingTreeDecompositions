@@ -4,8 +4,9 @@
 
 #include "ConcreteForgetNodeHandlers.h"
 
-void Solvers::PassiveForgetNodeHandler::handleForgetVertexBag(DataStructures::ForgetNode* node) const
+void Solvers::PassiveForgetNodeHandler::handleForgetVertexBag(std::shared_ptr<DataStructures::ForgetNode>& node) const
 {
-    solver->solveAtNode(node->getChild());
-    node->getTable()->referenceTable(node->getChild()->getTable());
+    auto child = node->getChild();
+    solver->solveAtNode(child);
+    node->getTable().referenceTable(node->getChild()->getTable());
 }

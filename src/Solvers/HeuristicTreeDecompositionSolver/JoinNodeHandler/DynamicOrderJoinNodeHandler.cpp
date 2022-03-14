@@ -7,7 +7,7 @@
 #include <algorithm>
 
 Solvers::DynamicOrderJoinNodeHandler::DynamicOrderJoinNodeHandler(
-        const EvaluationMerger *evaluationMerger,
+        std::shared_ptr<const EvaluationMerger>& evaluationMerger,
         double percentMustBeEqual,
         Solvers::DynamicOrderJoinNodeHandler::Order order)
     : PairwiseCombineJoinHandler{evaluationMerger, percentMustBeEqual}
@@ -30,46 +30,48 @@ Solvers::DynamicOrderJoinNodeHandler::DynamicOrderJoinNodeHandler(
 }
 
 void Solvers::DynamicOrderJoinNodeHandler::addMergedEntries(
-        DataStructures::JoinNode* node,
-        DataStructures::TableEntry* leftEntry,
-        DataStructures::TableEntry* rightEntry) const
+        std::shared_ptr<DataStructures::JoinNode>& node,
+        const std::shared_ptr<DataStructures::TableEntry>& leftEntry,
+        const std::shared_ptr<DataStructures::TableEntry>& rightEntry) const
 {
     // The colour assignments used to construct a new assignment
-    std::vector<DataStructures::ColourAssignments*> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
+    std::vector<std::shared_ptr<DataStructures::ColourAssignment>> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
 
     // Create a colour assignment
-    DataStructures::ColourAssignments assignments
-    {
+    std::shared_ptr<DataStructures::ColourAssignment> leftEntryAssignments = leftEntry->getColourAssignments();
+    std::shared_ptr<DataStructures::ColourAssignment> rightEntryAssignments = rightEntry->getColourAssignments();
+    std::shared_ptr<DataStructures::ColourAssignment> assignments = std::make_shared<DataStructures::ColourAssignment>
+    (
         node,
-        leftEntry->getColourAssignments(),
-        rightEntry->getColourAssignments()
-    };
+        leftEntryAssignments,
+        rightEntryAssignments
+    );
 
     std::set<DataStructures::VertexType> remainingVerticesToColour{verticesToColour.begin(), verticesToColour.end()};
     int initialMergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
     int previousEvaluation{initialMergedEvaluation};
     while (!remainingVerticesToColour.empty())
     {
-        auto it = vertexSelector->select(remainingVerticesToColour, graph, &assignments);
+        auto it = vertexSelector->select(remainingVerticesToColour, graph, assignments);
         DataStructures::VertexType vertex{*it};
         remainingVerticesToColour.erase(it);
 
         // If the vertices have the same colour, then you only need to re-evaluate once
         if (leftEntry->getColourAssignments()->getColour(vertex) == rightEntry->getColourAssignments()->getColour(vertex))
         {
-            assignments.assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
-            previousEvaluation = evaluator->evaluate(vertex, oldColourAssignments, &assignments, graph, previousEvaluation);
+            assignments->assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
+            previousEvaluation = evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation);
         }
         else
         {
-            assignments.assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
-            int leftEvaluation{evaluator->evaluate(vertex, oldColourAssignments, &assignments, graph, previousEvaluation)};
-            assignments.assignColour(vertex, rightEntry->getColourAssignments()->getColour(vertex));
-            int rightEvaluation{evaluator->evaluate(vertex, oldColourAssignments, &assignments, graph, previousEvaluation)};
+            assignments->assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
+            int leftEvaluation{evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation)};
+            assignments->assignColour(vertex, rightEntry->getColourAssignments()->getColour(vertex));
+            int rightEvaluation{evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation)};
 
             if (leftEvaluation > rightEvaluation)
             {
-                assignments.assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
+                assignments->assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
                 previousEvaluation = leftEvaluation;
             }
             else
@@ -80,18 +82,17 @@ void Solvers::DynamicOrderJoinNodeHandler::addMergedEntries(
         }
     }
 
-    node->getTable()->push(
-        new DataStructures::TableEntry{
+    std::shared_ptr<DataStructures::TableEntry> newEntry = std::make_shared<DataStructures::TableEntry>(
             previousEvaluation,
             assignments
-        }
-    );
+        );
+    node->getTable().push(newEntry);
 }
 
 int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbColouredNeighbours(
         DataStructures::VertexType vertex,
-        const DataStructures::Graph* graph,
-        DataStructures::ColourAssignments* assignments)
+        const std::shared_ptr<DataStructures::Graph>& graph,
+        std::shared_ptr<DataStructures::ColourAssignment>& assignments)
 {
     return std::count_if(
             graph->getNeighbours(vertex).begin(),
@@ -101,8 +102,8 @@ int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbColouredNeighbour
 
 int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbPotentialHappyNeighbours(
         DataStructures::VertexType vertex,
-        const DataStructures::Graph* graph,
-        DataStructures::ColourAssignments* assignments)
+        const std::shared_ptr<DataStructures::Graph>& graph,
+        std::shared_ptr<DataStructures::ColourAssignment>& assignments)
 {
     int nbPotentialHappyNeighbours{0};
     for (DataStructures::VertexType potentialHappyNeighbour : graph->getNeighbours(vertex))
@@ -133,8 +134,8 @@ int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbPotentialHappyNei
 
 DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostColouredNeighboursSelector::select(
         DataStructures::BagContent& bagContent,
-        const DataStructures::Graph* graph,
-        DataStructures::ColourAssignments* assignments) const
+        const std::shared_ptr<DataStructures::Graph>& graph,
+        std::shared_ptr<DataStructures::ColourAssignment>& assignments) const
 {
     auto bestIterator = bagContent.begin();
     int bestNbColouredNeighbours{0};
@@ -152,8 +153,8 @@ DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostC
 
 DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::FewestColouredNeighboursSelector::select(
         DataStructures::BagContent& bagContent,
-        const DataStructures::Graph* graph,
-        DataStructures::ColourAssignments* assignments) const
+        const std::shared_ptr<DataStructures::Graph>& graph,
+        std::shared_ptr<DataStructures::ColourAssignment>& assignments) const
 {
     auto bestIterator = bagContent.begin();
     int bestNbColouredNeighbours{static_cast<int>(graph->getNbVertices())};
@@ -171,8 +172,8 @@ DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::Fewes
 
 DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostPotentialHappyNeighboursSelector::select(
         DataStructures::BagContent& bagContent,
-        const DataStructures::Graph* graph,
-        DataStructures::ColourAssignments* assignments) const
+        const std::shared_ptr<DataStructures::Graph>& graph,
+        std::shared_ptr<DataStructures::ColourAssignment>& assignments) const
 {
     auto bestIterator = bagContent.begin();
     int bestNbPotentialHappyNeighbours{0};
@@ -190,8 +191,8 @@ DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostP
 
 DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostPercentPotentialHappyNeighboursSelector::select(
         DataStructures::BagContent& bagContent,
-        const DataStructures::Graph* graph,
-        DataStructures::ColourAssignments* assignments) const
+        const std::shared_ptr<DataStructures::Graph>& graph,
+        std::shared_ptr<DataStructures::ColourAssignment>& assignments) const
 {
     auto bestIterator = bagContent.begin();
     double bestPercentPotentialHappyNeighbours{0.0};

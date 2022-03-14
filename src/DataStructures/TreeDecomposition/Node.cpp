@@ -4,12 +4,9 @@
 
 #include "Node.h"
 
-DataStructures::Node::Node(int id, size_t size, BagContent bagContent, std::vector<Node*> childVector)
+DataStructures::Node::Node(int id, size_t size, BagContent bagContent, std::vector<std::shared_ptr<Node>> childVector)
     : id{id}, bagSize{size}, bagContent{std::move(bagContent)}, childVector{std::move(childVector)}
-{
-    for (Node* child : this->childVector)
-        child->setParent(this);
-}
+{}
 
 int DataStructures::Node::getId() const
 {
@@ -31,16 +28,6 @@ DataStructures::BagContent DataStructures::Node::getBagContent() const
     return bagContent;
 }
 
-const DataStructures::Node* DataStructures::Node::getParent() const
-{
-    return parent;
-}
-
-void DataStructures::Node::setParent(DataStructures::Node* newParent)
-{
-    this->parent = newParent;
-}
-
 bool DataStructures::Node::isLeaf() const
 {
     return childVector.empty();
@@ -56,7 +43,7 @@ int DataStructures::Node::getHeight() const
     if (isLeaf()) return 0;
 
     int height{0};
-    for (Node* child : childVector)
+    for (const std::shared_ptr<Node>& child : childVector)
     {
         int heightChild{child->getHeight()};
         if (heightChild > height)
@@ -65,18 +52,18 @@ int DataStructures::Node::getHeight() const
     return height + 1;
 }
 
-std::vector<DataStructures::Node*>::const_iterator DataStructures::Node::beginChildrenIterator() const
+std::vector<std::shared_ptr<DataStructures::Node>>::const_iterator DataStructures::Node::beginChildrenIterator() const
 {
     return childVector.begin();
 }
 
-std::vector<DataStructures::Node*>::const_iterator DataStructures::Node::endChildrenIterator() const
+std::vector<std::shared_ptr<DataStructures::Node>>::const_iterator DataStructures::Node::endChildrenIterator() const
 {
     return childVector.end();
 }
 
 
-std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures::Node& node)
+std::ostream& DataStructures::operator<<(std::ostream& out, const Node& node)
 {
     std::string prefix{};
     return node.prettyPrint(out, prefix);

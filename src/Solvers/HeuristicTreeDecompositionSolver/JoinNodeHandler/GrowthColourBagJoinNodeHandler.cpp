@@ -32,8 +32,8 @@ static std::set<DataStructures::VertexType, Comparator> LF_vertices(Comparator{}
 
 void setGrowthTypes(
         std::deque<DataStructures::VertexType>& verticesToUpdate,
-        const DataStructures::Graph* graph,
-        DataStructures::ColourAssignments* colourAssignments,
+        const std::shared_ptr<DataStructures::Graph>& graph,
+        std::shared_ptr<DataStructures::ColourAssignment>& colourAssignments,
         const std::vector<DataStructures::VertexType>& verticesToColour)
 {
     std::deque<DataStructures::VertexType> colouredVerticesToUpdate{};
@@ -139,7 +139,7 @@ void setGrowthTypes(
 std::deque<DataStructures::VertexType> verticesAtDistance(
         size_t distance,
         DataStructures::VertexType vertex,
-        const DataStructures::Graph* graph)
+        const std::shared_ptr<DataStructures::Graph>& graph)
 {
     // Neighbourhood at distance 1
     std::set<DataStructures::VertexType> neighbourhood{};
@@ -171,23 +171,23 @@ std::deque<DataStructures::VertexType> verticesAtDistance(
 }
 
 Solvers::GrowthColourBagJoinNodeHandler::GrowthColourBagJoinNodeHandler(
-        const Solvers::EvaluationMerger *evaluationMerger,
+        std::shared_ptr<const EvaluationMerger>& evaluationMerger,
         double percentMustBeEqual)
     : PairwiseCombineJoinHandler{evaluationMerger, percentMustBeEqual}
 { }
 
 void Solvers::GrowthColourBagJoinNodeHandler::addMergedEntries(
-        DataStructures::JoinNode *node,
-        DataStructures::TableEntry *leftEntry,
-        DataStructures::TableEntry *rightEntry) const
+        std::shared_ptr<DataStructures::JoinNode>& node,
+        const std::shared_ptr<DataStructures::TableEntry>& leftEntry,
+        const std::shared_ptr<DataStructures::TableEntry>& rightEntry) const
 {
     // The colour assignments used to construct a new assignment
-    std::vector<DataStructures::ColourAssignments*> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
+    std::vector<std::shared_ptr<DataStructures::ColourAssignment>> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
 
     // Reset the types
     vertexTypes.clear();
     vertexTypes.resize(graph->getNbVertices());
-    Comparator::graph1 = graph;
+    Comparator::graph1 = graph.get();
     P_vertices.clear();
     LP_vertices.clear();
     LH_vertices.clear();
@@ -195,29 +195,31 @@ void Solvers::GrowthColourBagJoinNodeHandler::addMergedEntries(
     LF_vertices.clear();
 
     // Create a colour assignment
-    DataStructures::ColourAssignments assignments
-    {
+    std::shared_ptr<DataStructures::ColourAssignment> leftEntryAssignments = leftEntry->getColourAssignments();
+    std::shared_ptr<DataStructures::ColourAssignment> rightEntryAssignments = rightEntry->getColourAssignments();
+    std::shared_ptr<DataStructures::ColourAssignment> assignments = std::make_shared<DataStructures::ColourAssignment>
+    (
         node,
-        leftEntry->getColourAssignments(),
-        rightEntry->getColourAssignments()
-    };
+        leftEntryAssignments,
+        rightEntryAssignments
+    );
     for (DataStructures::VertexType vertex : verticesToColour)
-        assignments.removeColour(vertex);
+        assignments->removeColour(vertex);
 
     std::deque<DataStructures::VertexType> verticesToUpdate(graph->getNbVertices());
     std::iota(verticesToUpdate.begin(), verticesToUpdate.end(), 0);
-    setGrowthTypes(verticesToUpdate, graph, &assignments, verticesToColour);
+    setGrowthTypes(verticesToUpdate, graph, assignments, verticesToColour);
     while (!(LP_vertices.empty() && LH_vertices.empty() && LU_vertices.empty() && LF_vertices.empty()))
     {
         if (!P_vertices.empty())
         {
             DataStructures::VertexType p_vertex{*P_vertices.begin()};
-            DataStructures::ColourType colour{assignments.getColour(p_vertex)};
+            DataStructures::ColourType colour{assignments->getColour(p_vertex)};
             for (DataStructures::VertexType neighbour : graph->getNeighbours(p_vertex))
             {
                 if (vertexTypes[neighbour] == MaximumHappyVertices::GrowthMHV::GrowthType::LP_vertex)
                 {
-                    assignments.assignColour(neighbour, colour);
+                    assignments->assignColour(neighbour, colour);
                 }
             }
             verticesToUpdate = verticesAtDistance(3, p_vertex, graph);
@@ -230,14 +232,14 @@ void Solvers::GrowthColourBagJoinNodeHandler::addMergedEntries(
                     graph->getNeighbours(lh_vertex).end(),
                     [](const DataStructures::VertexType& neighbour)
                     { return vertexTypes[neighbour] == MaximumHappyVertices::GrowthMHV::GrowthType::U_vertex; }
-                    );
-            DataStructures::ColourType colour{assignments.getColour(*uNeighbourIt)};
-            assignments.assignColour(lh_vertex, colour);
+                );
+            DataStructures::ColourType colour{assignments->getColour(*uNeighbourIt)};
+            assignments->assignColour(lh_vertex, colour);
             for (DataStructures::VertexType neighbour : graph->getNeighbours(lh_vertex))
             {
-                if (!assignments.isColoured(neighbour))
+                if (!assignments->isColoured(neighbour))
                 {
-                    assignments.assignColour(neighbour, colour);
+                    assignments->assignColour(neighbour, colour);
                 }
             }
             verticesToUpdate = verticesAtDistance(3, lh_vertex, graph);
@@ -250,8 +252,8 @@ void Solvers::GrowthColourBagJoinNodeHandler::addMergedEntries(
                     graph->getNeighbours(lu_vertex).end(),
                     [](const DataStructures::VertexType& neighbour)
                     { return vertexTypes[neighbour] == MaximumHappyVertices::GrowthMHV::GrowthType::U_vertex; }
-                    );
-            assignments.assignColour(lu_vertex, assignments.getColour(u_neighbour));
+                );
+            assignments->assignColour(lu_vertex, assignments->getColour(u_neighbour));
 
             verticesToUpdate = verticesAtDistance(1, lu_vertex, graph);
         }
@@ -260,7 +262,7 @@ void Solvers::GrowthColourBagJoinNodeHandler::addMergedEntries(
             std::uniform_int_distribution<> distribution(0, graph->getNbColours());
             DataStructures::VertexType lf_vertex{*LF_vertices.begin()};
             DataStructures::ColourType colour = distribution(RNG::rng);
-            assignments.assignColour(lf_vertex, colour);
+            assignments->assignColour(lf_vertex, colour);
             verticesToUpdate = verticesAtDistance(1, lf_vertex, graph);
         }
 
@@ -277,16 +279,15 @@ void Solvers::GrowthColourBagJoinNodeHandler::addMergedEntries(
             }
             vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::TEMP_INVALID_TYPE;
         }
-        setGrowthTypes(verticesToUpdate, graph, &assignments, verticesToColour);
+        setGrowthTypes(verticesToUpdate, graph, assignments, verticesToColour);
     }
 
     // Add a new entry to the table
-    node->getTable()->push(
-        new DataStructures::TableEntry{
-            evaluator->evaluate(node->getBagContent(), oldColourAssignments, &assignments, graph, evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())),
+    std::shared_ptr<DataStructures::TableEntry> newEntry = std::make_shared<DataStructures::TableEntry>(
+            evaluator->evaluate(node->getBagContent(), oldColourAssignments, assignments, graph, evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())),
             assignments
-        }
-    );
+        );
+    node->getTable().push(newEntry);
 }
 
 

@@ -10,7 +10,7 @@
 #include <vector>
 
 
-void MaximumHappyVertices::ExactTreeDecompositionMHV::setProperties(DataStructures::Graph* graph)
+void MaximumHappyVertices::ExactTreeDecompositionMHV::setProperties(std::shared_ptr<DataStructures::Graph>& graph)
 {
     this->graph = graph;
     S.clear();
@@ -26,7 +26,7 @@ void MaximumHappyVertices::ExactTreeDecompositionMHV::setProperties(DataStructur
 }
 
 Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompositionMHV::handleLeafNode(
-        DataStructures::LeafNode* node) const
+        std::shared_ptr<DataStructures::LeafNode>& node) const
 {
     // Find the set of vertices that are happy
     std::set<DataStructures::VertexType> happyVertices{};
@@ -51,7 +51,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
     for (int counter{0}; counter < std::pow(2, nbColours); counter++)
     {
         // Create the partition of S for the colours
-        DataStructures::ColourAssignments colourAssignments{graph};
+        DataStructures::ColourAssignment colourAssignments{graph};
         for (DataStructures::VertexType vertex : S)
             colourAssignments.assignColour(vertex, graph->getColour(vertex));
 
@@ -92,7 +92,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
 }
 
 Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompositionMHV::handleIntroduceNode(
-        DataStructures::IntroduceNode* node,
+        std::shared_ptr<DataStructures::IntroduceNode>& node,
         const Solvers::ExactTreeDecompositionRankingMHV& rankingChild) const
 {
     if (S.find(node->getIntroducedVertex()) != S.end())
@@ -108,7 +108,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
     ExactTreeDecompositionMHVSolutionIterator iterator{verticesToConsider, graph};
     while (iterator.next())
     {
-        DataStructures::ColourAssignments colourAssignments{iterator.getColourAssignments()};
+        DataStructures::ColourAssignment colourAssignments{iterator.getColourAssignments()};
         DataStructures::HappyVerticesAssignments happyVerticesAssignments{iterator.getHappyVerticesAssignments()};
 
         std::set<DataStructures::ColourType> otherColoursOfNeighbours{};
@@ -137,7 +137,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
         if (!otherColoursOfHappyNeighbours.empty())
             continue;
 
-        DataStructures::ColourAssignments colourAssignmentsChild{colourAssignments};
+        DataStructures::ColourAssignment colourAssignmentsChild{colourAssignments};
         colourAssignmentsChild.removeColour(node->getIntroducedVertex());
         DataStructures::HappyVerticesAssignments happyVerticesAssignmentsChild{happyVerticesAssignments};
         happyVerticesAssignmentsChild.makeUnhappy(node->getIntroducedVertex());
@@ -146,7 +146,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
         if (evaluationChild == Solvers::ExactTreeDecompositionRankingMHV::NEGATIVE_INFINITY)
             continue;
 
-        const DataStructures::ColourAssignments* fullColouringChild = rankingChild.getFullColouring(colourAssignmentsChild, happyVerticesAssignmentsChild);
+        std::shared_ptr<DataStructures::ColourAssignment> fullColouringChild = rankingChild.getFullColouring(colourAssignmentsChild, happyVerticesAssignmentsChild);
         if (happyVerticesAssignments.isHappy(node->getIntroducedVertex()))
         {
             ranking.addSolution(evaluationChild + 1, colourAssignments, happyVerticesAssignments, {fullColouringChild});
@@ -160,7 +160,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
 }
 
 Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompositionMHV::handleForgetNode(
-        DataStructures::ForgetNode* node,
+        std::shared_ptr<DataStructures::ForgetNode>& node,
         const Solvers::ExactTreeDecompositionRankingMHV& rankingChild) const
 {
     if (S.find(node->getForgottenVertex()) != S.end())
@@ -176,7 +176,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
     ExactTreeDecompositionMHVSolutionIterator iterator{verticesToConsider, graph};
     while (iterator.next())
     {
-        DataStructures::ColourAssignments colourAssignments{iterator.getColourAssignments()};
+        DataStructures::ColourAssignment colourAssignments{iterator.getColourAssignments()};
         DataStructures::HappyVerticesAssignments happyVerticesAssignments{iterator.getHappyVerticesAssignments()};
         int evaluation{Solvers::ExactTreeDecompositionRankingMHV::NEGATIVE_INFINITY};
         DataStructures::ColourType colourInBestChild{0};
@@ -211,7 +211,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
                 happyVerticesAssignments.makeHappy(node->getForgottenVertex());
             else
                 happyVerticesAssignments.makeUnhappy(node->getForgottenVertex());
-            const DataStructures::ColourAssignments* fullColouringChild = rankingChild.getFullColouring(colourAssignments, happyVerticesAssignments);
+            std::shared_ptr<DataStructures::ColourAssignment> fullColouringChild = rankingChild.getFullColouring(colourAssignments, happyVerticesAssignments);
 
             // Remove the colour of the forgotten node
             colourAssignments.removeColour(node->getForgottenVertex());
@@ -224,7 +224,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
 }
 
 Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompositionMHV::handleJoinNode(
-        DataStructures::JoinNode* node,
+        std::shared_ptr<DataStructures::JoinNode>& node,
         const Solvers::ExactTreeDecompositionRankingMHV& rankingLeftChild,
         const Solvers::ExactTreeDecompositionRankingMHV& rankingRightChild) const
 {
@@ -238,7 +238,7 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
     ExactTreeDecompositionMHVSolutionIterator iterator{verticesToConsider, graph};
     while (iterator.next())
     {
-        DataStructures::ColourAssignments colourAssignments{iterator.getColourAssignments()};
+        DataStructures::ColourAssignment colourAssignments{iterator.getColourAssignments()};
         DataStructures::HappyVerticesAssignments happyVerticesAssignments{iterator.getHappyVerticesAssignments()};
 
         int evaluationLeftChild{rankingLeftChild.getEvaluation(colourAssignments, happyVerticesAssignments)};
@@ -256,8 +256,8 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
                 nbVerticesCountedDouble++;
         }
 
-        const DataStructures::ColourAssignments* fullColouringLeftChild = rankingLeftChild.getFullColouring(colourAssignments, happyVerticesAssignments);
-        const DataStructures::ColourAssignments* fullColouringRightChild = rankingRightChild.getFullColouring(colourAssignments, happyVerticesAssignments);
+        std::shared_ptr<DataStructures::ColourAssignment> fullColouringLeftChild = rankingLeftChild.getFullColouring(colourAssignments, happyVerticesAssignments);
+        std::shared_ptr<DataStructures::ColourAssignment> fullColouringRightChild = rankingRightChild.getFullColouring(colourAssignments, happyVerticesAssignments);
 
         ranking.addSolution(
             evaluationLeftChild + evaluationRightChild - nbVerticesCountedDouble,

@@ -12,7 +12,7 @@ namespace Solvers
     class PassiveLeafNodeHandlers : public LeafNodeHandler
     {
     public:
-        void handleLeafNode(DataStructures::LeafNode* node) const override;
+        void handleLeafNode(std::shared_ptr<DataStructures::LeafNode>& node) const override;
     };
 }
 

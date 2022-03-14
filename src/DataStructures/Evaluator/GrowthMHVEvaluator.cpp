@@ -2,6 +2,7 @@
 // Created by louis on 10/12/2021.
 //
 
+#include <memory>
 #include <numeric>
 #include "GrowthMHVEvaluator.h"
 
@@ -22,21 +23,22 @@ DataStructures::GrowthMHVEvaluator::GrowthMHVEvaluator(
       LFWeight{LFWeight}
 { }
 
-int DataStructures::GrowthMHVEvaluator::evaluate(const DataStructures::Graph* graph) const
+int DataStructures::GrowthMHVEvaluator::evaluate(const std::shared_ptr<Graph>& graph) const
 {
     int evaluation{0};
 
-    std::set<DataStructures::VertexType> allVertices{};
-    auto* colourAssignments = new DataStructures::ColourAssignments{graph};
-    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+    std::set<VertexType> allVertices{};
+    auto colourAssignments = std::make_shared<ColourAssignment>(graph);
+    for (VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
         allVertices.emplace_hint(allVertices.end(), vertex);
         colourAssignments->assignColour(vertex, graph->getColour(vertex));
     }
+
     std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> vertexTypes = getGrowthMHVTypes(
             allVertices, colourAssignments, graph);
 
-    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+    for (VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
         evaluation += getVertexWeight(vertexTypes[vertex]);
     }
@@ -44,26 +46,26 @@ int DataStructures::GrowthMHVEvaluator::evaluate(const DataStructures::Graph* gr
 }
 
 int DataStructures::GrowthMHVEvaluator::evaluate(
-        const std::set<DataStructures::VertexType>& recolouredVertices,
-        std::vector<DataStructures::ColourAssignments*> oldColourAssignments,
-        DataStructures::ColourAssignments* newColourAssignments,
-        const DataStructures::Graph* graph,
+        const std::set<VertexType>& recolouredVertices,
+        std::vector<std::shared_ptr<ColourAssignment>>& oldColourAssignments,
+        std::shared_ptr<ColourAssignment>& newColourAssignment,
+        const std::shared_ptr<Graph>& graph,
         int startEvaluation) const
 {
     int evaluation{startEvaluation};
-    std::set<DataStructures::VertexType> potentiallyChangedVertices = verticesAtDistance(4, recolouredVertices, graph);
+    std::set<VertexType> potentiallyChangedVertices = verticesAtDistance(4, recolouredVertices, graph);
 
     // Compute the types of the vertices that can have potentially a different type
     std::vector<std::vector<MaximumHappyVertices::GrowthMHV::GrowthType>> oldTypes{};
     oldTypes.reserve(oldColourAssignments.size());
-    for (DataStructures::ColourAssignments* oldColourAssignment : oldColourAssignments)
+    for (std::shared_ptr<ColourAssignment>& oldColourAssignment : oldColourAssignments)
         oldTypes.emplace_back(getGrowthMHVTypes(potentiallyChangedVertices, oldColourAssignment, graph));
 
     std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> newTypes = getGrowthMHVTypes(
-            potentiallyChangedVertices, newColourAssignments, graph);
+            potentiallyChangedVertices, newColourAssignment, graph);
 
     // Check for all vertices how their happiness has changed
-    for (DataStructures::VertexType vertex : potentiallyChangedVertices)
+    for (VertexType vertex : potentiallyChangedVertices)
     {
         // Remove the evaluation from the old colour assignment
         for (const std::vector<MaximumHappyVertices::GrowthMHV::GrowthType>& vertexTypes : oldTypes)
@@ -77,20 +79,20 @@ int DataStructures::GrowthMHVEvaluator::evaluate(
 }
 
 std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> DataStructures::GrowthMHVEvaluator::getGrowthMHVTypes(
-        const std::set<DataStructures::VertexType>& vertices,
-        DataStructures::ColourAssignments* colourAssignments,
-        const DataStructures::Graph* graph)
+        const std::set<VertexType>& vertices,
+        std::shared_ptr<ColourAssignment>& colourAssignment,
+        const std::shared_ptr<Graph>& graph)
 {
     std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> vertexTypes(
         graph->getNbVertices(),
         MaximumHappyVertices::GrowthMHV::GrowthType::TEMP_INVALID_TYPE
     );
 
-    std::deque<DataStructures::VertexType> colouredVertices{};
-    std::deque<DataStructures::VertexType> uncolouredVertices{};
-    for (DataStructures::VertexType vertex : vertices)
+    std::deque<VertexType> colouredVertices{};
+    std::deque<VertexType> uncolouredVertices{};
+    for (VertexType vertex : vertices)
     {
-        if (colourAssignments->isColoured(vertex))
+        if (colourAssignment->isColoured(vertex))
             colouredVertices.push_back(vertex);
         else
             uncolouredVertices.push_back(vertex);
@@ -98,18 +100,18 @@ std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> DataStructures::GrowthM
 
     while (!colouredVertices.empty())
     {
-        DataStructures::VertexType vertex{colouredVertices.front()};
+        VertexType vertex{colouredVertices.front()};
         colouredVertices.pop_front();
 
         bool vertexIsUnhappy{false};
         bool hasUncolouredNeighbour{false};
-        for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
+        for (VertexType neighbour : graph->getNeighbours(vertex))
         {
-            if (!colourAssignments->isColoured(neighbour))
+            if (!colourAssignment->isColoured(neighbour))
             {
                 hasUncolouredNeighbour = true;
             }
-            else if (colourAssignments->getColour(neighbour) != colourAssignments->getColour(vertex))
+            else if (colourAssignment->getColour(neighbour) != colourAssignment->getColour(vertex))
             {
                 vertexIsUnhappy = true;
                 break;
@@ -132,24 +134,24 @@ std::vector<MaximumHappyVertices::GrowthMHV::GrowthType> DataStructures::GrowthM
 
     while (!uncolouredVertices.empty())
     {
-        DataStructures::VertexType vertex{uncolouredVertices.front()};
+        VertexType vertex{uncolouredVertices.front()};
         uncolouredVertices.pop_front();
 
-        DataStructures::ColourType colourNeighbours{0};
+        ColourType colourNeighbours{0};
         bool hasPNeighbour{false};
         bool isUnhappy{false};
-        for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
+        for (VertexType neighbour : graph->getNeighbours(vertex))
         {
             if (vertexTypes[neighbour] == MaximumHappyVertices::GrowthMHV::GrowthType::P_vertex)
             {
                 hasPNeighbour = true;
                 break;
             }
-            else if (colourNeighbours == 0 && colourAssignments->isColoured(neighbour))
+            else if (colourNeighbours == 0 && colourAssignment->isColoured(neighbour))
             {
-                colourNeighbours = colourAssignments->getColour(neighbour);
+                colourNeighbours = colourAssignment->getColour(neighbour);
             }
-            else if (colourNeighbours != 0 && colourAssignments->isColoured(neighbour) && colourAssignments->getColour(neighbour) != colourNeighbours)
+            else if (colourNeighbours != 0 && colourAssignment->isColoured(neighbour) && colourAssignment->getColour(neighbour) != colourNeighbours)
             {
                 isUnhappy = true;
             }

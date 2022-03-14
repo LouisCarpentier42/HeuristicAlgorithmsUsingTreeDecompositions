@@ -12,14 +12,14 @@ namespace DataStructures
     class JoinNode : public NiceNode
     {
     private:
-        NiceNode* leftChild;
-        NiceNode* rightChild;
+        std::shared_ptr<NiceNode> leftChild;
+        std::shared_ptr<NiceNode> rightChild;
 
     public:
-        JoinNode(int id, size_t size, BagContent bagContent, NiceNode* leftChild, NiceNode* rightChild);
+        JoinNode(int id, size_t size, BagContent bagContent, std::shared_ptr<NiceNode>& leftChild, std::shared_ptr<NiceNode>& rightChild);
 
-        [[nodiscard]] NiceNode* getLeftChild();
-        [[nodiscard]] NiceNode* getRightChild();
+        [[nodiscard]] std::shared_ptr<NiceNode> getLeftChild();
+        [[nodiscard]] std::shared_ptr<NiceNode> getRightChild();
 
         [[nodiscard]] std::string getTypeString() const override;
     };

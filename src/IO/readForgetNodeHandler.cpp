@@ -5,21 +5,21 @@
 #include "Reader.h"
 #include "../Solvers/HeuristicTreeDecompositionSolver/ForgetNodeHandler/ConcreteForgetNodeHandlers.h"
 
-Solvers::ForgetNodeHandler* createForgetNodeHandler(std::vector<std::string> parameters)
+std::shared_ptr<Solvers::ForgetNodeHandler> createForgetNodeHandler(std::vector<std::string> parameters)
 {
     if (parameters[0] == "passive")
-        return new Solvers::PassiveForgetNodeHandler{};
+        return std::make_shared<Solvers::PassiveForgetNodeHandler>();
     else if (parameters[0] == "bestColour")
-        return new Solvers::BestColourForgetNodeHandler{};
+        return std::make_shared<Solvers::BestColourForgetNodeHandler>();
     throw std::runtime_error("Invalid forget node handler identifier is given: " + parameters[0] + "!");
 }
 
-Solvers::ForgetNodeHandler* IO::Reader::readForgetNodeHandler(const std::string& str)
+std::shared_ptr<Solvers::ForgetNodeHandler> IO::Reader::readForgetNodeHandler(const std::string& str)
 {
     return createForgetNodeHandler(splitParameters(str));
 }
 
-Solvers::ForgetNodeHandler* IO::Reader::readForgetNodeHandler(int argc, char** argv)
+std::shared_ptr<Solvers::ForgetNodeHandler> IO::Reader::readForgetNodeHandler(int argc, char** argv)
 {
     std::string forgetNodeHandler = getParameter(argc, argv, "--forgetNodeHandler", true);
     std::vector<std::string> parameters;

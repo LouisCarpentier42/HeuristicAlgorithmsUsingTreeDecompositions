@@ -8,13 +8,13 @@
 #include <algorithm>
 
 Solvers::StaticOrderJoinNodeHandler::StaticOrderJoinNodeHandler(
-        const Solvers::EvaluationMerger* evaluationMerger,
+        std::shared_ptr<const EvaluationMerger>& evaluationMerger,
         double percentMustBeEqual,
         Solvers::StaticOrderJoinNodeHandler::Order order)
     : PairwiseCombineJoinHandler{evaluationMerger, percentMustBeEqual}, order{order}
 { }
 
-void Solvers::StaticOrderJoinNodeHandler::setGraph(const DataStructures::Graph* graphToSolve)
+void Solvers::StaticOrderJoinNodeHandler::setGraph(std::shared_ptr<DataStructures::Graph>& graphToSolve)
 {
     vertexOrder.clear();
     NodeHandler::setGraph(graphToSolve);
@@ -45,7 +45,7 @@ void Solvers::StaticOrderJoinNodeHandler::setGraph(const DataStructures::Graph* 
     );
 }
 
-void Solvers::StaticOrderJoinNodeHandler::setVerticesToColour(DataStructures::JoinNode *node)
+void Solvers::StaticOrderJoinNodeHandler::setVerticesToColour(std::shared_ptr<DataStructures::JoinNode>& node)
 {
     verticesToColour.clear();
     for (DataStructures::VertexType vertex : vertexOrder)
@@ -56,24 +56,26 @@ void Solvers::StaticOrderJoinNodeHandler::setVerticesToColour(DataStructures::Jo
 }
 
 void Solvers::StaticOrderJoinNodeHandler::addMergedEntries(
-        DataStructures::JoinNode* node,
-        DataStructures::TableEntry* leftEntry,
-        DataStructures::TableEntry* rightEntry) const
+        std::shared_ptr<DataStructures::JoinNode>& node,
+        const std::shared_ptr<DataStructures::TableEntry>& leftEntry,
+        const std::shared_ptr<DataStructures::TableEntry>& rightEntry) const
 {
     // The colour assignments used to construct a new assignment
-    std::vector<DataStructures::ColourAssignments*> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
+    std::vector<std::shared_ptr<DataStructures::ColourAssignment>> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
 
     // Create a colour assignment
-    DataStructures::ColourAssignments assignments
-    {
+    std::shared_ptr<DataStructures::ColourAssignment> leftEntryAssignments = leftEntry->getColourAssignments();
+    std::shared_ptr<DataStructures::ColourAssignment> rightEntryAssignments = rightEntry->getColourAssignments();
+    std::shared_ptr<DataStructures::ColourAssignment> assignments = std::make_shared<DataStructures::ColourAssignment>
+    (
         node,
-        leftEntry->getColourAssignments(),
-        rightEntry->getColourAssignments()
-    };
+        leftEntryAssignments,
+        rightEntryAssignments
+    );
     for (DataStructures::VertexType vertex : node->getBagContent())
     {
         if (!graph->isPrecoloured(vertex))
-            assignments.removeColour(vertex);
+            assignments->removeColour(vertex);
     }
 
     // Colour the vertices in the predefined order
@@ -87,19 +89,19 @@ void Solvers::StaticOrderJoinNodeHandler::addMergedEntries(
             // If the vertices have the same colour, then you only need to re-evaluate once
             if (leftEntry->getColourAssignments()->getColour(vertex) == rightEntry->getColourAssignments()->getColour(vertex))
             {
-                assignments.assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
-                previousEvaluation = evaluator->evaluate(vertex, oldColourAssignments, &assignments, graph, previousEvaluation);
+                assignments->assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
+                previousEvaluation = evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation);
             }
             else
             {
-                assignments.assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
-                int leftEvaluation{evaluator->evaluate(vertex, oldColourAssignments, &assignments, graph, previousEvaluation)};
-                assignments.assignColour(vertex, rightEntry->getColourAssignments()->getColour(vertex));
-                int rightEvaluation{evaluator->evaluate(vertex, oldColourAssignments, &assignments, graph, previousEvaluation)};
+                assignments->assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
+                int leftEvaluation{evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation)};
+                assignments->assignColour(vertex, rightEntry->getColourAssignments()->getColour(vertex));
+                int rightEvaluation{evaluator->evaluate(vertex, oldColourAssignments, assignments, graph, previousEvaluation)};
 
                 if (leftEvaluation > rightEvaluation)
                 {
-                    assignments.assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
+                    assignments->assignColour(vertex, leftEntry->getColourAssignments()->getColour(vertex));
                     previousEvaluation = leftEvaluation;
                 }
                 else
@@ -112,11 +114,11 @@ void Solvers::StaticOrderJoinNodeHandler::addMergedEntries(
     }
 
     // Add a new entry to the table
-    node->getTable()->push(
-        new DataStructures::TableEntry{
+
+    std::shared_ptr<DataStructures::TableEntry> newEntry = std::make_shared<DataStructures::TableEntry>(
             previousEvaluation,
             assignments
-        }
-    );
+        );
+    node->getTable().push(newEntry);
 }
 

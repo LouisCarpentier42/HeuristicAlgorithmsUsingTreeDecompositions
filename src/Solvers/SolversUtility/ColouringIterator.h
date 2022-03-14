@@ -6,25 +6,25 @@
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_COLOURINGITERATOR_H
 
 #include "SolutionIterator.h"
-#include "../../DataStructures/Solution/ColourAssignments.h"
+#include "../../DataStructures/Solution/ColourAssignment.h"
 
 #include <set>
 
 namespace Solvers
 {
-    class ColouringIterator : public SolutionIterator<DataStructures::ColourAssignments>
+    class ColouringIterator : public SolutionIterator<DataStructures::ColourAssignment>
     {
     private:
         const int nbColours;
         const std::set<DataStructures::VertexType> verticesToConsider;
         std::set<DataStructures::VertexType> verticesToColour;
-        DataStructures::ColourAssignments colourAssignments;
+        DataStructures::ColourAssignment colourAssignments;
         int currentColourAssignmentId{0};
 
     public:
-        ColouringIterator(std::set<DataStructures::VertexType> verticesToConsider, DataStructures::Graph* graph);
+        ColouringIterator(std::set<DataStructures::VertexType> verticesToConsider, std::shared_ptr<DataStructures::Graph>& graph);
 
-        [[nodiscard]] const DataStructures::ColourAssignments getValue() const override;
+        [[nodiscard]] const DataStructures::ColourAssignment getValue() const override;
 
         [[nodiscard]] bool next() override;
     };

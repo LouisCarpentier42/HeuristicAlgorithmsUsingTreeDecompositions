@@ -43,7 +43,7 @@ int main(int argc, char** argv)
         std::string solverFile{"initial_solvers.sol"};
         std::string experimentFile{"initial_experiment.exp"};
 //        std::string experimentFile{"lewis_random_10.exp"};
-        ExperimentalAnalysis::Experiment experiment = defaultReader.readExperiment(solverFile, experimentFile);
+        std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
         ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
     }
     else if (strcmp(argv[1], "construct") == 0 || strcmp(argv[1], "construct-nice") == 0)
@@ -100,15 +100,15 @@ int main(int argc, char** argv)
                                     0.1);
                 }
 
-                DataStructures::Graph* graph = defaultReader.readGraph(tokens[0]);
-                DataStructures::NiceTreeDecomposition niceTreeDecomposition = defaultReader.readNiceTreeDecomposition(tokens[1]);
+                std::shared_ptr<DataStructures::Graph> graph = defaultReader.readGraph(tokens[0]);
+                std::shared_ptr<DataStructures::NiceTreeDecomposition> niceTreeDecomposition = defaultReader.readNiceTreeDecomposition(tokens[1]);
                 std::string colourType = IO::Reader::colourGraph("random(" + tokens[2] + "," + tokens[3] + ")", graph);
 
                 exactBruteForceSolver->solve(graph);
                 int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
-                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, &niceTreeDecomposition)};
+                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, niceTreeDecomposition)};
                 int tdColouringEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
@@ -164,20 +164,24 @@ int main(int argc, char** argv)
         if (!seed.empty())
             RNG::setRNG(std::strtoll(seed.c_str(), nullptr, 10));
 
+        auto leafNodeHandler = IO::Reader::readLeafNodeHandler(argc, argv);
+        auto introduceNodeHandler = IO::Reader::readIntroduceNodeHandler(argc, argv);
+        auto forgetNodeHandler = IO::Reader::readForgetNodeHandler(argc, argv);
+        auto joinNodeHandler = IO::Reader::readJoinNodeHandler(argc, argv);
         Solvers::HeuristicTreeDecompositionSolver solver{
             static_cast<size_t>(IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--nbSolutionsToKeep", true))),
             IO::Reader::readEvaluator(argc, argv),
-            IO::Reader::readLeafNodeHandler(argc, argv),
-            IO::Reader::readIntroduceNodeHandler(argc, argv),
-            IO::Reader::readForgetNodeHandler(argc, argv),
-            IO::Reader::readJoinNodeHandler(argc, argv)
+            leafNodeHandler,
+            introduceNodeHandler,
+            forgetNodeHandler,
+            joinNodeHandler
         };
 
-        DataStructures::Graph* graph = reader.readGraph(IO::Reader::getParameter(argc, argv, "--graphFile", true));
+        std::shared_ptr<DataStructures::Graph> graph = reader.readGraph(IO::Reader::getParameter(argc, argv, "--graphFile", true));
         std::string colourType = IO::Reader::colourGraph(argc, argv, graph);
-        DataStructures::NiceTreeDecomposition treeDecomposition = reader.readNiceTreeDecomposition(IO::Reader::getParameter(argc, argv, "--treeDecompositionFile", true));
+        std::shared_ptr<DataStructures::NiceTreeDecomposition> treeDecomposition = reader.readNiceTreeDecomposition(IO::Reader::getParameter(argc, argv, "--treeDecompositionFile", true));
 
-        solver.solve(graph, &treeDecomposition);
+        solver.solve(graph, treeDecomposition);
 
         std::cout << "Evaluation for '" << argv[2] << "': " << problemEvaluator->evaluate(graph) << "." << std::endl;
     }

@@ -7,12 +7,12 @@
 
 void Solvers::ExactTreeDecompositionRankingMHV::addSolution(
         int evaluation,
-        const DataStructures::ColourAssignments& colourAssignments,
+        const DataStructures::ColourAssignment& colourAssignments,
         const DataStructures::HappyVerticesAssignments& happyVerticesAssignments,
-        const std::vector<const DataStructures::ColourAssignments*>& previousFullColourings)
+        const std::vector<std::shared_ptr<DataStructures::ColourAssignment>>& previousFullColourings)
 {
     // Create a full colouring
-    auto* fullColouring = new DataStructures::ColourAssignments{colourAssignments.getSize()};
+    auto fullColouring = std::make_shared<DataStructures::ColourAssignment>(colourAssignments.getSize());
     for (DataStructures::VertexType vertex{0}; vertex < fullColouring->getSize(); vertex++)
     {
         if (colourAssignments.isColoured(vertex))
@@ -20,7 +20,7 @@ void Solvers::ExactTreeDecompositionRankingMHV::addSolution(
     }
 
     // Assign the colours of the previous full colourings (without overriding)
-    for (const DataStructures::ColourAssignments* previousFullColouring : previousFullColourings)
+    for (const std::shared_ptr<DataStructures::ColourAssignment>& previousFullColouring : previousFullColourings)
     {
         for (DataStructures::VertexType vertex{0}; vertex < fullColouring->getSize(); vertex++)
         {
@@ -46,13 +46,13 @@ int Solvers::ExactTreeDecompositionRankingMHV::getBestEvaluation() const
     return getBestEntry().second.first;
 }
 
-const DataStructures::ColourAssignments *Solvers::ExactTreeDecompositionRankingMHV::getBestFullColouring() const
+std::shared_ptr<DataStructures::ColourAssignment> Solvers::ExactTreeDecompositionRankingMHV::getBestFullColouring() const
 {
     return getBestEntry().second.second;
 }
 
 int Solvers::ExactTreeDecompositionRankingMHV::getEvaluation(
-        const DataStructures::ColourAssignments& colourAssignments,
+        const DataStructures::ColourAssignment& colourAssignments,
         const DataStructures::HappyVerticesAssignments& happyVerticesAssignments) const
 {
     try {
@@ -63,8 +63,8 @@ int Solvers::ExactTreeDecompositionRankingMHV::getEvaluation(
     }
 }
 
-const DataStructures::ColourAssignments* Solvers::ExactTreeDecompositionRankingMHV::getFullColouring(
-        const DataStructures::ColourAssignments& colourAssignments,
+std::shared_ptr<DataStructures::ColourAssignment> Solvers::ExactTreeDecompositionRankingMHV::getFullColouring(
+        const DataStructures::ColourAssignment& colourAssignments,
         const DataStructures::HappyVerticesAssignments& happyVerticesAssignments) const
 {
     return solutions.at({colourAssignments, happyVerticesAssignments}).second;

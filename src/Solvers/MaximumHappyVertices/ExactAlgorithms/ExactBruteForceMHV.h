@@ -13,7 +13,7 @@ namespace MaximumHappyVertices
     {
     public:
         ExactBruteForceMHV();
-        void solve(DataStructures::Graph* graph) const override;
+        void solve(std::shared_ptr<DataStructures::Graph>& graph) const override;
     };
 }
 

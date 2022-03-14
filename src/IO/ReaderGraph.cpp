@@ -4,7 +4,7 @@
 
 #include "Reader.h"
 
-DataStructures::Graph* IO::Reader::readGraph(const std::string &filename) const
+std::shared_ptr<DataStructures::Graph> IO::Reader::readGraph(const std::string &filename) const
 {
     std::ifstream file{graphFilesDir + filename};
     if (!file)
@@ -76,5 +76,5 @@ DataStructures::Graph* IO::Reader::readGraph(const std::string &filename) const
         tokens = tokenize(line);
     }
 
-    return new DataStructures::Graph{vertices};
+    return std::make_shared<DataStructures::Graph>(vertices);
 }

@@ -5,18 +5,18 @@
 #include "ConcreteJoinNodeHandlers.h"
 
 Solvers::UseChildColoursJoinNodeHandler::UseChildColoursJoinNodeHandler(
-        const Solvers::EvaluationMerger *evaluationMerger,
+        std::shared_ptr<const EvaluationMerger>& evaluationMerger,
         double percentMustBeEqual)
     : PairwiseCombineJoinHandler{evaluationMerger, percentMustBeEqual}
 { }
 
 void Solvers::UseChildColoursJoinNodeHandler::addMergedEntries(
-        DataStructures::JoinNode *node,
-        DataStructures::TableEntry *leftEntry,
-        DataStructures::TableEntry *rightEntry) const
+        std::shared_ptr<DataStructures::JoinNode>& node,
+        const std::shared_ptr<DataStructures::TableEntry>& leftEntry,
+        const std::shared_ptr<DataStructures::TableEntry>& rightEntry) const
 {
     // The colour assignments used to construct a new assignment
-    std::vector<DataStructures::ColourAssignments*> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
+    std::vector<std::shared_ptr<DataStructures::ColourAssignment>> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
 
     // The set of vertices that should be recoloured
     std::set<DataStructures::VertexType> verticesToColourSet{verticesToColour.begin(), verticesToColour.end()};
@@ -24,31 +24,33 @@ void Solvers::UseChildColoursJoinNodeHandler::addMergedEntries(
     // Merge the evaluation functions
     int mergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
 
+    // Get the colour assignments of the given entries
+    std::shared_ptr<DataStructures::ColourAssignment> leftEntryAssignments = leftEntry->getColourAssignments();
+    std::shared_ptr<DataStructures::ColourAssignment> rightEntryAssignments = rightEntry->getColourAssignments();
+
     // Insert the colour assignment in which the bag is coloured following the left entry
-    DataStructures::ColourAssignments leftExtendedAssignments
-    {
+    std::shared_ptr<DataStructures::ColourAssignment> leftExtendedAssignments = std::make_shared<DataStructures::ColourAssignment>
+    (
         node,
-        leftEntry->getColourAssignments(),
-        rightEntry->getColourAssignments()
-    };
-    node->getTable()->push(
-        new DataStructures::TableEntry{
-            evaluator->evaluate(verticesToColourSet, oldColourAssignments, &leftExtendedAssignments, graph, mergedEvaluation),
-            leftExtendedAssignments
-        }
+        leftEntryAssignments,
+        rightEntryAssignments
     );
+    std::shared_ptr<DataStructures::TableEntry> newEntryLeft = std::make_shared<DataStructures::TableEntry>(
+            evaluator->evaluate(verticesToColourSet, oldColourAssignments, leftExtendedAssignments, graph, mergedEvaluation),
+            leftExtendedAssignments
+        );
+    node->getTable().push(newEntryLeft);
 
     // Insert the colour assignment in which the bag is coloured following the right entry
-    DataStructures::ColourAssignments rightExtendedAssignments
-    {
+    std::shared_ptr<DataStructures::ColourAssignment> rightExtendedAssignments = std::make_shared<DataStructures::ColourAssignment>
+    (
         node,
-        rightEntry->getColourAssignments(),
-        leftEntry->getColourAssignments()
-    };
-    node->getTable()->push(
-        new DataStructures::TableEntry{
-            evaluator->evaluate(verticesToColourSet, oldColourAssignments, &rightExtendedAssignments, graph, mergedEvaluation),
-            rightExtendedAssignments
-        }
+        leftEntryAssignments,
+        rightEntryAssignments
     );
+    std::shared_ptr<DataStructures::TableEntry> newEntryRight = std::make_shared<DataStructures::TableEntry>(
+            evaluator->evaluate(verticesToColourSet, oldColourAssignments, rightExtendedAssignments, graph, mergedEvaluation),
+            rightExtendedAssignments
+        );
+    node->getTable().push(newEntryRight);
 }

@@ -5,7 +5,7 @@
 #include "ForgetNode.h"
 
 DataStructures::ForgetNode::ForgetNode(
-        int id, size_t size, DataStructures::BagContent bagContent, NiceNode* child, DataStructures::VertexType forgottenVertex)
+        int id, size_t size, DataStructures::BagContent bagContent, std::shared_ptr<NiceNode>& child, DataStructures::VertexType forgottenVertex)
     : IntroduceForgetNodeBase(id, size, std::move(bagContent), child, DataStructures::NodeType::ForgetNode, forgottenVertex)
 {}
 

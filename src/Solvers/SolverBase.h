@@ -8,16 +8,18 @@
 #include "../DataStructures/Evaluator/Evaluator.h"
 #include "../DataStructures/Graph/Graph.h"
 
+#include <memory>
+
 namespace Solvers
 {
     class SolverBase
     {
     public:
-        const DataStructures::Evaluator* evaluator;
+        const std::unique_ptr<DataStructures::Evaluator> evaluator;
 
-        explicit SolverBase(const DataStructures::Evaluator* evaluator) : evaluator{evaluator} {}
+        explicit SolverBase(std::unique_ptr<DataStructures::Evaluator> evaluator) : evaluator{std::move(evaluator)} {}
 
-        virtual void solve(DataStructures::Graph* graph) const = 0;
+        virtual void solve(std::shared_ptr<DataStructures::Graph>& graph) const = 0;
     };
 }
 

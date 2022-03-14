@@ -5,7 +5,7 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONMHVSOLUTIONITERATOR_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONMHVSOLUTIONITERATOR_H
 
-#include "../../../DataStructures/Solution/ColourAssignments.h"
+#include "../../../DataStructures/Solution/ColourAssignment.h"
 #include "../../../DataStructures/Solution/HappyVerticesAssignments.h"
 
 #include <set>
@@ -18,16 +18,18 @@ namespace MaximumHappyVertices
         const int nbColours;
         const std::set<DataStructures::VertexType> verticesToConsider;
         std::set<DataStructures::VertexType> verticesToColour;
-        DataStructures::ColourAssignments colourAssignments;
+        DataStructures::ColourAssignment colourAssignments;
         DataStructures::HappyVerticesAssignments happyVerticesAssignments;
 
         int currentColourAssignmentId{0};
         int currentHappinessAssignmentId{-1};
 
     public:
-        ExactTreeDecompositionMHVSolutionIterator(std::set<DataStructures::VertexType> verticesToConsider, DataStructures::Graph* graph);
+        ExactTreeDecompositionMHVSolutionIterator(
+                std::set<DataStructures::VertexType>& verticesToConsider,
+                const std::shared_ptr<DataStructures::Graph>& graph);
 
-        [[nodiscard]] const DataStructures::ColourAssignments getColourAssignments() const;
+        [[nodiscard]] const DataStructures::ColourAssignment getColourAssignments() const;
         [[nodiscard]] const DataStructures::HappyVerticesAssignments getHappyVerticesAssignments() const;
 
         [[nodiscard]] bool next();

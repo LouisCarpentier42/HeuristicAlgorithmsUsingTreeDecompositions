@@ -19,29 +19,29 @@ namespace Solvers
     {
     public:
         [[nodiscard]] int solve(
-            DataStructures::Graph* graph,
-            DataStructures::NiceTreeDecomposition* treeDecomposition
+            std::shared_ptr<DataStructures::Graph>& graph,
+            std::shared_ptr<DataStructures::NiceTreeDecomposition>& treeDecomposition
         );
         ExactTreeDecompositionRankingMHV solveAtNode(
-            DataStructures::NiceNode* node,
-            std::vector<ExactTreeDecompositionRankingMHV> rankingsChildren = {}
+            std::shared_ptr<DataStructures::NiceNode>& node,
+            const std::vector<ExactTreeDecompositionRankingMHV>& rankingsChildren = {}
         ) const;
-        virtual void setProperties(DataStructures::Graph* graph) = 0;
+        virtual void setProperties(std::shared_ptr<DataStructures::Graph>& graph) = 0;
 
     private:
         virtual Solvers::ExactTreeDecompositionRankingMHV handleLeafNode(
-            DataStructures::LeafNode* node
+            std::shared_ptr<DataStructures::LeafNode>& node
         ) const = 0;
         virtual Solvers::ExactTreeDecompositionRankingMHV handleIntroduceNode(
-            DataStructures::IntroduceNode* node,
+                std::shared_ptr<DataStructures::IntroduceNode>& node,
             const ExactTreeDecompositionRankingMHV& rankingChild
         ) const = 0;
         virtual Solvers::ExactTreeDecompositionRankingMHV handleForgetNode(
-            DataStructures::ForgetNode* node,
+            std::shared_ptr<DataStructures::ForgetNode>& node,
             const ExactTreeDecompositionRankingMHV& rankingChild
         ) const = 0;
         virtual Solvers::ExactTreeDecompositionRankingMHV handleJoinNode(
-            DataStructures::JoinNode* node,
+            std::shared_ptr<DataStructures::JoinNode>& node,
             const ExactTreeDecompositionRankingMHV& rankingLeftChild,
             const ExactTreeDecompositionRankingMHV& rankingRightChild
         ) const = 0;

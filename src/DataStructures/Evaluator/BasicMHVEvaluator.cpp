@@ -5,15 +5,15 @@
 #include <algorithm>
 #include "BasicMHVEvaluator.h"
 
-int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* graph) const
+int DataStructures::BasicMHVEvaluator::evaluate(const std::shared_ptr<Graph>& graph) const
 {
     int nbHappyVertices{0};
-    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+    for (VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
         if (!graph->isColoured(vertex)) continue;
 
         bool vertexIsHappy{true};
-        for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
+        for (VertexType neighbour : graph->getNeighbours(vertex))
         {
             if (graph->getColour(neighbour) != graph->getColour(vertex))
             {
@@ -30,29 +30,28 @@ int DataStructures::BasicMHVEvaluator::evaluate(const DataStructures::Graph* gra
 }
 
 int DataStructures::BasicMHVEvaluator::evaluate(
-        const std::set<DataStructures::VertexType>& recolouredVertices,
-        std::vector<DataStructures::ColourAssignments*> oldColourAssignments,
-        DataStructures::ColourAssignments* newColourAssignments,
-        const DataStructures::Graph* graph,
+        const std::set<VertexType>& recolouredVertices,
+        std::vector<std::shared_ptr<ColourAssignment>>& oldColourAssignments,
+        std::shared_ptr<ColourAssignment>& newColourAssignment,
+        const std::shared_ptr<Graph>& graph,
         int startEvaluation) const
 {
     int evaluation{startEvaluation};
-    std::set<DataStructures::VertexType> potentiallyChangedVertices = verticesAtDistance(1, recolouredVertices, graph);
+    std::set<VertexType> potentiallyChangedVertices = verticesAtDistance(1, recolouredVertices, graph);
 
     // Check for all vertices how their happiness has changed
-    for (DataStructures::VertexType vertex : potentiallyChangedVertices)
+    for (VertexType vertex : potentiallyChangedVertices)
     {
         // Remove the happy vertices from the old colour assignments
-        for (DataStructures::ColourAssignments* oldColourAssignment : oldColourAssignments)
+        for (std::shared_ptr<ColourAssignment>& oldColourAssignment : oldColourAssignments)
         {
             if (isHappy(vertex, oldColourAssignment, graph))
                 evaluation -= 1;
         }
 
         // Check if the vertex is happy in the new colour assignment
-        if (isHappy(vertex, newColourAssignments, graph))
+        if (isHappy(vertex, newColourAssignment, graph))
             evaluation += 1;
-
     }
 
     // Return the adjusted evaluation
@@ -60,9 +59,9 @@ int DataStructures::BasicMHVEvaluator::evaluate(
 }
 
 bool DataStructures::BasicMHVEvaluator::isHappy(
-        DataStructures::VertexType vertex,
-        DataStructures::ColourAssignments* colourAssignments,
-        const DataStructures::Graph *graph)
+        VertexType vertex,
+        std::shared_ptr<ColourAssignment>& colourAssignments,
+        const std::shared_ptr<Graph>& graph)
 {
     return (
         colourAssignments->isColoured(vertex)

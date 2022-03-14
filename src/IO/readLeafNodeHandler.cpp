@@ -5,19 +5,19 @@
 #include "Reader.h"
 #include "../Solvers/HeuristicTreeDecompositionSolver/LeafNodeHandler/ConcreteLeafNodeHandlers.h"
 
-Solvers::LeafNodeHandler* createLeafNodeHandler(std::vector<std::string> parameters)
+std::shared_ptr<Solvers::LeafNodeHandler> createLeafNodeHandler(std::vector<std::string> parameters)
 {
     if (parameters[0] == "passive")
-        return new Solvers::PassiveLeafNodeHandlers{};
+        return std::make_shared<Solvers::PassiveLeafNodeHandlers>();
     throw std::runtime_error("Invalid leaf node handler identifier is given: " + parameters[0] + "!");
 }
 
-Solvers::LeafNodeHandler* IO::Reader::readLeafNodeHandler(const std::string& str)
+std::shared_ptr<Solvers::LeafNodeHandler> IO::Reader::readLeafNodeHandler(const std::string& str)
 {
     return createLeafNodeHandler(splitParameters(str));
 }
 
-Solvers::LeafNodeHandler* IO::Reader::readLeafNodeHandler(int argc, char** argv)
+std::shared_ptr<Solvers::LeafNodeHandler> IO::Reader::readLeafNodeHandler(int argc, char** argv)
 {
     std::string leafNodeHandler = getParameter(argc, argv, "--leafNodeHandler", true);
     std::vector<std::string> parameters;

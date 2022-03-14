@@ -5,13 +5,14 @@
 #include "ExactTreeDecompositionSolverBase.h"
 
 int Solvers::ExactTreeDecompositionSolverBase::solve(
-        DataStructures::Graph* graph,
-        DataStructures::NiceTreeDecomposition* treeDecomposition)
+        std::shared_ptr<DataStructures::Graph>& graph,
+        std::shared_ptr<DataStructures::NiceTreeDecomposition>& treeDecomposition)
 {
     setProperties(graph);
-    Solvers::ExactTreeDecompositionRankingMHV rankingRoot = solveAtNode(treeDecomposition->getRoot());
+    auto root = treeDecomposition->getRoot();
+    Solvers::ExactTreeDecompositionRankingMHV rankingRoot = solveAtNode(root);
 
-    const DataStructures::ColourAssignments* bestColouring = rankingRoot.getBestFullColouring();
+    std::shared_ptr<DataStructures::ColourAssignment> bestColouring = rankingRoot.getBestFullColouring();
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
         if (!graph->isPrecoloured(vertex))
@@ -22,21 +23,24 @@ int Solvers::ExactTreeDecompositionSolverBase::solve(
 }
 
 Solvers::ExactTreeDecompositionRankingMHV Solvers::ExactTreeDecompositionSolverBase::solveAtNode(
-        DataStructures::NiceNode* node,
-        std::vector<ExactTreeDecompositionRankingMHV> rankingsChildren) const
+        std::shared_ptr<DataStructures::NiceNode>& node,
+        const std::vector<ExactTreeDecompositionRankingMHV>& rankingsChildren) const
 {
     switch(node->getNodeType())
     {
         case DataStructures::NodeType::LeafNode:
         {
-            return handleLeafNode(dynamic_cast<DataStructures::LeafNode*>(node));
+            auto leafNode = std::dynamic_pointer_cast<DataStructures::LeafNode>(node);
+            return handleLeafNode(leafNode);
         }
         case DataStructures::NodeType::IntroduceNode:
         {
-            auto* introduceNode = dynamic_cast<DataStructures::IntroduceNode*>(node);
+            auto introduceNode = std::dynamic_pointer_cast<DataStructures::IntroduceNode>(node);
             if (rankingsChildren.empty())
             {
-                return handleIntroduceNode(introduceNode,solveAtNode(introduceNode->getChild()));
+                auto child = introduceNode->getChild();
+                auto rankingChild = solveAtNode(child);
+                return handleIntroduceNode(introduceNode,rankingChild);
             }
             else
             {
@@ -45,10 +49,12 @@ Solvers::ExactTreeDecompositionRankingMHV Solvers::ExactTreeDecompositionSolverB
         }
         case DataStructures::NodeType::ForgetNode:
         {
-            auto* forgetNode = dynamic_cast<DataStructures::ForgetNode*>(node);
+            auto forgetNode = std::dynamic_pointer_cast<DataStructures::ForgetNode>(node);
             if (rankingsChildren.empty())
             {
-                return handleForgetNode(forgetNode, solveAtNode(forgetNode->getChild()));
+                auto child = forgetNode->getChild();
+                auto rankingChild = solveAtNode(child);
+                return handleForgetNode(forgetNode, rankingChild);
             }
             else
             {
@@ -57,10 +63,14 @@ Solvers::ExactTreeDecompositionRankingMHV Solvers::ExactTreeDecompositionSolverB
         }
         case DataStructures::NodeType::JoinNode:
         {
-            auto* joinNode = dynamic_cast<DataStructures::JoinNode*>(node);
+            auto joinNode = std::dynamic_pointer_cast<DataStructures::JoinNode>(node);
             if (rankingsChildren.empty())
             {
-                return handleJoinNode(joinNode, solveAtNode(joinNode->getLeftChild()), solveAtNode(joinNode->getRightChild()));
+                auto leftChild = joinNode->getLeftChild();
+                auto rightChild = joinNode->getRightChild();
+                auto rankingLeftChild = solveAtNode(leftChild);
+                auto rankingRightChild = solveAtNode(rightChild);
+                return handleJoinNode(joinNode, rankingLeftChild, rankingRightChild);
             }
             else
             {

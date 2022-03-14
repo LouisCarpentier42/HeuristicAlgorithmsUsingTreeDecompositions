@@ -6,18 +6,19 @@
 #include "../../rng.h"
 
 #include <algorithm>
+#include <memory>
 
 DataStructures::DynamicProgrammingTable::DynamicProgrammingTable(size_t capacity)
     : capacity{capacity} {}
 
-DataStructures::TableEntry* DataStructures::DynamicProgrammingTable::getBestEntry() const
+std::shared_ptr<DataStructures::TableEntry> DataStructures::DynamicProgrammingTable::getBestEntry() const
 {
     return *std::prev(entries.end());
 }
 
-DataStructures::TableEntry* DataStructures::DynamicProgrammingTable::popBestEntry()
+std::shared_ptr<DataStructures::TableEntry> DataStructures::DynamicProgrammingTable::popBestEntry()
 {
-    DataStructures::TableEntry* bestEntry = *std::prev(entries.end());
+    std::shared_ptr<DataStructures::TableEntry> bestEntry = *std::prev(entries.end());
     entries.erase(std::prev(entries.end()));
     return bestEntry;
 }
@@ -53,7 +54,7 @@ void DataStructures::DynamicProgrammingTable::clear()
     entries.clear();
 }
 
-void DataStructures::DynamicProgrammingTable::push(DataStructures::TableEntry* newEntry)
+void DataStructures::DynamicProgrammingTable::push(std::shared_ptr<DataStructures::TableEntry> newEntry)
 {
     // Check if there is already an entry with identical colour assignment
     auto iterator = entries.begin();
@@ -66,14 +67,14 @@ void DataStructures::DynamicProgrammingTable::push(DataStructures::TableEntry* n
             if ((*iterator)->getEvaluation() < newEntry->getEvaluation())
             {
                 entries.erase(iterator);
-                entries.insert(newEntry);
+                entries.insert(std::move(newEntry));
             }
             return;
         }
         iterator++;
     }
 
-    entries.insert(newEntry);
+    entries.insert(std::move(newEntry));
     if (entries.size() > capacity)
     {
         // Find the range of elements that have the worst evaluation and select a random element from it to erase
@@ -83,7 +84,7 @@ void DataStructures::DynamicProgrammingTable::push(DataStructures::TableEntry* n
             worstEntriesEnd++;
         }
         while (worstEntriesEnd != entries.end() &&
-            (*worstEntriesEnd)->getEvaluation() == (*entries.begin())->getEvaluation());
+              (*worstEntriesEnd)->getEvaluation() == (*entries.begin())->getEvaluation());
 
         std::uniform_int_distribution<> dis(0, std::distance(worstEntriesStart, worstEntriesEnd) - 1);
         std::advance(worstEntriesStart, dis(RNG::rng));
@@ -91,18 +92,27 @@ void DataStructures::DynamicProgrammingTable::push(DataStructures::TableEntry* n
     }
 }
 
-void DataStructures::DynamicProgrammingTable::referenceTable(DataStructures::DynamicProgrammingTable* other)
+void DataStructures::DynamicProgrammingTable::pop(std::shared_ptr<DataStructures::TableEntry>& entry)
 {
-    for (TableEntry* entry : other->entries)
-        push(entry);
+    entries.erase(entry);
 }
 
-std::set<DataStructures::TableEntry *>::const_iterator DataStructures::DynamicProgrammingTable::begin()
+void DataStructures::DynamicProgrammingTable::referenceTable(const DynamicProgrammingTable& other)
+{
+    for (const std::shared_ptr<TableEntry>& entry : other.entries)
+    {
+        std::shared_ptr<ColourAssignment> entryAssignments = entry->getColourAssignments(); // TODO maybe just push entryAssignments in stead of making a new one?
+        std::shared_ptr<TableEntry> newEntry = std::make_shared<TableEntry>(entry->getEvaluation(), entryAssignments);
+        push(newEntry);
+    }
+}
+
+std::set<std::shared_ptr<DataStructures::TableEntry>>::const_iterator DataStructures::DynamicProgrammingTable::begin()
 {
     return entries.begin();
 }
 
-std::set<DataStructures::TableEntry *>::const_iterator DataStructures::DynamicProgrammingTable::end()
+std::set<std::shared_ptr<DataStructures::TableEntry>>::const_iterator DataStructures::DynamicProgrammingTable::end()
 {
     return entries.end();
 }
@@ -110,7 +120,7 @@ std::set<DataStructures::TableEntry *>::const_iterator DataStructures::DynamicPr
 std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures::DynamicProgrammingTable& table)
 {
     int count{1};
-    for (DataStructures::TableEntry* entry : table.entries)
+    for (const std::shared_ptr<TableEntry>& entry : table.entries)
         out << "E(" << count++ << "): " << entry->getEvaluation() << " " << entry->getColourAssignments() << "\n";
     return out;
 }

@@ -73,8 +73,8 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h
         src/Solvers/MaximumHappyVertices/ExactTreeDecompositionRankingMHV.cpp
         src/Solvers/MaximumHappyVertices/ExactTreeDecompositionRankingMHV.h
-        src/DataStructures/Solution/ColourAssignments.cpp
-        src/DataStructures/Solution/ColourAssignments.h
+        src/DataStructures/Solution/ColourAssignment.cpp
+        src/DataStructures/Solution/ColourAssignment.h
         src/DataStructures/Solution/HappyVerticesAssignments.cpp
         src/DataStructures/Solution/HappyVerticesAssignments.h
         src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHVSolutionIterator.cpp

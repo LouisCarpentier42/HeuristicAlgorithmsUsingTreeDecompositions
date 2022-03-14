@@ -14,8 +14,7 @@
 
 namespace ExperimentalAnalysis
 {
-    void executeExperiment(IO::Reader& reader, Experiment& experiment);
-    void precolourGraph(DataStructures::Graph& graph, size_t nbColours, double percentColouredVertices);
+    void executeExperiment(IO::Reader& reader, std::shared_ptr<Experiment>& experiment);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXPERIMENTALANALYSIS_H

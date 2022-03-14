@@ -4,31 +4,33 @@
 
 #include "ConcreteIntroduceNodeHandlers.h"
 
-void Solvers::GreedyIntroduceNodeHandler::handleIntroduceNode(DataStructures::IntroduceNode* node) const
+void Solvers::GreedyIntroduceNodeHandler::handleIntroduceNode(std::shared_ptr<DataStructures::IntroduceNode>& node) const
 {
-    solver->solveAtNode(node->getChild());
+    std::shared_ptr<DataStructures::NiceNode> child = node->getChild();
+    solver->solveAtNode(child);
 
     // Nothing needs to happen for precoloured vertices
     if (graph->isPrecoloured(node->getIntroducedVertex()))
     {
-        node->getTable()->referenceTable(node->getChild()->getTable());
+        node->getTable().referenceTable(node->getChild()->getTable());
     }
     // Otherwise, the introduced vertex must be coloured
     else
     {
         // Try all possible colours for the introduced vertex in all entries and keep the best entries
-        for (DataStructures::TableEntry* entry : *node->getChild()->getTable())
+        for (const std::shared_ptr<DataStructures::TableEntry>& entry : node->getChild()->getTable())
         {
             for (DataStructures::ColourType colour{1}; colour <= graph->getNbColours(); colour++)
             {
-                DataStructures::ColourAssignments assignments{node, entry->getColourAssignments()};
-                assignments.assignColour(node->getIntroducedVertex(), colour);
-                node->getTable()->push(
-                    new DataStructures::TableEntry{
-                        evaluator->evaluate(node->getIntroducedVertex(), entry->getColourAssignments(), &assignments, graph, entry->getEvaluation()),
-                        assignments
-                    }
-                );
+                std::shared_ptr<DataStructures::ColourAssignment> entryAssignment = entry->getColourAssignments();
+                std::shared_ptr<DataStructures::ColourAssignment> assignments = std::make_shared<DataStructures::ColourAssignment>(node, entryAssignment);
+                assignments->assignColour(node->getIntroducedVertex(), colour);
+                std::shared_ptr<DataStructures::TableEntry> newEntry =
+                        std::make_shared<DataStructures::TableEntry>(
+                            evaluator->evaluate(node->getIntroducedVertex(), entryAssignment, assignments, graph, entry->getEvaluation()),
+                            assignments
+                        );
+                node->getTable().push(newEntry);
             }
         }
     }

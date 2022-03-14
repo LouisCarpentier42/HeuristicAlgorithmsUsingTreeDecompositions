@@ -6,35 +6,35 @@
 #include "../DataStructures/Evaluator/potentialHappyMHVEvaluator.h"
 #include "../DataStructures/Evaluator/GrowthMHVEvaluator.h"
 
-const DataStructures::Evaluator* createEvaluator(std::vector<std::string> parameters)
+std::shared_ptr<DataStructures::Evaluator> createEvaluator(std::vector<std::string> parameters)
 {
     if (parameters[0] == "basicMHVEvaluator")
-        return new DataStructures::BasicMHVEvaluator{};
+        return std::make_shared<DataStructures::BasicMHVEvaluator>();
     else if (parameters[0] == "potentialHappyMHVEvaluator")
-        return new DataStructures::potentialHappyMHVEvaluator{
-        IO::Reader::convertToInt(parameters[1]),
-        IO::Reader::convertToInt(parameters[2]),
-        IO::Reader::convertToInt(parameters[3])
-    };
+        return std::make_shared<DataStructures::potentialHappyMHVEvaluator>(
+            IO::Reader::convertToInt(parameters[1]),
+            IO::Reader::convertToInt(parameters[2]),
+            IO::Reader::convertToInt(parameters[3])
+        );
     else if (parameters[0] == "growthMHVEvaluator")
-        return new DataStructures::GrowthMHVEvaluator{
-        IO::Reader::convertToInt(parameters[1]),
-        IO::Reader::convertToInt(parameters[2]),
-        IO::Reader::convertToInt(parameters[3]),
-        IO::Reader::convertToInt(parameters[4]),
-        IO::Reader::convertToInt(parameters[5]),
-        IO::Reader::convertToInt(parameters[6]),
-        IO::Reader::convertToInt(parameters[7])
-    };
+        return std::make_shared<DataStructures::GrowthMHVEvaluator>(
+            IO::Reader::convertToInt(parameters[1]),
+            IO::Reader::convertToInt(parameters[2]),
+            IO::Reader::convertToInt(parameters[3]),
+            IO::Reader::convertToInt(parameters[4]),
+            IO::Reader::convertToInt(parameters[5]),
+            IO::Reader::convertToInt(parameters[6]),
+            IO::Reader::convertToInt(parameters[7])
+        );
     throw std::runtime_error("Invalid evaluator identifier is given: " + parameters[0] + "!");
 }
 
-const DataStructures::Evaluator* IO::Reader::readEvaluator(const std::string& str)
+std::shared_ptr<DataStructures::Evaluator> IO::Reader::readEvaluator(const std::string& str)
 {
     return createEvaluator(splitParameters(str));
 }
 
-const DataStructures::Evaluator* IO::Reader::readEvaluator(int argc, char** argv)
+std::shared_ptr<DataStructures::Evaluator> IO::Reader::readEvaluator(int argc, char** argv)
 {
     std::string evaluator = getParameter(argc, argv, "--evaluator", true);
     std::vector<std::string> parameters;

@@ -19,12 +19,12 @@ namespace DataStructures
     {
     private:
         const int treeWidth;
-        T* root;
+        std::shared_ptr<T> root;
 
     public:
-        TreeDecompositionTemplate(int treeWidth, T* root) : treeWidth{treeWidth}, root{root} {}
+        TreeDecompositionTemplate(int treeWidth, std::shared_ptr<T> root) : treeWidth{treeWidth}, root{root} {}
         [[nodiscard]] int getTreeWidth() const { return treeWidth; }
-        [[nodiscard]] T* getRoot() { return root; }
+        [[nodiscard]] std::shared_ptr<T> getRoot() { return root; }
     };
 
     template <typename T>

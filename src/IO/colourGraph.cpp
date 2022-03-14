@@ -5,7 +5,7 @@
 #include "Reader.h"
 #include "../rng.h"
 
-void colourGraphRandom(int nbColours, double percentColouredVertices, DataStructures::Graph* graph)
+void colourGraphRandom(int nbColours, double percentColouredVertices, std::shared_ptr<DataStructures::Graph>& graph)
 {
     std::uniform_int_distribution<DataStructures::ColourType> colourDistribution(1, nbColours);
 
@@ -22,7 +22,7 @@ void colourGraphRandom(int nbColours, double percentColouredVertices, DataStruct
         graph->setInitialColour(allVertices[i], colourDistribution(RNG::rng));
 }
 
-std::string IO::Reader::colourGraph(const std::string& str, DataStructures::Graph* graph)
+std::string IO::Reader::colourGraph(const std::string& str, std::shared_ptr<DataStructures::Graph>& graph)
 {
     std::vector<std::string> parameters = splitParameters(str);
     if (parameters[0] == "generated")
@@ -41,7 +41,7 @@ std::string IO::Reader::colourGraph(const std::string& str, DataStructures::Grap
     throw std::runtime_error("Invalid colouring identifier is given: " + str + "!");
 }
 
-std::string IO::Reader::colourGraph(int argc, char** argv, DataStructures::Graph* graph)
+std::string IO::Reader::colourGraph(int argc, char** argv, std::shared_ptr<DataStructures::Graph>& graph)
 {
     std::string colouring = getParameter(argc, argv, "--colouring", true);
     if (colouring == "random")

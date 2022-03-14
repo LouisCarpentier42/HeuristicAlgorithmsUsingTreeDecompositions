@@ -4,25 +4,24 @@
 
 #include "ConcreteLeafNodeHandlers.h"
 
-void Solvers::PassiveLeafNodeHandlers::handleLeafNode(DataStructures::LeafNode* node) const
+void Solvers::PassiveLeafNodeHandlers::handleLeafNode(std::shared_ptr<DataStructures::LeafNode>& node) const
 {
-    DataStructures::ColourAssignments assignments{graph};
+    auto assignments = std::make_shared<DataStructures::ColourAssignment>(graph);
     std::set<DataStructures::VertexType> precolouredVertices{};
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
         if (graph->isPrecoloured(vertex))
         {
-            assignments.assignColour(vertex, graph->getColour(vertex));
+            assignments->assignColour(vertex, graph->getColour(vertex));
             precolouredVertices.insert(precolouredVertices.end(), vertex);
         }
     }
 
-    auto* noColours = new DataStructures::ColourAssignments{graph};
-    node->getTable()->push(
-        new DataStructures::TableEntry{
-            evaluator->evaluate(precolouredVertices, noColours, &assignments, graph, 0),
-            assignments
-        }
-    );
-    delete noColours;
+    std::shared_ptr<DataStructures::ColourAssignment> noColours = std::make_shared<DataStructures::ColourAssignment>(graph);
+    std::shared_ptr<DataStructures::TableEntry> newEntry =
+            std::make_shared<DataStructures::TableEntry>(
+                evaluator->evaluate(precolouredVertices, noColours, assignments, graph, 0),
+                assignments
+            );
+    node->getTable().push(newEntry);
 }

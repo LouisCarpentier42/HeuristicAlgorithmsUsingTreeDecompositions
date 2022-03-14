@@ -14,7 +14,7 @@ namespace DataStructures
     public:
         StandardNode(int id, size_t size, BagContent bagContent);
 
-        void addChild(StandardNode* child);
+        void addChild(std::shared_ptr<StandardNode>& child);
     };
 }
 

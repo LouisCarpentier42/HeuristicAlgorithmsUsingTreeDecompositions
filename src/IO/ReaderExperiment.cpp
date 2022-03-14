@@ -8,8 +8,7 @@
 #include "../Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h"
 
 
-
-ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const
+std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const
 {
     std::ifstream solverFile{experimentFilesDir + solversFilename};
     if (!solverFile)
@@ -23,10 +22,10 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
         throw std::runtime_error("Can't read '" + experimentsFilename + "' because the file can't be opened!");
     }
 
-    Solvers::ExactTreeDecompositionSolverBase* exactTreeDecompositionSolver{};
-    DataStructures::Evaluator* evaluator{};
-    std::map<std::string, Solvers::SolverBase*> baselines{};
-    std::map<std::string, Solvers::HeuristicTreeDecompositionSolver*> treeDecompositionSolvers{};
+    std::unique_ptr<Solvers::ExactTreeDecompositionSolverBase> exactTreeDecompositionSolver{};
+    std::unique_ptr<DataStructures::Evaluator> evaluator{};
+    std::map<std::string, std::shared_ptr<Solvers::SolverBase>> baselines{};
+    std::map<std::string, std::shared_ptr<Solvers::HeuristicTreeDecompositionSolver>> treeDecompositionSolvers{};
     size_t nbRepetitionsPerInstance{1};
     while (solverFile)
     {
@@ -40,8 +39,8 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
                 throw std::runtime_error("An experiment can only have 1 problem!");
             else if (tokens[1] == "MaximumHappyVertices")
             {
-                exactTreeDecompositionSolver = new MaximumHappyVertices::ExactTreeDecompositionMHV{};
-                evaluator = new DataStructures::BasicMHVEvaluator{};
+                exactTreeDecompositionSolver = std::make_unique<MaximumHappyVertices::ExactTreeDecompositionMHV>();
+                evaluator = std::make_unique<DataStructures::BasicMHVEvaluator>();
             }
         }
         else if (tokens[0] == "nbRepetitions")
@@ -51,22 +50,26 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
         else if (tokens[0] == "baseline")
         {
             if (tokens[1] == "greedyMHV")
-                baselines["greedy-mhv"] = new MaximumHappyVertices::GreedyMHV{};
+                baselines["greedy-mhv"] = std::make_shared<MaximumHappyVertices::GreedyMHV>();
             else if (tokens[1] == "growthMHV")
-                baselines["growth-mhv"] = new MaximumHappyVertices::GrowthMHV{};
+                baselines["growth-mhv"] = std::make_shared<MaximumHappyVertices::GrowthMHV>();
             else
                 throw std::runtime_error("Invalid baseline given " + tokens[1] + "!");
         }
         else if (tokens[0] == "heuristicTD")
         {
-            treeDecompositionSolvers[tokens[1]] = new Solvers::HeuristicTreeDecompositionSolver{
+            auto leafNodeHandler = readLeafNodeHandler(tokens[4]);
+            auto introduceNodeHandler = readIntroduceNodeHandler(tokens[5]);
+            auto forgetNodeHandler = readForgetNodeHandler(tokens[6]);
+            auto joinNodeHandler = readJoinNodeHandler(tokens[7]);
+            treeDecompositionSolvers[tokens[1]] = std::make_shared<Solvers::HeuristicTreeDecompositionSolver>(
                 static_cast<size_t>(convertToInt(tokens[2])),
                 readEvaluator(tokens[3]),
-                readLeafNodeHandler(tokens[4]),
-                readIntroduceNodeHandler(tokens[5]),
-                readForgetNodeHandler(tokens[6]),
-                readJoinNodeHandler(tokens[7]),
-            };
+                leafNodeHandler,
+                introduceNodeHandler,
+                forgetNodeHandler,
+                joinNodeHandler
+            );
         }
         else
         {
@@ -83,7 +86,7 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
         if (tokens.empty() || tokens[0] == "c") continue;
         else if (tokens[0] == "experiment")
         {
-            DataStructures::Graph* graph = readGraph(tokens[1]);
+            std::shared_ptr<DataStructures::Graph> graph = readGraph(tokens[1]);
             if (tokens.size() == 4)
             {
                 testInstances.push_back(
@@ -135,15 +138,13 @@ ExperimentalAnalysis::Experiment IO::Reader::readExperiment(const std::string& s
     std::string resultFile = resultFilesDir;
     resultFile.append(experimentsFilename.substr(0, experimentsFilename.size()-4));
 
-    return ExperimentalAnalysis::Experiment{
+    return std::make_shared<ExperimentalAnalysis::Experiment>(
         resultFile,
-        exactTreeDecompositionSolver,
-        evaluator,
+        std::move(exactTreeDecompositionSolver),
+        std::move(evaluator),
         baselines,
         treeDecompositionSolvers,
         testInstances,
         nbRepetitionsPerInstance
-    };
+    );
 }
-
-

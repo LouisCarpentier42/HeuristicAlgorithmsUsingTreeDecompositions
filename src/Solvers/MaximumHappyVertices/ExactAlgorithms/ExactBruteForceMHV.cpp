@@ -7,10 +7,10 @@
 #include "../../SolversUtility/ColouringIterator.h"
 
 MaximumHappyVertices::ExactBruteForceMHV::ExactBruteForceMHV()
-    : SolverBase{new DataStructures::BasicMHVEvaluator{}}
+    : SolverBase{std::make_unique<DataStructures::BasicMHVEvaluator>()}
 { }
 
-void MaximumHappyVertices::ExactBruteForceMHV::solve(DataStructures::Graph* graph) const
+void MaximumHappyVertices::ExactBruteForceMHV::solve(std::shared_ptr<DataStructures::Graph>& graph) const
 {
     std::set<DataStructures::VertexType> verticesToConsider{};
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
@@ -20,7 +20,7 @@ void MaximumHappyVertices::ExactBruteForceMHV::solve(DataStructures::Graph* grap
     int bestEvaluation{-1};
     std::vector<DataStructures::ColourType> colours(graph->getNbVertices(), 0);
     do {
-        DataStructures::ColourAssignments colourAssignments = iterator.getValue();
+        DataStructures::ColourAssignment colourAssignments = iterator.getValue();
         for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
             graph->setColour(vertex, colourAssignments.getColour(vertex));
 

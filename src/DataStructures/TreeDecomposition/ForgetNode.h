@@ -13,7 +13,7 @@ namespace DataStructures
     class ForgetNode : public IntroduceForgetNodeBase
     {
     public:
-        ForgetNode(int id, size_t size, BagContent bagContent, NiceNode* child, VertexType forgottenVertex);
+        ForgetNode(int id, size_t size, BagContent bagContent, std::shared_ptr<NiceNode>& child, VertexType forgottenVertex);
 
         [[nodiscard]] DataStructures::VertexType getForgottenVertex() const;
 

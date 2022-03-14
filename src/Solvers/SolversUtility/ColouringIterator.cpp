@@ -8,7 +8,7 @@
 
 Solvers::ColouringIterator::ColouringIterator(
         std::set<DataStructures::VertexType> verticesToConsider,
-        DataStructures::Graph* graph)
+        std::shared_ptr<DataStructures::Graph>& graph)
     : nbColours{static_cast<int>(graph->getNbColours())},
       verticesToConsider{std::move(verticesToConsider)},
       verticesToColour{},
@@ -28,7 +28,7 @@ Solvers::ColouringIterator::ColouringIterator(
     }
 }
 
-const DataStructures::ColourAssignments Solvers::ColouringIterator::getValue() const
+const DataStructures::ColourAssignment Solvers::ColouringIterator::getValue() const
 {
     return colourAssignments;
 }

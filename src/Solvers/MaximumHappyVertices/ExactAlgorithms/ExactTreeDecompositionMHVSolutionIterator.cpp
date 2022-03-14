@@ -7,8 +7,8 @@
 #include <cmath>
 
 MaximumHappyVertices::ExactTreeDecompositionMHVSolutionIterator::ExactTreeDecompositionMHVSolutionIterator(
-        std::set<DataStructures::VertexType> verticesToConsider,
-        DataStructures::Graph* graph)
+        std::set<DataStructures::VertexType>& verticesToConsider,
+        const std::shared_ptr<DataStructures::Graph>& graph)
     : nbColours{static_cast<int>(graph->getNbColours())},
       verticesToConsider{std::move(verticesToConsider)},
       verticesToColour{},
@@ -29,7 +29,7 @@ MaximumHappyVertices::ExactTreeDecompositionMHVSolutionIterator::ExactTreeDecomp
     }
 }
 
-const DataStructures::ColourAssignments MaximumHappyVertices::ExactTreeDecompositionMHVSolutionIterator::getColourAssignments() const
+const DataStructures::ColourAssignment MaximumHappyVertices::ExactTreeDecompositionMHVSolutionIterator::getColourAssignments() const
 {
     return colourAssignments;
 }

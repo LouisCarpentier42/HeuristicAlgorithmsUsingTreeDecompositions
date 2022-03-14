@@ -44,24 +44,24 @@ namespace IO
         );
 
         void readG6File(const std::string& filename) const;
-        [[nodiscard]] DataStructures::Graph* readGraph(const std::string& filename) const;
-        [[nodiscard]] DataStructures::TreeDecomposition readTreeDecomposition(const std::string& filename) const;
-        [[nodiscard]] DataStructures::NiceTreeDecomposition readNiceTreeDecomposition(const std::string& filename) const;
-        [[nodiscard]] ExperimentalAnalysis::Experiment readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const;
+        [[nodiscard]] std::shared_ptr<DataStructures::Graph> readGraph(const std::string& filename) const;
+        [[nodiscard]] std::shared_ptr<DataStructures::TreeDecomposition> readTreeDecomposition(const std::string& filename) const;
+        [[nodiscard]] std::shared_ptr<DataStructures::NiceTreeDecomposition> readNiceTreeDecomposition(const std::string& filename) const;
+        [[nodiscard]] std::shared_ptr<ExperimentalAnalysis::Experiment> readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const;
 
-        [[nodiscard]] static const DataStructures::Evaluator* readEvaluator(const std::string& str);
-        [[nodiscard]] static const DataStructures::Evaluator* readEvaluator(int argc, char** argv);
-        [[nodiscard]] static Solvers::LeafNodeHandler* readLeafNodeHandler(const std::string& str);
-        [[nodiscard]] static Solvers::LeafNodeHandler* readLeafNodeHandler(int argc, char** argv);
-        [[nodiscard]] static Solvers::IntroduceNodeHandler* readIntroduceNodeHandler(const std::string& str);
-        [[nodiscard]] static Solvers::IntroduceNodeHandler* readIntroduceNodeHandler(int argc, char** argv);
-        [[nodiscard]] static Solvers::ForgetNodeHandler* readForgetNodeHandler(const std::string& str);
-        [[nodiscard]] static Solvers::ForgetNodeHandler* readForgetNodeHandler(int argc, char** argv);
-        [[nodiscard]] static Solvers::JoinNodeHandler* readJoinNodeHandler(const std::string& str);
-        [[nodiscard]] static Solvers::JoinNodeHandler* readJoinNodeHandler(int argc, char** argv);
-        [[nodiscard]] static Solvers::EvaluationMerger* getEvaluationMerger(const std::string& str);
-        [[nodiscard]] static std::string colourGraph(const std::string& str, DataStructures::Graph* graph);
-        [[nodiscard]] static std::string colourGraph(int argc, char** argv, DataStructures::Graph* graph);
+        [[nodiscard]] static std::shared_ptr<DataStructures::Evaluator> readEvaluator(const std::string& str);
+        [[nodiscard]] static std::shared_ptr<DataStructures::Evaluator> readEvaluator(int argc, char** argv);
+        [[nodiscard]] static std::shared_ptr<Solvers::LeafNodeHandler> readLeafNodeHandler(const std::string& str);
+        [[nodiscard]] static std::shared_ptr<Solvers::LeafNodeHandler> readLeafNodeHandler(int argc, char** argv);
+        [[nodiscard]] static std::shared_ptr<Solvers::IntroduceNodeHandler> readIntroduceNodeHandler(const std::string& str);
+        [[nodiscard]] static std::shared_ptr<Solvers::IntroduceNodeHandler> readIntroduceNodeHandler(int argc, char** argv);
+        [[nodiscard]] static std::shared_ptr<Solvers::ForgetNodeHandler> readForgetNodeHandler(const std::string& str);
+        [[nodiscard]] static std::shared_ptr<Solvers::ForgetNodeHandler> readForgetNodeHandler(int argc, char** argv);
+        [[nodiscard]] static std::shared_ptr<Solvers::JoinNodeHandler> readJoinNodeHandler(const std::string& str);
+        [[nodiscard]] static std::shared_ptr<Solvers::JoinNodeHandler> readJoinNodeHandler(int argc, char** argv);
+        [[nodiscard]] static std::shared_ptr<const Solvers::EvaluationMerger> getEvaluationMerger(const std::string& str);
+        [[nodiscard]] static std::string colourGraph(const std::string& str, std::shared_ptr<DataStructures::Graph>& graph);
+        [[nodiscard]] static std::string colourGraph(int argc, char** argv, std::shared_ptr<DataStructures::Graph>& graph);
 
         static std::string getParameter(int argc, char** argv, const std::string& paramName, bool isObligatedParam);
         static std::vector<std::string> tokenize(const std::string& line);

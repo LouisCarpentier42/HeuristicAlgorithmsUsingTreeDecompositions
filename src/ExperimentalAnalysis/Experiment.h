@@ -16,7 +16,7 @@ namespace ExperimentalAnalysis
 {
     struct TestInstance
     {
-        DataStructures::Graph* graph;
+        std::shared_ptr<DataStructures::Graph> graph;
         const std::string graphName;
         const std::string treeDecompositionName;
         const std::string colourGeneration;
@@ -26,13 +26,30 @@ namespace ExperimentalAnalysis
 
     struct Experiment
     {
+        Experiment(
+                std::string& resultFileName,
+                std::unique_ptr<Solvers::ExactTreeDecompositionSolverBase> exactTreeDecompositionSolver,
+                std::unique_ptr<DataStructures::Evaluator> evaluator,
+                std::map<std::string, std::shared_ptr<Solvers::SolverBase>>& baselines,
+                std::map<std::string, std::shared_ptr<Solvers::HeuristicTreeDecompositionSolver>>& treeDecompositionSolvers,
+                std::vector<TestInstance>& testInstances,
+                size_t nbRepetitionsPerInstance)
+            : resultFileName(resultFileName),
+              exactTreeDecompositionSolver(std::move(exactTreeDecompositionSolver)),
+              evaluator(std::move(evaluator)),
+              baselines(baselines),
+              treeDecompositionSolvers(treeDecompositionSolvers),
+              testInstances(testInstances),
+              nbRepetitionsPerInstance(nbRepetitionsPerInstance)
+        {}
+
         const std::string resultFileName{};
-        Solvers::ExactTreeDecompositionSolverBase* exactTreeDecompositionSolver{};
-        const DataStructures::Evaluator* evaluator{};
-        const std::map<std::string, Solvers::SolverBase*> baselines{};
-        const std::map<std::string, Solvers::HeuristicTreeDecompositionSolver*> treeDecompositionSolvers{};
-        const std::vector<TestInstance> testInstances{};
-        const size_t nbRepetitionsPerInstance;
+        std::unique_ptr<Solvers::ExactTreeDecompositionSolverBase> exactTreeDecompositionSolver{};
+        std::unique_ptr<DataStructures::Evaluator> evaluator{};
+        const std::map<std::string, std::shared_ptr<Solvers::SolverBase>> baselines{};
+        const std::map<std::string, std::shared_ptr<Solvers::HeuristicTreeDecompositionSolver>> treeDecompositionSolvers{};
+        std::vector<TestInstance> testInstances{};
+        const size_t nbRepetitionsPerInstance{};
     };
 }
 
