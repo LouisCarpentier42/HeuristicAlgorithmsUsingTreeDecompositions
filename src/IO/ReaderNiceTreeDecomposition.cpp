@@ -4,16 +4,6 @@
 
 #include "Reader.h"
 
-bool containSameElements(DataStructures::BagContent& bag1, DataStructures::BagContent& bag2)
-{
-    if (bag1.size() != bag2.size()) return false;
-    return std::all_of(
-            bag1.begin(),
-            bag1.end(),
-            [bag2](DataStructures::VertexType vertex){ return std::find(bag2.begin(), bag2.end(), vertex) != bag2.end(); }
-        );
-}
-
 std::shared_ptr<DataStructures::NiceNode> transformToNiceBag(const std::shared_ptr<DataStructures::Node>& bag)
 {
     if (bag->isLeaf())
@@ -30,17 +20,18 @@ std::shared_ptr<DataStructures::NiceNode> transformToNiceBag(const std::shared_p
 
         if (bag->getBagSize() + 1 == child->getBagSize()) // Forget node
         {
-            std::vector<DataStructures::VertexType> forgottenVertex{};
-            for (DataStructures::VertexType vertex : childContent)
-            {
-                if (std::find(parentContent.begin(), parentContent.end(), vertex) == parentContent.end())
-                {
-                    forgottenVertex.push_back(vertex);
-                }
-                if (forgottenVertex.size() > 1) throw std::invalid_argument("Only one vertex can be forgotten in a forget node!");
-            }
+            DataStructures::VertexType forgottenVertex;
 
-            if (forgottenVertex.empty()) throw std::invalid_argument("A vertex must be forgotten in forget node!");
+            for (auto itParent = parentContent.begin(), itChild = childContent.begin();
+                 /* condition redundant */;
+                 itParent++, itChild++)
+            {
+                if (*itParent != *itChild)
+                {
+                    forgottenVertex = *itChild;
+                    break;
+                }
+            }
 
             auto niceChildForget = transformToNiceBag(child);
             return std::make_shared<DataStructures::ForgetNode>(
@@ -48,22 +39,22 @@ std::shared_ptr<DataStructures::NiceNode> transformToNiceBag(const std::shared_p
                 bag->getBagSize(),
                 bag->getBagContent(),
                 niceChildForget,
-                forgottenVertex[0]
+                forgottenVertex
             );
         }
         else if (bag->getBagSize() == child->getBagSize() + 1) // Introduce node
         {
-            std::vector<DataStructures::VertexType> introducedVertex;
-            for (DataStructures::VertexType vertex : parentContent)
+            DataStructures::VertexType introducedVertex;
+            for (auto itParent = parentContent.begin(), itChild = childContent.begin();
+                 /* condition redundant */;
+                 itParent++, itChild++)
             {
-                if (std::find(childContent.begin(), childContent.end(), vertex) == childContent.end())
+                if (*itParent != *itChild)
                 {
-                    introducedVertex.push_back(vertex);
+                    introducedVertex = *itParent;
+                    break;
                 }
-                if (introducedVertex.size() > 1) throw std::invalid_argument("Only one vertex can be introduced in an introduce node!");
             }
-
-            if (introducedVertex.empty()) throw std::invalid_argument("A vertex must be introduced in an introduce node!");
 
             auto niceChildIntroduce = transformToNiceBag(child);
             return std::make_shared<DataStructures::IntroduceNode>(
@@ -71,7 +62,7 @@ std::shared_ptr<DataStructures::NiceNode> transformToNiceBag(const std::shared_p
                 bag->getBagSize(),
                 bag->getBagContent(),
                 niceChildIntroduce,
-                introducedVertex[0]
+                introducedVertex
             );
         }
         else
@@ -85,35 +76,17 @@ std::shared_ptr<DataStructures::NiceNode> transformToNiceBag(const std::shared_p
         std::shared_ptr<DataStructures::Node> leftChild = *bag->beginChildrenIterator();
         std::shared_ptr<DataStructures::Node> rightChild = *(bag->beginChildrenIterator()+1);
 
-        DataStructures::BagContent parentContent = bag->getBagContent();
-        DataStructures::BagContent leftChildContent = leftChild->getBagContent();
-        DataStructures::BagContent rightChildContent = rightChild->getBagContent();
-
-        if (!containSameElements(parentContent, leftChildContent) ||
-            !containSameElements(parentContent, rightChildContent))
-        {
-            std::cout << "ID parent: " << bag->getId() << '\n';
-            std::cout << "Content parent: ";
-            for (auto x : parentContent)
-                std::cout << x << " ";
-            std::cout << "\n";
-
-            std::cout << "ID left: " << leftChild->getId() << '\n';
-            std::cout << "Content left: ";
-            for (auto x : leftChildContent)
-                std::cout << x << " ";
-            std::cout << "\n";
-
-            std::cout << "ID right: " << rightChild->getId() << '\n';
-            std::cout << "Content right: ";
-            for (auto x : rightChildContent)
-                std::cout << x << " ";
-            std::cout << "\n";
-
-
-
-            throw std::invalid_argument("Children of a join bag must have the same content as the parent bag!");
-        }
+//        // Check if the bags have the same content
+//        DataStructures::BagContent parentContent = bag->getBagContent();
+//        DataStructures::BagContent leftChildContent = leftChild->getBagContent();
+//        DataStructures::BagContent rightChildContent = rightChild->getBagContent();
+//        for (auto itParent = parentContent.begin(), itLeftChild = leftChildContent.begin(), itRightChild = rightChildContent.begin();
+//             itParent != parentContent.end() && itLeftChild != leftChildContent.end() && itRightChild != rightChildContent.end();
+//             itParent++, itLeftChild++, itRightChild++)
+//        {
+//            if (!(*itParent == *itLeftChild && *itParent == *itRightChild))
+//                throw std::invalid_argument("Children of a join bag must have the same content as the parent bag!");
+//        }
 
         auto niceLeftChildJoin = transformToNiceBag(leftChild);
         auto niceRightChildJoin = transformToNiceBag(rightChild);

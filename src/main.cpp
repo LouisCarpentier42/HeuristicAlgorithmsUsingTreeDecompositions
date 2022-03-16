@@ -12,9 +12,11 @@
 
 #include <cstring>
 
-//  valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./HeuristicAlgorithmsUsingTreeDecompositions
+// valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./HeuristicAlgorithmsUsingTreeDecompositions
+// valgrind --tool=callgrind ./HeuristicAlgorithmsUsingTreeDecompositions
 int main(int argc, char** argv)
 {
+    RNG::setRNG(1);
     std::string defaultRootDir = IO::Reader::getParameter(argc, argv, "--rootDir", false);
     if (defaultRootDir.empty())
         defaultRootDir = "../../";
@@ -40,11 +42,22 @@ int main(int argc, char** argv)
 
     if (argc == 1)
     {
+//        auto flowCutter = ConstructTreeDecompositions::ConstructionAlgorithm::FlowCutter;
+//        std::string file = defaultConstructor.construct(flowCutter, "thesis_graph.gr", 0.5);
+//        auto td = defaultReader.readNiceTreeDecomposition(file);
+//        std::cout << *td << "\n";
+
         std::string solverFile{"initial_solvers.sol"};
-        std::string experimentFile{"initial_experiment.exp"};
-//        std::string experimentFile{"lewis_random_10.exp"};
+//        std::string experimentFile{"initial_experiment.exp"};
+        std::string experimentFile{"lewis_random_10.exp"};
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
-        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
+//        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
+
+        for (ExperimentalAnalysis::TestInstance& testInstance : experiment->testInstances)
+        {
+            auto td = defaultReader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
+            break;
+        }
     }
     else if (strcmp(argv[1], "construct") == 0 || strcmp(argv[1], "construct-nice") == 0)
     {

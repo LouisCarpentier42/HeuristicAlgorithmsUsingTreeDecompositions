@@ -26,6 +26,14 @@ problem MaximumHappyVertices
 baseline greedyMHV
 baseline growthMHV
 nbRepetitions 1
-heuristicTD basic 8 basicMHVEvaluator passive bestColour bestColour staticOrder(avg,0.01,gdf)
+c heuristicTD staticOrderGdf 16 basicMHVEvaluator passive bestColour bestColour staticOrder(avg,0.01,gdf)
+heuristicTD dynamicOrderMostColNeigh 16 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,mostColouredNeighbours)
+c heuristicTD greedyColourBag 16 basicMHVEvaluator passive bestColour bestColour greedyColourBag(avg,0.01)
+c heuristicTD growthColourBag 16 basicMHVEvaluator passive bestColour bestColour growthColourBag(avg,0.01)
+c heuristicTD useChildColours 16 basicMHVEvaluator passive bestColour bestColour useChildColours(avg,0.01)
+
+
+c heuristicTD bestColour16 16 basicMHVEvaluator passive bestColour bestColour greedyColourBag(avg,0.01)
+c heuristicTD bestColour32 32 basicMHVEvaluator passive bestColour bestColour greedyColourBag(avg,0.01)
 c heuristicTD potential 16 potentialHappyMHVEvaluator(6,2,-1) passive bestColour bestColour staticOrder(avg,0.01,gdf)
 c heuristicTD growth 16 growthMHVEvaluator(6,-1,4,2,2,-1,0) passive bestColour bestColour staticOrder(avg,0.01,gdf)

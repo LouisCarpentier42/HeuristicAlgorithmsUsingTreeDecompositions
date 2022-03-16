@@ -31,6 +31,11 @@ void Solvers::PairwiseCombineJoinHandler::handleJoinNode(std::shared_ptr<DataStr
 
     setVerticesToColour(node);
 
+    bool addedAnEntry{false};
+    int backupSimilarity = -1;
+    const std::shared_ptr<DataStructures::TableEntry>* backupLeftEntry;
+    const std::shared_ptr<DataStructures::TableEntry>* backupRightEntry;
+
     int nbThatMustBeEqual{static_cast<int>(std::ceil(node->getBagSize() * percentMustBeEqual))};
     for (const std::shared_ptr<DataStructures::TableEntry>& leftEntry : node->getLeftChild()->getTable())
     {
@@ -48,9 +53,21 @@ void Solvers::PairwiseCombineJoinHandler::handleJoinNode(std::shared_ptr<DataStr
             }
             if (nbEqualColouredVertices >= nbThatMustBeEqual)
             {
+                addedAnEntry = true;
                 addMergedEntries(node, leftEntry, rightEntry);
             }
+            else if (nbEqualColouredVertices > backupSimilarity)
+            {
+                backupSimilarity = nbEqualColouredVertices;
+                backupLeftEntry = &leftEntry;
+                backupRightEntry = &rightEntry;
+            }
         }
+    }
+
+    if (!addedAnEntry)
+    {
+        addMergedEntries(node, *backupLeftEntry, *backupRightEntry);
     }
 }
 

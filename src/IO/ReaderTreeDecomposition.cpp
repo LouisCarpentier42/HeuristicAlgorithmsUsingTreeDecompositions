@@ -33,8 +33,6 @@ std::shared_ptr<DataStructures::TreeDecomposition> IO::Reader::readTreeDecomposi
     int nbVertices{convertToInt(tokens[4])};
 
     std::vector<std::shared_ptr<DataStructures::StandardNode>> bags(nbBags);
-    std::vector<std::pair<std::shared_ptr<DataStructures::StandardNode>, std::shared_ptr<DataStructures::StandardNode>>> edges(nbBags-1);
-
     std::getline(file, line);
     tokens = tokenize(line);
     while (file && (line[0] == 'b' || line[0] == 'c'))
@@ -42,33 +40,26 @@ std::shared_ptr<DataStructures::TreeDecomposition> IO::Reader::readTreeDecomposi
         if (tokens[0] != "c") {
             int bagId{convertToInt(tokens[1])};
             size_t bagSize{tokens.size()-2}; // Minus 2 because first token is 'b' and second token is bag id
-            std::set<DataStructures::VertexType> vertices{};
+            DataStructures::BagContent content{};
             for (int i = 2; i < tokens.size(); i++)
             {
-                vertices.insert(convertToInt(tokens[i])-1);
+                content.insert(convertToInt(tokens[i]) - 1);
             }
-            bags[bagId-1] = std::make_shared<DataStructures::StandardNode>(bagId, bagSize, vertices);
-        }
-        else if (rootId == -1 && tokens[1] == "ROOT_NICE_TREE") // From previous if we know (tokens[0] == "c")
-        {
-            rootId = convertToInt(tokens[2]);
+            bags[bagId-1] = std::make_shared<DataStructures::StandardNode>(bagId, bagSize, content);
         }
         std::getline(file, line);
         tokens = tokenize(line);
     }
 
+    std::vector<std::set<int>> edges(nbBags);
     while (file) {
         if (!(tokens.empty() || tokens[0] == "c")){
-            edges.emplace_back(
-                    bags[convertToInt(tokens[0])-1],
-                    bags[convertToInt(tokens[1])-1]
-                    );
-        }
-        else if (rootId == -1 && tokens[0] == "c" && tokens[1] == "ROOT_NICE_TREE")
-        {
-            rootId = convertToInt(tokens[2]);
-        }
+            int id1 = convertToInt(tokens[0])-1;
+            int id2 = convertToInt(tokens[1])-1;
 
+            edges[id1].insert(id2);
+            edges[id2].insert(id1);
+        }
         std::getline(file, line);
         tokens = tokenize(line);
     }
@@ -99,25 +90,17 @@ std::shared_ptr<DataStructures::TreeDecomposition> IO::Reader::readTreeDecomposi
 
     std::queue<std::shared_ptr<DataStructures::StandardNode>> bagsToProcess{};
     bagsToProcess.push(root);
-    std::vector<std::shared_ptr<DataStructures::StandardNode>> parents(bags.size() + 1, nullptr);
+//    std::vector<std::shared_ptr<DataStructures::StandardNode>> parents(bags.size() + 1, nullptr);
     while (!bagsToProcess.empty()) {
         std::shared_ptr<DataStructures::StandardNode> bagBeingProcessed{bagsToProcess.front()};
-        for (std::pair<std::shared_ptr<DataStructures::StandardNode>, std::shared_ptr<DataStructures::StandardNode>> edge : edges) {
-            if (bagBeingProcessed == edge.first) {
-                if (parents[bagBeingProcessed->getId()] != edge.second) {
-                    bagBeingProcessed->addChild(edge.second);
-                    bagsToProcess.push(edge.second);
-                    parents[edge.second->getId()] = bagBeingProcessed;
-                }
-            }
-            else if (bagBeingProcessed == edge.second) {
-                if (parents[bagBeingProcessed->getId()] != edge.first) {
-                    bagBeingProcessed->addChild(edge.first);
-                    bagsToProcess.push(edge.first);
-                    parents[edge.first->getId()] = bagBeingProcessed;
-                }
-            }
+        int bagBeingProcessedId{bagBeingProcessed->getId() - 1};
+        for (int otherBagId : edges[bagBeingProcessedId])
+        {
+            bagBeingProcessed->addChild(bags[otherBagId]);
+            bagsToProcess.push(bags[otherBagId]);
+            edges[otherBagId].erase(bagBeingProcessedId);
         }
+        edges[bagBeingProcessedId].clear();
         bagsToProcess.pop();
     }
     return std::make_shared<DataStructures::TreeDecomposition>(largestBagSize-1, root);

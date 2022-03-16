@@ -5,15 +5,15 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONRANKINGMHV_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONRANKINGMHV_H
 
-#include "../../DataStructures/Solution/ColourAssignment.h"
-#include "../../DataStructures/Solution/HappyVerticesAssignments.h"
+#include "../../../DataStructures/Solution/ColourAssignment.h"
+#include "../../../DataStructures/Solution/HappyVerticesAssignments.h"
 
 #include <limits>
 #include <map>
 
 namespace Solvers
 {
-    class ExactTreeDecompositionRankingMHV // TODO move to exact MHV algorithms dir
+    class ExactTreeDecompositionRankingMHV
     {
     public:
         static const int NEGATIVE_INFINITY = std::numeric_limits<int>::min();

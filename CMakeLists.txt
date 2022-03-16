@@ -71,8 +71,8 @@ add_executable(HeuristicAlgorithmsUsingTreeDecompositions
         src/Solvers/HeuristicTreeDecompositionSolver/JoinNodeHandler/EvaluationMerger.h
         src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.cpp
         src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h
-        src/Solvers/MaximumHappyVertices/ExactTreeDecompositionRankingMHV.cpp
-        src/Solvers/MaximumHappyVertices/ExactTreeDecompositionRankingMHV.h
+        src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionRankingMHV.cpp
+        src/Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionRankingMHV.h
         src/DataStructures/Solution/ColourAssignment.cpp
         src/DataStructures/Solution/ColourAssignment.h
         src/DataStructures/Solution/HappyVerticesAssignments.cpp
