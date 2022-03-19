@@ -14,11 +14,11 @@ Solvers::PairwiseCombineJoinHandler::PairwiseCombineJoinHandler(
 void Solvers::PairwiseCombineJoinHandler::setVerticesToColour(std::shared_ptr<DataStructures::JoinNode>& node)
 {
     verticesToColour.clear();
-    verticesToColour.resize(node->getBagSize());
     for (DataStructures::VertexType vertex : node->getBagContent())
     {
         if (!graph->isPrecoloured(vertex))
-            verticesToColour.push_back(vertex);
+            // At the end because bag is also sorted set
+            verticesToColour.emplace_hint(verticesToColour.end(), vertex);
     }
 }
 

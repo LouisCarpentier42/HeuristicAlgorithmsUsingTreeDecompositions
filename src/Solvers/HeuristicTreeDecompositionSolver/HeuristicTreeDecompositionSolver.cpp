@@ -34,14 +34,6 @@ void Solvers::HeuristicTreeDecompositionSolver::solve(
     std::shared_ptr<DataStructures::NiceNode> root = treeDecomposition->getRoot();
     solveAtNode(root);
 
-//    std::cout << "Solved at root\n"; // TODO remove
-//    std::cout << "Final table:\n";
-//    std::cout << treeDecomposition->getRoot()->getTable() << "\n";
-//    std::cout << "Printed final table\n";
-//
-//    std::cout << "retrieving best entry ...";
-//    auto x = treeDecomposition->getRoot()->getTable().getBestEntry();
-//    std::cout << " with eval " << x->getEvaluation() << "\n";
     treeDecomposition->getRoot()->getTable().getBestEntry()->colourGraph(graph);
 }
 

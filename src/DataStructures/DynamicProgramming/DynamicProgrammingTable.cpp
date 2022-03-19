@@ -101,7 +101,7 @@ void DataStructures::DynamicProgrammingTable::referenceTable(const DynamicProgra
 {
     for (const std::shared_ptr<TableEntry>& entry : other.entries)
     {
-        std::shared_ptr<ColourAssignment> entryAssignments = entry->getColourAssignments(); // TODO maybe just push entryAssignments in stead of making a new one?
+        std::shared_ptr<ColourAssignment> entryAssignments = entry->getColourAssignments();
         std::shared_ptr<TableEntry> newEntry = std::make_shared<TableEntry>(entry->getEvaluation(), entryAssignments);
         push(newEntry);
     }

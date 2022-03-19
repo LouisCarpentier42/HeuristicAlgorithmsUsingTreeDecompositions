@@ -10,8 +10,8 @@ c
 
 c Really small graphs
 experiment PACE_heuristic/he005.gr PACE_heuristic/he005_nice.tw random(3,0.01) exactTD(true,true)
-experiment my_first_graph.gr my_first_graph_nice.tw random(2,0.01) exactTD(false,false)
-experiment graph5c/graph1.gr graph5c/graph1_nice.tw random(2,0.01) exactTD(false,false)
+c experiment my_first_graph.gr my_first_graph_nice.tw random(2,0.01) exactTD(false,false)
+c experiment graph5c/graph1.gr graph5c/graph1_nice.tw random(2,0.01) exactTD(false,false)
 
 c A bigger graph
 c experiment PACE_exact/ex001.gr PACE_exact/ex001_nice.tw random(8,0.1) exactTD(false,false)

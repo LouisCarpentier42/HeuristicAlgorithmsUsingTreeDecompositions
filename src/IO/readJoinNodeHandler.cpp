@@ -29,10 +29,10 @@ std::shared_ptr<Solvers::JoinNodeHandler> createJoinNodeHandler(std::vector<std:
             return std::make_shared<Solvers::DynamicOrderJoinNodeHandler>(merger, percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order::mostColouredNeighboursFirst);
         else if (parameters[3] == "fewestColouredNeighboursFirst")
             return std::make_shared<Solvers::DynamicOrderJoinNodeHandler>(merger, percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order::fewestColouredNeighboursFirst);
-        else if (parameters[3] == "mostPotentialHappyNeighbours")
-            return std::make_shared<Solvers::DynamicOrderJoinNodeHandler>(merger, percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order::mostPotentialHappyNeighbours);
-        else if (parameters[3] == "mostPercentPotentialHappyNeighbours")
-            return std::make_shared<Solvers::DynamicOrderJoinNodeHandler>(merger, percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order::mostPercentPotentialHappyNeighbours);
+        else if (parameters[3] == "mostSameColouredNeighboursFirst")
+            return std::make_shared<Solvers::DynamicOrderJoinNodeHandler>(merger, percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order::mostSameColouredNeighboursFirst);
+        else if (parameters[3] == "mostPercentSameColouredNeighboursFirst")
+            return std::make_shared<Solvers::DynamicOrderJoinNodeHandler>(merger, percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order::mostPercentSameColouredNeighboursFirst);
         else
             throw std::runtime_error("Invalid order for dynamic order join node handler: " + parameters[3] + "!");
     }

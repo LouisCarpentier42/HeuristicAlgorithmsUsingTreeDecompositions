@@ -21,17 +21,19 @@ std::shared_ptr<DataStructures::NiceNode> transformToNiceBag(const std::shared_p
         if (bag->getBagSize() + 1 == child->getBagSize()) // Forget node
         {
             DataStructures::VertexType forgottenVertex;
-
+            bool forgottenVertexFound{false};
             for (auto itParent = parentContent.begin(), itChild = childContent.begin();
-                 /* condition redundant */;
-                 itParent++, itChild++)
+            itParent != parentContent.end();
+            itParent++, itChild++)
             {
                 if (*itParent != *itChild)
                 {
                     forgottenVertex = *itChild;
+                    forgottenVertexFound = true;
                     break;
                 }
             }
+            if (!forgottenVertexFound) forgottenVertex = *childContent.rbegin();
 
             auto niceChildForget = transformToNiceBag(child);
             return std::make_shared<DataStructures::ForgetNode>(
@@ -45,16 +47,19 @@ std::shared_ptr<DataStructures::NiceNode> transformToNiceBag(const std::shared_p
         else if (bag->getBagSize() == child->getBagSize() + 1) // Introduce node
         {
             DataStructures::VertexType introducedVertex;
+            bool introducedVertexFound{false};
             for (auto itParent = parentContent.begin(), itChild = childContent.begin();
-                 /* condition redundant */;
+                 itChild != childContent.end();
                  itParent++, itChild++)
             {
                 if (*itParent != *itChild)
                 {
                     introducedVertex = *itParent;
+                    introducedVertexFound = true;
                     break;
                 }
             }
+            if (!introducedVertexFound) introducedVertex = *parentContent.rbegin();
 
             auto niceChildIntroduce = transformToNiceBag(child);
             return std::make_shared<DataStructures::IntroduceNode>(

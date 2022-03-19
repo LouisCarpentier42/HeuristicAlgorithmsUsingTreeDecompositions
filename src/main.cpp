@@ -1,4 +1,6 @@
 
+#include "SolverV2/HeuristicMHVSolverV2.h"
+
 #include "rng.h"
 #include "IO/Reader.h"
 #include "ExperimentalAnalysis/Experiment.h"
@@ -11,12 +13,14 @@
 #include "ConstructingTreeDecompositions/Constructor.h"
 
 #include <cstring>
+#include <chrono>
 
 // valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./HeuristicAlgorithmsUsingTreeDecompositions
-// valgrind --tool=callgrind ./HeuristicAlgorithmsUsingTreeDecompositions
+// valgrind --tool=callgrind --callgrind-out-file=callgrind.out ./HeuristicAlgorithmsUsingTreeDecompositions
 int main(int argc, char** argv)
 {
     RNG::setRNG(1);
+//    RNG::setRNG(std::random_device{}());
     std::string defaultRootDir = IO::Reader::getParameter(argc, argv, "--rootDir", false);
     if (defaultRootDir.empty())
         defaultRootDir = "../../";
@@ -42,22 +46,57 @@ int main(int argc, char** argv)
 
     if (argc == 1)
     {
-//        auto flowCutter = ConstructTreeDecompositions::ConstructionAlgorithm::FlowCutter;
-//        std::string file = defaultConstructor.construct(flowCutter, "thesis_graph.gr", 0.5);
-//        auto td = defaultReader.readNiceTreeDecomposition(file);
-//        std::cout << *td << "\n";
+//        std::string solverFile{"greedy_vs_growth.sol"};
+//        std::string experimentFile{"lewis_random_greedy_vs_growth.exp"};
 
-        std::string solverFile{"initial_solvers.sol"};
-//        std::string experimentFile{"initial_experiment.exp"};
-        std::string experimentFile{"lewis_random_10.exp"};
+        std::string solverFile{"greedy_vs_growth.sol"};
+        std::string experimentFile{"initial_experiment.exp"};
+//        std::string experimentFile{"small_random_graphs.exp"};
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
-//        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
 
         for (ExperimentalAnalysis::TestInstance& testInstance : experiment->testInstances)
         {
-            auto td = defaultReader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
-            break;
+            std::cout << " --- Graph: " << testInstance.graphName << " ---\n";
+            // Test the baselines
+            for (auto const& [name, baseline] : experiment->baselines)
+            {
+                std::cout << "Baseline: " << name << "\n";
+
+                testInstance.graph->removeColours();
+                auto start = std::chrono::high_resolution_clock::now();
+                baseline->solve(testInstance.graph);
+                auto stop = std::chrono::high_resolution_clock::now();
+                int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
+
+                std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
+                std::cout  << "\n";
+            }
+
+            int nbSolutionsToKeep{24};
+//            MaximumHappyVertices::ExactTreeDecompositionMHV solverV2{};
+            SolverV2::HeuristicMHVSolverV2 solverV2{nbSolutionsToKeep};
+            std::cout << "Solver V2 with " << nbSolutionsToKeep << " entries to keep\n";
+
+            std::shared_ptr<DataStructures::NiceTreeDecomposition> td = defaultReader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
+            std::cout << *td << "\n";
+
+            testInstance.graph->removeColours();
+            auto start = std::chrono::high_resolution_clock::now();
+            int evaluation{solverV2.solve(testInstance.graph, td)};
+            auto stop = std::chrono::high_resolution_clock::now();
+
+            DataStructures::BasicMHVEvaluator evaluator{};
+
+
+            std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
+            std::cout << "True evaluation: " << evaluator.evaluate(testInstance.graph) << "\n";
+            std::cout  << "\n";
+
+            std::cout << "--------------------------------------------\n";
         }
+
+
+//        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
     }
     else if (strcmp(argv[1], "construct") == 0 || strcmp(argv[1], "construct-nice") == 0)
     {

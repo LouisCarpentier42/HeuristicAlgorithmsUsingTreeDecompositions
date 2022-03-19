@@ -15,8 +15,8 @@ void Solvers::ExactTreeDecompositionRankingMHV::addSolution(
     auto fullColouring = std::make_shared<DataStructures::ColourAssignment>(colourAssignments.getSize());
     for (DataStructures::VertexType vertex{0}; vertex < fullColouring->getSize(); vertex++)
     {
-        if (colourAssignments.isColoured(vertex))
-            fullColouring->assignColour(vertex, colourAssignments.getColour(vertex));
+        if (colourAssignments.isColouredConst(vertex))
+            fullColouring->assignColour(vertex, colourAssignments.getColourConst(vertex));
     }
 
     // Assign the colours of the previous full colourings (without overriding)
@@ -24,7 +24,7 @@ void Solvers::ExactTreeDecompositionRankingMHV::addSolution(
     {
         for (DataStructures::VertexType vertex{0}; vertex < fullColouring->getSize(); vertex++)
         {
-            if (!fullColouring->isColoured(vertex) && previousFullColouring->isColoured(vertex) && !colourAssignments.isColoured(vertex))
+            if (!fullColouring->isColoured(vertex) && previousFullColouring->isColoured(vertex) && !colourAssignments.isColouredConst(vertex))
                 fullColouring->assignColour(vertex, previousFullColouring->getColour(vertex));
         }
     }
@@ -79,8 +79,3 @@ Solvers::ExactTreeDecompositionRankingMHV::ExactTreeDecompositionRankingIterator
 {
     return solutions.end();
 }
-//
-//Solvers::ExactTreeDecompositionRankingMHV::~ExactTreeDecompositionRankingMHV()
-//{
-//
-//}

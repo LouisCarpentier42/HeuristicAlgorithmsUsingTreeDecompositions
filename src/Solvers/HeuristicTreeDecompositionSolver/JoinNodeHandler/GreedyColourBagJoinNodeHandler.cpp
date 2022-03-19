@@ -37,7 +37,6 @@ void Solvers::GreedyColourBagJoinNodeHandler::addMergedEntries(
         rightEntryAssignments
     );
     DataStructures::ColourType bestColour{0};
-    std::set<DataStructures::VertexType> verticesToColourSet{verticesToColour.begin(), verticesToColour.end()};
     int bestEvaluation{-1};
     int mergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
     for (DataStructures::ColourType colour{1}; colour <= graph->getNbColours(); colour++)
@@ -50,7 +49,7 @@ void Solvers::GreedyColourBagJoinNodeHandler::addMergedEntries(
             assignments->assignColour(vertex, colour);
 
         // Compute the new evaluation and update the best colour and evaluation if needed
-        int updatedEvaluation{evaluator->evaluate(verticesToColourSet, oldColourAssignments, assignments, graph, mergedEvaluation)};
+        int updatedEvaluation{evaluator->evaluate(verticesToColour, oldColourAssignments, assignments, graph, mergedEvaluation)};
         if (updatedEvaluation > bestEvaluation)
         {
             bestColour = colour;
@@ -62,11 +61,9 @@ void Solvers::GreedyColourBagJoinNodeHandler::addMergedEntries(
     for (DataStructures::VertexType vertex : verticesToColour)
         assignments->assignColour(vertex, bestColour);
 
-
-
     std::shared_ptr<DataStructures::TableEntry> newEntry = std::make_shared<DataStructures::TableEntry>(
             bestEvaluation,
             assignments
-            );
+        );
     node->getTable().push(newEntry);
 }

@@ -65,7 +65,7 @@ DataStructures::ColourType DataStructures::ColourAssignment::getColour(VertexTyp
     return 0;
 }
 
-DataStructures::ColourType DataStructures::ColourAssignment::getColour(const VertexType& vertex) const
+DataStructures::ColourType DataStructures::ColourAssignment::getColourConst(const VertexType& vertex) const // TODO rename back to non const
 {
     if (assignments[vertex] != 0)
         return assignments[vertex];
@@ -89,9 +89,9 @@ bool DataStructures::ColourAssignment::isColoured(VertexType vertex)
     return getColour(vertex) != 0;
 }
 
-bool DataStructures::ColourAssignment::isColoured(VertexType vertex) const
+bool DataStructures::ColourAssignment::isColouredConst(VertexType vertex) const // TODO rename back to non const
 {
-    return getColour(vertex) != 0;
+    return getColourConst(vertex) != 0;
 }
 
 void DataStructures::ColourAssignment::assignColour(VertexType vertex, ColourType colour)
@@ -116,9 +116,9 @@ bool DataStructures::operator<(const DataStructures::ColourAssignment& c1, const
 
 std::ostream& DataStructures::operator<<(std::ostream& out, const DataStructures::ColourAssignment& assignments)
 {
-    out << "[" << assignments.getColour(0);
+    out << "[" << assignments.getColourConst(0);
     for (int i{1}; i < assignments.assignments.size(); i++)
-        out << ", " << assignments.getColour(i);
+        out << ", " << assignments.getColourConst(i);
     return out << "]";
 }
 

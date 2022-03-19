@@ -34,7 +34,7 @@ void setGrowthTypes(
         std::deque<DataStructures::VertexType>& verticesToUpdate,
         const std::shared_ptr<DataStructures::Graph>& graph,
         std::shared_ptr<DataStructures::ColourAssignment>& colourAssignments,
-        const std::vector<DataStructures::VertexType>& verticesToColour)
+        const std::set<DataStructures::VertexType>& verticesToColour)
 {
     std::deque<DataStructures::VertexType> colouredVerticesToUpdate{};
     std::deque<DataStructures::VertexType> uncolouredVerticesToUpdate{};
@@ -74,7 +74,7 @@ void setGrowthTypes(
         }
         else if (hasUncolouredNeighbour)
         {
-            if (std::find(verticesToColour.begin(), verticesToColour.end(), vertex) != verticesToColour.end())
+            if (verticesToColour.find(vertex) != verticesToColour.end())
                 P_vertices.insert(vertex);
             vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::P_vertex;
         }
@@ -111,25 +111,25 @@ void setGrowthTypes(
 
         if (hasPNeighbour)
         {
-            if (std::find(verticesToColour.begin(), verticesToColour.end(), vertex) != verticesToColour.end())
+            if (verticesToColour.find(vertex) != verticesToColour.end())
                 LP_vertices.insert(vertex);
             vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::LP_vertex;
         }
         else if (isUnhappy)
         {
-            if (std::find(verticesToColour.begin(), verticesToColour.end(), vertex) != verticesToColour.end())
+            if (verticesToColour.find(vertex) != verticesToColour.end())
                 LU_vertices.insert(vertex);
             vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::LU_vertex;
         }
         else if (colourNeighbours == 0) // No neighbours have a colour
         {
-            if (std::find(verticesToColour.begin(), verticesToColour.end(), vertex) != verticesToColour.end())
+            if (verticesToColour.find(vertex) != verticesToColour.end())
                 LF_vertices.insert(vertex);
             vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::LF_vertex;
         }
         else
         {
-            if (std::find(verticesToColour.begin(), verticesToColour.end(), vertex) != verticesToColour.end())
+            if (verticesToColour.find(vertex) != verticesToColour.end())
                 LH_vertices.insert(vertex);
             vertexTypes[vertex] = MaximumHappyVertices::GrowthMHV::GrowthType::LH_vertex;
         }

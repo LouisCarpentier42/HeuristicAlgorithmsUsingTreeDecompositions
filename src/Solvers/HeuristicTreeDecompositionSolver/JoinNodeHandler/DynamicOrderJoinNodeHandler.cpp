@@ -15,16 +15,16 @@ Solvers::DynamicOrderJoinNodeHandler::DynamicOrderJoinNodeHandler(
     switch (order)
     {
         case Order::mostColouredNeighboursFirst:
-            vertexSelector = new MostColouredNeighboursSelector{};
+            vertexSelector = std::make_unique<MostColouredNeighboursSelector>();
             break;
         case Order::fewestColouredNeighboursFirst:
-            vertexSelector = new FewestColouredNeighboursSelector{};
+            vertexSelector = std::make_unique<FewestColouredNeighboursSelector>();
             break;
-        case Order::mostPotentialHappyNeighbours:
-            vertexSelector = new MostPotentialHappyNeighboursSelector{};
+        case Order::mostSameColouredNeighboursFirst:
+            vertexSelector = std::make_unique<MostSameColouredNeighboursFirst>();
             break;
-        case Order::mostPercentPotentialHappyNeighbours:
-            vertexSelector = new MostPercentPotentialHappyNeighboursSelector{};
+        case Order::mostPercentSameColouredNeighboursFirst:
+            vertexSelector = std::make_unique<MostPercentSameColouredNeighboursFirst>();
             break;
     }
 }
@@ -47,14 +47,15 @@ void Solvers::DynamicOrderJoinNodeHandler::addMergedEntries(
         rightEntryAssignments
     );
 
-    std::set<DataStructures::VertexType> remainingVerticesToColour{verticesToColour.begin(), verticesToColour.end()};
+    for (DataStructures::VertexType vertex : verticesToColour)
+        assignments->removeColour(vertex);
+
+    vertexSelector->initializeScores(verticesToColour, assignments, graph);
     int initialMergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
     int previousEvaluation{initialMergedEvaluation};
-    while (!remainingVerticesToColour.empty())
+    while (vertexSelector->hasScoresLeft())
     {
-        auto it = vertexSelector->select(remainingVerticesToColour, graph, assignments);
-        DataStructures::VertexType vertex{*it};
-        remainingVerticesToColour.erase(it);
+        DataStructures::VertexType vertex = vertexSelector->popBest();
 
         // If the vertices have the same colour, then you only need to re-evaluate once
         if (leftEntry->getColourAssignments()->getColour(vertex) == rightEntry->getColourAssignments()->getColour(vertex))
@@ -80,6 +81,8 @@ void Solvers::DynamicOrderJoinNodeHandler::addMergedEntries(
                 previousEvaluation = rightEvaluation;
             }
         }
+
+        vertexSelector->updateScores(vertex, assignments, graph);
     }
 
     std::shared_ptr<DataStructures::TableEntry> newEntry = std::make_shared<DataStructures::TableEntry>(
@@ -91,8 +94,8 @@ void Solvers::DynamicOrderJoinNodeHandler::addMergedEntries(
 
 int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbColouredNeighbours(
         DataStructures::VertexType vertex,
-        const std::shared_ptr<DataStructures::Graph>& graph,
-        std::shared_ptr<DataStructures::ColourAssignment>& assignments)
+        std::shared_ptr<DataStructures::ColourAssignment>& assignments,
+        const std::shared_ptr<DataStructures::Graph>& graph)
 {
     return std::count_if(
             graph->getNeighbours(vertex).begin(),
@@ -100,114 +103,220 @@ int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbColouredNeighbour
             [assignments](auto neighbour){ return assignments->isColoured(neighbour); });
 }
 
-int Solvers::DynamicOrderJoinNodeHandler::VertexSelector::getNbPotentialHappyNeighbours(
-        DataStructures::VertexType vertex,
-        const std::shared_ptr<DataStructures::Graph>& graph,
-        std::shared_ptr<DataStructures::ColourAssignment>& assignments)
+DataStructures::VertexType Solvers::DynamicOrderJoinNodeHandler::VertexSelector::popBest()
 {
-    int nbPotentialHappyNeighbours{0};
-    for (DataStructures::VertexType potentialHappyNeighbour : graph->getNeighbours(vertex))
+    auto bestIt = scores.begin();
+
+    for (auto it = scores.begin(); it != scores.end(); it++)
     {
-        DataStructures::ColourType colourNeighbours{0};
-        bool canBeHappy{true};
-        for (DataStructures::VertexType neighbour : graph->getNeighbours(potentialHappyNeighbour))
+        if (it->second > bestIt->second)
+            bestIt = it;
+    }
+
+    scores.erase(bestIt);
+    return bestIt->first;
+}
+
+bool Solvers::DynamicOrderJoinNodeHandler::VertexSelector::hasScoresLeft()
+{
+    return !scores.empty();
+}
+
+void Solvers::DynamicOrderJoinNodeHandler::MostColouredNeighboursSelector::initializeScores(
+        const std::set<DataStructures::VertexType>& verticesToColour,
+        std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+        const std::shared_ptr<DataStructures::Graph>& graph)
+{
+    scores.clear();
+    for (DataStructures::VertexType vertex : verticesToColour)
+        // At the end since vertices to colour is set
+        scores.emplace_hint(scores.end(), vertex, getNbColouredNeighbours(vertex, colourAssignment, graph));
+}
+
+void Solvers::DynamicOrderJoinNodeHandler::MostColouredNeighboursSelector::updateScores(
+        DataStructures::VertexType colouredVertex,
+        std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+        const std::shared_ptr<DataStructures::Graph>& graph)
+{
+    for (DataStructures::VertexType neighbour : graph->getNeighbours(colouredVertex))
+    {
+        auto it = scores.find(neighbour);
+        if (it != scores.end() )
         {
-            if (assignments->isColoured(neighbour))
+            it->second++;
+        }
+    }
+}
+
+void Solvers::DynamicOrderJoinNodeHandler::FewestColouredNeighboursSelector::initializeScores(
+        const std::set<DataStructures::VertexType>& verticesToColour,
+        std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+        const std::shared_ptr<DataStructures::Graph>& graph)
+{
+    scores.clear();
+    for (DataStructures::VertexType vertex : verticesToColour)
+        // At the end since vertices to colour is set
+        // Negative of nb coloured neighbours to promote vertices without coloured neighbours
+        scores.emplace_hint(scores.end(), vertex, -getNbColouredNeighbours(vertex, colourAssignment, graph));
+}
+
+void Solvers::DynamicOrderJoinNodeHandler::FewestColouredNeighboursSelector::updateScores(
+        DataStructures::VertexType colouredVertex,
+        std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+        const std::shared_ptr<DataStructures::Graph>& graph)
+{
+    for (DataStructures::VertexType neighbour : graph->getNeighbours(colouredVertex))
+    {
+        auto it = scores.find(neighbour);
+        if (it != scores.end())
+        {
+            it->second--;
+        }
+    }
+}
+
+void Solvers::DynamicOrderJoinNodeHandler::MostSameColouredNeighboursFirst::initializeScores(
+        const std::set<DataStructures::VertexType>& verticesToColour,
+        std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+        const std::shared_ptr<DataStructures::Graph>& graph)
+{
+    scores.clear();
+    cachedColourNeighbours.clear();
+
+    for (DataStructures::VertexType vertex : verticesToColour)
+    {
+        DataStructures::ColourType colourOfNeighbours{0};
+        int nbNeighboursInColour{0};
+        bool hasNeighboursInMultipleColours{false};
+        for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
+        {
+            if (colourAssignment->isColoured(neighbour))
             {
-                if (colourNeighbours == 0)
+                if (colourOfNeighbours == 0)
                 {
-                    colourNeighbours = assignments->getColour(neighbour);
+                    colourOfNeighbours = colourAssignment->getColour(neighbour);
+                    nbNeighboursInColour++;
                 }
-                else if (assignments->getColour(neighbour) != colourNeighbours)
+                else if (colourOfNeighbours == colourAssignment->getColour(neighbour))
                 {
-                    canBeHappy = false;
+                    nbNeighboursInColour++;
+                }
+                else // Neighbour has a different colour
+                {
+                    hasNeighboursInMultipleColours = true;
                     break;
                 }
             }
         }
 
-        if (canBeHappy) nbPotentialHappyNeighbours++;
+        if (hasNeighboursInMultipleColours)
+        {
+            scores.emplace_hint(scores.end(), vertex, 0);
+        }
+        else
+        {
+            scores.emplace_hint(scores.end(), vertex, nbNeighboursInColour);
+            cachedColourNeighbours.emplace_hint(cachedColourNeighbours.end(), vertex, colourOfNeighbours);
+        }
+
     }
-    return nbPotentialHappyNeighbours;
 }
 
-
-DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostColouredNeighboursSelector::select(
-        DataStructures::BagContent& bagContent,
-        const std::shared_ptr<DataStructures::Graph>& graph,
-        std::shared_ptr<DataStructures::ColourAssignment>& assignments) const
+void Solvers::DynamicOrderJoinNodeHandler::MostSameColouredNeighboursFirst::updateScores(
+        DataStructures::VertexType colouredVertex,
+        std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+        const std::shared_ptr<DataStructures::Graph>& graph)
 {
-    auto bestIterator = bagContent.begin();
-    int bestNbColouredNeighbours{0};
-    for (auto it = bagContent.begin(); it != bagContent.end(); ++it)
+    cachedColourNeighbours.erase(colouredVertex); // It is coloured thus this vertex must not be cached anymore
+    for (DataStructures::VertexType neighbour : graph->getNeighbours(colouredVertex))
     {
-        int nbColouredNeighbours{getNbColouredNeighbours(*it, graph, assignments)};
-        if (nbColouredNeighbours > bestNbColouredNeighbours)
+        auto itScores = scores.find(neighbour);
+        auto itCachedColour = cachedColourNeighbours.find(neighbour);
+        if (itScores != scores.end() && itCachedColour != cachedColourNeighbours.end())
         {
-            bestIterator = it;
-            bestNbColouredNeighbours = nbColouredNeighbours;
+            if (itCachedColour->second == colourAssignment->getColour(colouredVertex))
+            {
+                itScores->second++;
+            }
+            else
+            {
+                itScores->second = 0;
+                cachedColourNeighbours.erase(itCachedColour); // Has multiple neighbouring colours
+            }
         }
     }
-    return bestIterator;
 }
 
-DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::FewestColouredNeighboursSelector::select(
-        DataStructures::BagContent& bagContent,
-        const std::shared_ptr<DataStructures::Graph>& graph,
-        std::shared_ptr<DataStructures::ColourAssignment>& assignments) const
+void Solvers::DynamicOrderJoinNodeHandler::MostPercentSameColouredNeighboursFirst::initializeScores(
+        const std::set<DataStructures::VertexType>& verticesToColour,
+        std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+        const std::shared_ptr<DataStructures::Graph>& graph)
 {
-    auto bestIterator = bagContent.begin();
-    int bestNbColouredNeighbours{static_cast<int>(graph->getNbVertices())};
-    for (auto it = bagContent.begin(); it != bagContent.end(); ++it)
+    scores.clear();
+    cachedColourNeighbours.clear();
+
+    for (DataStructures::VertexType vertex : verticesToColour)
     {
-        int nbColouredNeighbours{getNbColouredNeighbours(*it, graph, assignments)};
-        if (nbColouredNeighbours < bestNbColouredNeighbours)
+        DataStructures::ColourType colourOfNeighbours{0};
+        double nbNeighboursInColour{0.0};
+        double totalNbNeighbours{0.0};
+        bool hasNeighboursInMultipleColours{false};
+        for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
         {
-            bestIterator = it;
-            bestNbColouredNeighbours = nbColouredNeighbours;
+            totalNbNeighbours++;
+            if (colourAssignment->isColoured(neighbour))
+            {
+                if (colourOfNeighbours == 0)
+                {
+                    colourOfNeighbours = colourAssignment->getColour(neighbour);
+                    nbNeighboursInColour++;
+                }
+                else if (colourOfNeighbours == colourAssignment->getColour(neighbour))
+                {
+                    nbNeighboursInColour++;
+                }
+                else // Neighbour has a different colour
+                {
+                    hasNeighboursInMultipleColours = true;
+                    break;
+                }
+            }
+        }
+
+        if (hasNeighboursInMultipleColours)
+        {
+            scores.emplace_hint(scores.end(), vertex, 0);
+        }
+        else
+        {
+            scores.emplace_hint(scores.end(), vertex, nbNeighboursInColour / totalNbNeighbours);
+            cachedColourNeighbours.emplace_hint(cachedColourNeighbours.end(), vertex, colourOfNeighbours);
+        }
+
+    }
+}
+
+void Solvers::DynamicOrderJoinNodeHandler::MostPercentSameColouredNeighboursFirst::updateScores(
+        DataStructures::VertexType colouredVertex,
+        std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+        const std::shared_ptr<DataStructures::Graph>& graph)
+{
+    cachedColourNeighbours.erase(colouredVertex); // It is coloured thus this vertex must not be cached anymore
+    for (DataStructures::VertexType neighbour : graph->getNeighbours(colouredVertex))
+    {
+        auto itScores = scores.find(neighbour);
+        auto itCachedColour = cachedColourNeighbours.find(neighbour);
+        if (itScores != scores.end() && itCachedColour != cachedColourNeighbours.end())
+        {
+            if (itCachedColour->second == colourAssignment->getColour(colouredVertex))
+            {
+                itScores->second += (1.0 / (double)graph->getNeighbours(neighbour).size());
+            }
+            else
+            {
+                itScores->second = 0;
+                cachedColourNeighbours.erase(itCachedColour); // Has multiple neighbouring colours
+            }
         }
     }
-    return bestIterator;
 }
-
-DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostPotentialHappyNeighboursSelector::select(
-        DataStructures::BagContent& bagContent,
-        const std::shared_ptr<DataStructures::Graph>& graph,
-        std::shared_ptr<DataStructures::ColourAssignment>& assignments) const
-{
-    auto bestIterator = bagContent.begin();
-    int bestNbPotentialHappyNeighbours{0};
-    for (auto it = bagContent.begin(); it != bagContent.end(); ++it)
-    {
-        int nbPotentialHappyNeighbours{getNbPotentialHappyNeighbours(*it, graph, assignments)};
-        if (nbPotentialHappyNeighbours < bestNbPotentialHappyNeighbours)
-        {
-            bestIterator = it;
-            bestNbPotentialHappyNeighbours = nbPotentialHappyNeighbours;
-        }
-    }
-    return bestIterator;
-}
-
-DataStructures::BagContent::iterator Solvers::DynamicOrderJoinNodeHandler::MostPercentPotentialHappyNeighboursSelector::select(
-        DataStructures::BagContent& bagContent,
-        const std::shared_ptr<DataStructures::Graph>& graph,
-        std::shared_ptr<DataStructures::ColourAssignment>& assignments) const
-{
-    auto bestIterator = bagContent.begin();
-    double bestPercentPotentialHappyNeighbours{0.0};
-    for (auto it = bagContent.begin(); it != bagContent.end(); ++it)
-    {
-        double percentPotentialHappyNeighbours{
-            (double)getNbPotentialHappyNeighbours(*it, graph, assignments) / (double)graph->getDegree(*it)
-        };
-        if (percentPotentialHappyNeighbours < bestPercentPotentialHappyNeighbours)
-        {
-            bestIterator = it;
-            bestPercentPotentialHappyNeighbours = percentPotentialHappyNeighbours;
-        }
-    }
-    return bestIterator;
-}
-
-

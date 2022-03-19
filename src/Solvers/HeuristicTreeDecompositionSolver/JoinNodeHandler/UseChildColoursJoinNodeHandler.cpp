@@ -18,9 +18,6 @@ void Solvers::UseChildColoursJoinNodeHandler::addMergedEntries(
     // The colour assignments used to construct a new assignment
     std::vector<std::shared_ptr<DataStructures::ColourAssignment>> oldColourAssignments{leftEntry->getColourAssignments(), rightEntry->getColourAssignments()};
 
-    // The set of vertices that should be recoloured
-    std::set<DataStructures::VertexType> verticesToColourSet{verticesToColour.begin(), verticesToColour.end()};
-
     // Merge the evaluation functions
     int mergedEvaluation{evaluationMerger->mergeEvaluations(leftEntry->getEvaluation(), rightEntry->getEvaluation())};
 
@@ -36,7 +33,7 @@ void Solvers::UseChildColoursJoinNodeHandler::addMergedEntries(
         rightEntryAssignments
     );
     std::shared_ptr<DataStructures::TableEntry> newEntryLeft = std::make_shared<DataStructures::TableEntry>(
-            evaluator->evaluate(verticesToColourSet, oldColourAssignments, leftExtendedAssignments, graph, mergedEvaluation),
+            evaluator->evaluate(verticesToColour, oldColourAssignments, leftExtendedAssignments, graph, mergedEvaluation),
             leftExtendedAssignments
         );
     node->getTable().push(newEntryLeft);
@@ -49,7 +46,7 @@ void Solvers::UseChildColoursJoinNodeHandler::addMergedEntries(
         rightEntryAssignments
     );
     std::shared_ptr<DataStructures::TableEntry> newEntryRight = std::make_shared<DataStructures::TableEntry>(
-            evaluator->evaluate(verticesToColourSet, oldColourAssignments, rightExtendedAssignments, graph, mergedEvaluation),
+            evaluator->evaluate(verticesToColour, oldColourAssignments, rightExtendedAssignments, graph, mergedEvaluation),
             rightExtendedAssignments
         );
     node->getTable().push(newEntryRight);

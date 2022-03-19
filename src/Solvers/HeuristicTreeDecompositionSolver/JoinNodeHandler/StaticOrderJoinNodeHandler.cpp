@@ -47,11 +47,12 @@ void Solvers::StaticOrderJoinNodeHandler::setGraph(std::shared_ptr<DataStructure
 
 void Solvers::StaticOrderJoinNodeHandler::setVerticesToColour(std::shared_ptr<DataStructures::JoinNode>& node)
 {
-    verticesToColour.clear();
+//    PairwiseCombineJoinHandler::setVerticesToColour(node); // Not needed for static join node handler thus don't waste time
+    vertexOrderToColour.clear();
     for (DataStructures::VertexType vertex : vertexOrder)
     {
         if (!graph->isPrecoloured(vertex) && node->getBagContent().find(vertex) != node->getBagContent().end())
-            verticesToColour.push_back(vertex);
+            vertexOrderToColour.push_back(vertex);
     }
 }
 
@@ -81,7 +82,7 @@ void Solvers::StaticOrderJoinNodeHandler::addMergedEntries(
     // Colour the vertices in the predefined order
     int initialMergedEvaluation{};
     int previousEvaluation{initialMergedEvaluation};
-    for (DataStructures::VertexType vertex : verticesToColour)
+    for (DataStructures::VertexType vertex : vertexOrderToColour)
     {
         // You only need to check the colour of vertices that are in the bag, thus those that are coloured in both entries
         if (leftEntry->getColourAssignments()->isColoured(vertex) && rightEntry->getColourAssignments()->isColoured(vertex))

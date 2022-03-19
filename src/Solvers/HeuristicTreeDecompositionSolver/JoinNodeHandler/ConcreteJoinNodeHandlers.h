@@ -15,7 +15,7 @@ namespace Solvers
         const double percentMustBeEqual;
 
     protected:
-        std::vector<DataStructures::VertexType> verticesToColour;
+        std::set<DataStructures::VertexType> verticesToColour;
 
     public:
         explicit PairwiseCombineJoinHandler(std::shared_ptr<const EvaluationMerger>& evaluationMerger, double percentMustBeEqual);
@@ -40,6 +40,7 @@ namespace Solvers
     private:
         const Order order;
         std::vector<DataStructures::VertexType> vertexOrder;
+        std::vector<DataStructures::VertexType> vertexOrderToColour;
     public:
         StaticOrderJoinNodeHandler(std::shared_ptr<const EvaluationMerger>& evaluationMerger, double percentMustBeEqual, Order order);
         void setGraph(std::shared_ptr<DataStructures::Graph>& graphToSolve) override;
@@ -57,32 +58,38 @@ namespace Solvers
         enum class Order {
             mostColouredNeighboursFirst,
             fewestColouredNeighboursFirst,
-            mostPotentialHappyNeighbours,
-            mostPercentPotentialHappyNeighbours
+            mostSameColouredNeighboursFirst,
+            mostPercentSameColouredNeighboursFirst
         };
 
     private:
         class VertexSelector
         {
+        protected:
+            std::map<DataStructures::VertexType, double> scores{};
+
         public:
-            [[nodiscard]] virtual DataStructures::BagContent::iterator select(
-                DataStructures::BagContent& bagContent,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                std::shared_ptr<DataStructures::ColourAssignment>& assignments
-            ) const = 0;
+            virtual void initializeScores(
+                const std::set<DataStructures::VertexType>& verticesToColour,
+                std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+                const std::shared_ptr<DataStructures::Graph>& graph
+            ) = 0;
+            virtual void updateScores(
+                DataStructures::VertexType colouredVertex,
+                std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+                const std::shared_ptr<DataStructures::Graph>& graph
+            ) = 0;
+            [[nodiscard]] DataStructures::VertexType popBest();
+            [[nodiscard]] bool hasScoresLeft();
+
         protected:
             [[nodiscard]] static int getNbColouredNeighbours(
                 DataStructures::VertexType vertex,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                std::shared_ptr<DataStructures::ColourAssignment>& assignments
-            );
-            [[nodiscard]] static int getNbPotentialHappyNeighbours(
-                DataStructures::VertexType vertex,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                std::shared_ptr<DataStructures::ColourAssignment>& assignments
+                std::shared_ptr<DataStructures::ColourAssignment>& assignments,
+                const std::shared_ptr<DataStructures::Graph>& graph
             );
         };
-        const VertexSelector* vertexSelector;
+        std::unique_ptr<VertexSelector> vertexSelector;
 
     public:
         DynamicOrderJoinNodeHandler(std::shared_ptr<const EvaluationMerger>& evaluationMerger, double percentMustBeEqual, Solvers::DynamicOrderJoinNodeHandler::Order order);
@@ -96,41 +103,65 @@ namespace Solvers
         class MostColouredNeighboursSelector : public VertexSelector
         {
         public:
-            [[nodiscard]] DataStructures::BagContent::iterator select(
-                DataStructures::BagContent& bagContent,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                std::shared_ptr<DataStructures::ColourAssignment>& assignments
-            ) const override;
+            void initializeScores(
+                const std::set<DataStructures::VertexType>& verticesToColour,
+                std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+                const std::shared_ptr<DataStructures::Graph>& graph
+            ) override;
+            void updateScores(
+                DataStructures::VertexType colouredVertex,
+                std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+                const std::shared_ptr<DataStructures::Graph>& graph
+            ) override;
         };
 
         class FewestColouredNeighboursSelector : public VertexSelector
         {
         public:
-            [[nodiscard]] DataStructures::BagContent::iterator select(
-                DataStructures::BagContent& bagContent,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                std::shared_ptr<DataStructures::ColourAssignment>& assignments
-            ) const override;
+            void initializeScores(
+                const std::set<DataStructures::VertexType>& verticesToColour,
+                std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+                const std::shared_ptr<DataStructures::Graph>& graph
+            ) override;
+            void updateScores(
+                DataStructures::VertexType colouredVertex,
+                std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+                const std::shared_ptr<DataStructures::Graph>& graph
+            ) override;
         };
 
-        class MostPotentialHappyNeighboursSelector : public VertexSelector
+        class MostSameColouredNeighboursFirst : public VertexSelector
         {
+        private:
+            std::map<DataStructures::VertexType, DataStructures::ColourType> cachedColourNeighbours{};
         public:
-            [[nodiscard]] DataStructures::BagContent::iterator select(
-                DataStructures::BagContent& bagContent,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                std::shared_ptr<DataStructures::ColourAssignment>& assignments
-            ) const override;
+            void initializeScores(
+                const std::set<DataStructures::VertexType>& verticesToColour,
+                std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+                const std::shared_ptr<DataStructures::Graph>& graph
+            ) override;
+            void updateScores(
+                DataStructures::VertexType colouredVertex,
+                std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+                const std::shared_ptr<DataStructures::Graph>& graph
+            ) override;
         };
 
-        class MostPercentPotentialHappyNeighboursSelector : public VertexSelector
+        class MostPercentSameColouredNeighboursFirst : public VertexSelector
         {
+        private:
+            std::map<DataStructures::VertexType, DataStructures::ColourType> cachedColourNeighbours{};
         public:
-            [[nodiscard]] DataStructures::BagContent::iterator select(
-                DataStructures::BagContent& bagContent,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                std::shared_ptr<DataStructures::ColourAssignment>& assignments
-            ) const override;
+            void initializeScores(
+                const std::set<DataStructures::VertexType>& verticesToColour,
+                std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+                const std::shared_ptr<DataStructures::Graph>& graph
+            ) override;
+            void updateScores(
+                DataStructures::VertexType colouredVertex,
+                std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
+                const std::shared_ptr<DataStructures::Graph>& graph
+            ) override;
         };
     };
 

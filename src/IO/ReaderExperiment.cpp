@@ -83,6 +83,7 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
         std::string line{};
         std::getline(experimentFile, line);
         std::vector<std::string> tokens = tokenize(line);
+
         if (tokens.empty() || tokens[0] == "c") continue;
         else if (tokens[0] == "experiment")
         {

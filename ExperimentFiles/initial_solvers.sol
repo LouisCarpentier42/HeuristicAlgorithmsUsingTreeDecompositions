@@ -26,9 +26,17 @@ problem MaximumHappyVertices
 baseline greedyMHV
 baseline growthMHV
 nbRepetitions 1
-c heuristicTD staticOrderGdf 16 basicMHVEvaluator passive bestColour bestColour staticOrder(avg,0.01,gdf)
-heuristicTD dynamicOrderMostColNeigh 16 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,mostColouredNeighbours)
-c heuristicTD greedyColourBag 16 basicMHVEvaluator passive bestColour bestColour greedyColourBag(avg,0.01)
+c heuristicTD mostColNeigh 16 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,mostColouredNeighbours)
+c heuristicTD fewColNeigh001 1 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,fewestColouredNeighboursFirst)
+heuristicTD fewColNeigh4 4 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,fewestColouredNeighboursFirst)
+heuristicTD fewColNeigh8 8 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,fewestColouredNeighboursFirst)
+c heuristicTD fewColNeigh016 16 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,fewestColouredNeighboursFirst)
+c heuristicTD fewColNeigh032 32 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,fewestColouredNeighboursFirst)
+c heuristicTD fewColNeigh128 128 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,fewestColouredNeighboursFirst)
+c heuristicTD mostSameColNeigh 16 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,mostSameColouredNeighboursFirst)
+c heuristicTD most%SameColNeigh 16 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,mostPercentSameColouredNeighboursFirst)
+
+
 c heuristicTD growthColourBag 16 basicMHVEvaluator passive bestColour bestColour growthColourBag(avg,0.01)
 c heuristicTD useChildColours 16 basicMHVEvaluator passive bestColour bestColour useChildColours(avg,0.01)
 

@@ -36,9 +36,9 @@ namespace DataStructures
 
         [[nodiscard]] size_t getSize() const;
         [[nodiscard]] ColourType getColour(VertexType vertex);
-        [[nodiscard]] ColourType getColour(const VertexType& vertex) const;
+        [[nodiscard]] ColourType getColourConst(const VertexType& vertex) const;
         [[nodiscard]] bool isColoured(VertexType vertex);
-        [[nodiscard]] bool isColoured(VertexType vertex) const;
+        [[nodiscard]] bool isColouredConst(VertexType vertex) const;
         void assignColour(VertexType vertex, ColourType colour);
         void removeColour(VertexType vertex);
 

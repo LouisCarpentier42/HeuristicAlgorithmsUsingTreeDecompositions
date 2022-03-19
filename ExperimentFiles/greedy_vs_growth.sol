@@ -1,0 +1,4 @@
+problem MaximumHappyVertices
+baseline greedyMHV
+baseline growthMHV
+nbRepetitions 1
