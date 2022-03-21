@@ -9,7 +9,7 @@
 
 SolverV2::HeuristicMHVSolverV2::HeuristicMHVSolverV2(int nbSolutionsToKeep) : nbSolutionsToKeep(nbSolutionsToKeep) {}
 
-int SolverV2::HeuristicMHVSolverV2::solve(
+void SolverV2::HeuristicMHVSolverV2::solve(
         std::shared_ptr<DataStructures::Graph>& graph,
         std::shared_ptr<DataStructures::NiceTreeDecomposition>& treeDecomposition) const
 {
@@ -36,13 +36,10 @@ int SolverV2::HeuristicMHVSolverV2::solve(
             if (!graph->isPrecoloured(vertex))
                 graph->setColour(vertex, std::get<0>(bestEntry)->getColour(vertex));
         }
-
-        return std::get<2>(bestEntry);
     }
     else
     {
         std::cout << "No viable solution found\n";
-        return 0;
     }
 }
 
@@ -68,60 +65,56 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::solveAtNode(
         case DataStructures::NodeType::LeafNode:
         {
             auto ranking = handleLeafNode(std::dynamic_pointer_cast<DataStructures::LeafNode>(node), graph, S);
-//            std::cout << "Nb entries leaf node " << node->getId() << ": " << ranking.size() << "\n";
-            if (ranking.size() == 0) std::cout << "EMPTY RANKING FROM LEAF NODE!\n";
 
-//            auto c = std::get<0>(ranking.getBestEntry());
-//            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-//                graph->setColour(vertex, c->getColour(vertex));
-//            DataStructures::BasicMHVEvaluator e{};
-//            if (e.evaluate(graph) != std::get<2>(ranking.getBestEntry())) std::cout << "WRONG EVALUATION IN LEAF NODE\n";
-//            graph->removeColours();
+            auto h = std::get<1>(ranking.getBestEntry());
+            int nbHappy{0};
+            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+            {
+                if (h.isHappy(vertex)) nbHappy++;
+            }
+            if (nbHappy != std::get<2>(ranking.getBestEntry())) std::cout << "WRONG EVALUATION IN LEAF NODE\n";
 
             return ranking;
         }
         case DataStructures::NodeType::IntroduceNode:
         {
             auto ranking = handleIntroduceNode(std::dynamic_pointer_cast<DataStructures::IntroduceNode>(node), graph, S);
-//            std::cout << "Nb entries introduce node " << node->getId() << ": " << ranking.size() << "\n";
-            if (ranking.size() == 0) std::cout << "EMPTY RANKING FROM INTRODUCE NODE!\n";
 
-//            auto c = std::get<0>(ranking.getBestEntry());
-//            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-//                graph->setColour(vertex, c->getColour(vertex));
-//            DataStructures::BasicMHVEvaluator e{};
-//            if (e.evaluate(graph) != std::get<2>(ranking.getBestEntry())) std::cout << "WRONG EVALUATION IN INTRODUCE NODE\n";
-//            graph->removeColours();
+            auto h = std::get<1>(ranking.getBestEntry());
+            int nbHappy{0};
+            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+            {
+                if (h.isHappy(vertex)) nbHappy++;
+            }
+            if (nbHappy != std::get<2>(ranking.getBestEntry())) std::cout << "WRONG EVALUATION IN INTRODUCE NODE\n";
 
             return ranking;
         }
         case DataStructures::NodeType::ForgetNode:
         {
             auto ranking = handleForgetNode(std::dynamic_pointer_cast<DataStructures::ForgetNode>(node), graph, S);
-//            std::cout << "Nb entries forget node " << node->getId() << ": " << ranking.size() << "\n";
-            if (ranking.size() == 0) std::cout << "EMPTY RANKING FROM FORGET NODE!\n";
 
-//            auto c = std::get<0>(ranking.getBestEntry());
-//            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-//                graph->setColour(vertex, c->getColour(vertex));
-//            DataStructures::BasicMHVEvaluator e{};
-//            if (e.evaluate(graph) != std::get<2>(ranking.getBestEntry())) std::cout << "WRONG EVALUATION IN FORGET NODE\n";
-//            graph->removeColours();
+            auto h = std::get<1>(ranking.getBestEntry());
+            int nbHappy{0};
+            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+            {
+                if (h.isHappy(vertex)) nbHappy++;
+            }
+            if (nbHappy != std::get<2>(ranking.getBestEntry())) std::cout << "WRONG EVALUATION IN FORGET NODE\n";
 
             return ranking;
         }
         case DataStructures::NodeType::JoinNode:
         {
             auto ranking = handleJoinNode(std::dynamic_pointer_cast<DataStructures::JoinNode>(node), graph, S);
-//            std::cout << "Nb entries join node " << node->getId() << ": " << ranking.size() << "\n";
-            if (ranking.size() == 0) std::cout << "EMPTY RANKING FROM JOIN NODE!\n";
 
-//            auto c = std::get<0>(ranking.getBestEntry());
-//            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-//                graph->setColour(vertex, c->getColour(vertex));
-//            DataStructures::BasicMHVEvaluator e{};
-//            if (e.evaluate(graph) != std::get<2>(ranking.getBestEntry())) std::cout << "WRONG EVALUATION IN JOIN NODE\n";
-//            graph->removeColours();
+            auto h = std::get<1>(ranking.getBestEntry());
+            int nbHappy{0};
+            for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+            {
+                if (h.isHappy(vertex)) nbHappy++;
+            }
+            if (nbHappy != std::get<2>(ranking.getBestEntry())) std::cout << "WRONG EVALUATION IN JOIN NODE\n";
 
             return ranking;
         }
@@ -283,18 +276,6 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
         }
     }
 
-    if (ranking.size() == 0 && rankingChild.size() > 0) // TODO remove
-    {
-        std::cout << "Introduced vertex " << node->getIntroducedVertex() << " (" << node->getId() << ") - ";
-        for (DataStructures::VertexType neighbour : graph->getNeighbours(node->getIntroducedVertex()))
-        {
-            std::cout << neighbour << ", ";
-        }
-        std::cout << "\n";
-
-        std::cout << rankingChild << "\n";
-    }
-
     return ranking;
 }
 
@@ -317,70 +298,6 @@ void mergeEntries(
         const std::shared_ptr<DataStructures::ColourAssignment>& secondaryColouring,
         const DataStructures::HappyVerticesAssignments& secondaryHappiness)
 {
-    // TODO verify, the final solution always underestimates the true evaluation
-//    int nbHappyInSecondaryWithoutBag{0};
-//    DataStructures::HappyVerticesAssignments mergedHappiness{primaryHappiness};
-//    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-//    {
-//        if (node->getBagContent().find(vertex) != node->getBagContent().end())
-//        {
-//
-//        }
-//        else if (!secondaryColouring->isColoured(vertex))
-//        {
-//
-//        }
-////        if (primaryColouring->isColoured(vertex) || !secondaryColouring->isColoured(vertex))
-////        {
-////            // Only consider vertices that are in the coloured only in the secondary colouring and are not in the bag
-////        }
-//        else if (!secondaryHappiness.isHappy(vertex)) // TODO you can't guarantee that this is correct aka that the happy vertex assignment for a vertex outside the bag is correct
-//        {
-//            // Only consider happy vertices
-//        }
-//        else
-//        {
-//            bool neighbourInBagColouredDifferent{false};
-//            for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
-//            {
-//                // Only consider neighbours in the bag
-////                if (node->getBagContent().find(neighbour) == node->getBagContent().end()) continue;
-////                if (!primaryColouring->isColoured(neighbour) || !secondaryColouring->isColoured(neighbour)) continue;
-//
-//                if (primaryColouring->getColour(neighbour) != secondaryColouring->getColour(vertex))
-//                {
-//                    // vertex is happy + one in the bag in left has different colour => can not be happy
-//                    neighbourInBagColouredDifferent = true;
-//                    break;
-//                }
-//            }
-//
-//            if (!neighbourInBagColouredDifferent)
-//            {
-//                nbHappyInSecondaryWithoutBag++;
-//            }
-//        }
-//    }
-//
-//    int nbBagMadeUnhappy{0};
-//    for (DataStructures::VertexType vertex : node->getBagContent())
-//    {
-//        if (!mergedHappiness.isHappy(vertex)) continue;
-//
-//        for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
-//        {
-//            if (secondaryColouring->isColoured(neighbour) && !primaryColouring->isColoured(neighbour))
-//            {
-//                if (primaryColouring->getColour(vertex) != secondaryColouring->getColour(neighbour))
-//                {
-//                    mergedHappiness.makeUnhappy(vertex);
-//                    nbBagMadeUnhappy++;
-//                    break;
-//                }
-//            }
-//        }
-//    }
-
     auto mergedColouring = std::make_shared<DataStructures::ColourAssignment>(node, primaryColouring, secondaryColouring);
     DataStructures::HappyVerticesAssignments mergedHappiness{graph};
     int nbHappyVertices{0};
@@ -445,79 +362,6 @@ void mergeEntries(
 }
 
 
-SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNode(
-        const std::shared_ptr<DataStructures::JoinNode>& node,
-        std::shared_ptr<DataStructures::Graph>& graph,
-        std::set<DataStructures::VertexType>& S) const
-{
-    HeuristicSolverRankingV2 rankingLeftChild = solveAtNode(node->getLeftChild(), graph, S);
-    HeuristicSolverRankingV2 rankingRightChild = solveAtNode(node->getRightChild(), graph, S);
-    HeuristicSolverRankingV2 ranking{nbSolutionsToKeep};
-    HeuristicSolverRankingV2 backupRanking{nbSolutionsToKeep};
-
-    // Gather all vertices that should be coloured, that is the vertices in S and the vertices in the bag
-    std::set<DataStructures::VertexType> verticesToConsider{S};
-    for (DataStructures::VertexType vertex : node->getBagContent())
-        verticesToConsider.insert(vertex);
-
-    for (auto& [colourAssignmentLeft, happyVerticesAssignmentsLeft, evaluationLeft] : rankingLeftChild)
-    {
-        for (auto& [colourAssignmentRight, happyVerticesAssignmentsRight, evaluationRight] : rankingRightChild)
-        {
-            bool noMistakes{true};
-            int nbHappyVerticesCountedDouble{0};
-            for (DataStructures::VertexType vertex : verticesToConsider)
-            {
-                bool sameColour = colourAssignmentLeft->getColour(vertex) == colourAssignmentRight->getColour(vertex);
-                bool sameHappiness = happyVerticesAssignmentsLeft.isHappy(vertex) == happyVerticesAssignmentsRight.isHappy(vertex);
-                if (!(sameColour && sameHappiness))
-                {
-                    noMistakes = false;
-                    break;
-                }
-                if (happyVerticesAssignmentsLeft.isHappy(vertex))
-                    nbHappyVerticesCountedDouble++;
-            }
-
-            if (noMistakes)
-            {
-                DataStructures::HappyVerticesAssignments mergedHappiness{graph};
-                for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-                {
-                    if (happyVerticesAssignmentsLeft.isHappy(vertex) || happyVerticesAssignmentsRight.isHappy(vertex))
-                        mergedHappiness.makeHappy(vertex);
-                }
-                ranking.push(
-                        std::make_shared<DataStructures::ColourAssignment>(node, colourAssignmentLeft, colourAssignmentRight),
-                        mergedHappiness,
-                        evaluationLeft + evaluationRight - nbHappyVerticesCountedDouble);
-            }
-            else
-            { // TODO miss niet nodig wanneer er wel ergens anders entries zijn toegevoegd/gemerged
-                mergeEntries(
-                        ranking, node, graph,
-                        colourAssignmentLeft, happyVerticesAssignmentsLeft, evaluationLeft,
-                        colourAssignmentRight, happyVerticesAssignmentsRight);
-                mergeEntries(
-                        ranking, node, graph,
-                        colourAssignmentRight, happyVerticesAssignmentsRight, evaluationRight,
-                        colourAssignmentLeft, happyVerticesAssignmentsLeft);
-            }
-        }
-    }
-
-    if (ranking.size() == 0)
-    {
-        std::cout << "Used backup\n";
-        return backupRanking;
-    }
-    else
-    {
-        return ranking;
-    }
-}
-
-
 //SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNode(
 //        const std::shared_ptr<DataStructures::JoinNode>& node,
 //        std::shared_ptr<DataStructures::Graph>& graph,
@@ -540,7 +384,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
 //            int nbHappyVerticesCountedDouble{0};
 //            for (DataStructures::VertexType vertex : verticesToConsider)
 //            {
-//                bool sameColour = colourAssignmentLeft->getColourConst(vertex) == colourAssignmentRight->getColourConst(vertex);
+//                bool sameColour = colourAssignmentLeft->getColour(vertex) == colourAssignmentRight->getColour(vertex);
 //                bool sameHappiness = happyVerticesAssignmentsLeft.isHappy(vertex) == happyVerticesAssignmentsRight.isHappy(vertex);
 //                if (!(sameColour && sameHappiness))
 //                {
@@ -553,13 +397,107 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
 //
 //            if (noMistakes)
 //            {
+//                DataStructures::HappyVerticesAssignments mergedHappiness{graph};
+//                for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+//                {
+//                    if (happyVerticesAssignmentsLeft.isHappy(vertex) || happyVerticesAssignmentsRight.isHappy(vertex))
+//                        mergedHappiness.makeHappy(vertex);
+//                }
 //                ranking.push(
 //                        std::make_shared<DataStructures::ColourAssignment>(node, colourAssignmentLeft, colourAssignmentRight),
-//                        happyVerticesAssignmentsLeft, // Important information is in bag and S, which is in the child assignments and equal for left and right
+//                        mergedHappiness,
 //                        evaluationLeft + evaluationRight - nbHappyVerticesCountedDouble);
+//            }
+//            else
+//            { // TODO miss niet nodig wanneer er wel ergens anders entries zijn toegevoegd/gemerged
+//                mergeEntries(
+//                        ranking, node, graph,
+//                        colourAssignmentLeft, happyVerticesAssignmentsLeft, evaluationLeft,
+//                        colourAssignmentRight, happyVerticesAssignmentsRight);
+//                mergeEntries(
+//                        ranking, node, graph,
+//                        colourAssignmentRight, happyVerticesAssignmentsRight, evaluationRight,
+//                        colourAssignmentLeft, happyVerticesAssignmentsLeft);
 //            }
 //        }
 //    }
 //
 //    return ranking;
 //}
+
+
+SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNode(
+        const std::shared_ptr<DataStructures::JoinNode>& node,
+        std::shared_ptr<DataStructures::Graph>& graph,
+        std::set<DataStructures::VertexType>& S) const
+{
+    HeuristicSolverRankingV2 rankingLeftChild = solveAtNode(node->getLeftChild(), graph, S);
+    HeuristicSolverRankingV2 rankingRightChild = solveAtNode(node->getRightChild(), graph, S);
+    HeuristicSolverRankingV2 ranking{nbSolutionsToKeep};
+
+    // Gather all vertices that should be coloured, that is the vertices in S and the vertices in the bag
+    std::set<DataStructures::VertexType> verticesToConsider{S};
+    for (DataStructures::VertexType vertex : node->getBagContent())
+        verticesToConsider.insert(vertex);
+
+    for (auto& [colourAssignmentLeft, happyVerticesAssignmentsLeft, evaluationLeft] : rankingLeftChild)
+    {
+        int bestNbMistakes = graph->getNbVertices() + 1;
+        std::shared_ptr<DataStructures::ColourAssignment> bestColouringRight;
+        DataStructures::HappyVerticesAssignments bestHappinessRight{graph};
+        int bestEvaluationRight;
+        for (auto& [colourAssignmentRight, happyVerticesAssignmentsRight, evaluationRight] : rankingRightChild)
+        {
+            int nbMistakes{0};
+            int nbHappyVerticesCountedDouble{0};
+            for (DataStructures::VertexType vertex : verticesToConsider)
+            {
+                bool sameColour = colourAssignmentLeft->getColour(vertex) == colourAssignmentRight->getColour(vertex);
+                bool sameHappiness = happyVerticesAssignmentsLeft.isHappy(vertex) == happyVerticesAssignmentsRight.isHappy(vertex);
+                if (!(sameColour && sameHappiness))
+                {
+                    nbMistakes++;
+                }
+                if (happyVerticesAssignmentsLeft.isHappy(vertex))
+                    nbHappyVerticesCountedDouble++;
+            }
+
+            if (nbMistakes == 0)
+            {
+                DataStructures::HappyVerticesAssignments mergedHappiness{graph};
+                for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+                {
+                    if (happyVerticesAssignmentsLeft.isHappy(vertex) || happyVerticesAssignmentsRight.isHappy(vertex))
+                        mergedHappiness.makeHappy(vertex);
+                }
+                ranking.push(
+                        std::make_shared<DataStructures::ColourAssignment>(node, colourAssignmentLeft, colourAssignmentRight),
+                        mergedHappiness,
+                        evaluationLeft + evaluationRight - nbHappyVerticesCountedDouble);
+            }
+
+            if (nbMistakes < bestNbMistakes)
+            {
+                bestNbMistakes = nbMistakes;
+                bestColouringRight = colourAssignmentRight;
+                bestHappinessRight = happyVerticesAssignmentsRight;
+                bestEvaluationRight = evaluationRight;
+            }
+        }
+
+        if (bestNbMistakes > 0)
+        {
+            mergeEntries(
+                    ranking, node, graph,
+                    colourAssignmentLeft, happyVerticesAssignmentsLeft, evaluationLeft,
+                    bestColouringRight, bestHappinessRight);
+            mergeEntries(
+                    ranking, node, graph,
+                    bestColouringRight, bestHappinessRight, bestEvaluationRight,
+                    colourAssignmentLeft, happyVerticesAssignmentsLeft);
+        }
+    }
+
+    return ranking;
+}
+

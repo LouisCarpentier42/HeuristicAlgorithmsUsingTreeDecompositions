@@ -26,7 +26,7 @@ namespace SolverV2
     public:
         explicit HeuristicMHVSolverV2(int nbSolutionsToKeep);
 
-        [[nodiscard]] int solve(
+        void solve(
                 std::shared_ptr<DataStructures::Graph>& graph,
                 std::shared_ptr<DataStructures::NiceTreeDecomposition>& treeDecomposition) const;
 

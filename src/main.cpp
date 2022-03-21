@@ -49,12 +49,14 @@ int main(int argc, char** argv)
 //        std::string solverFile{"greedy_vs_growth.sol"};
 //        std::string experimentFile{"lewis_random_greedy_vs_growth.exp"};
 
-        std::string solverFile{"greedy_vs_growth.sol"};
-        std::string experimentFile{"grid_graphs.exp"};
+        std::string solverFile{"initial_solvers.sol"};
+//        std::string experimentFile{"grid_graphs.exp"};
+        std::string experimentFile{"small_random_graphs.exp"};
 
 //        std::string solverFile{"greedy_vs_growth.sol"};
 //        std::string experimentFile{"initial_experiment.exp"};
 //        std::string experimentFile{"small_random_graphs.exp"};
+
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
         ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
     }
@@ -96,13 +98,11 @@ int main(int argc, char** argv)
 
             testInstance.graph->removeColours();
             auto start = std::chrono::high_resolution_clock::now();
-            int evaluation{solverV2.solve(testInstance.graph, td)};
+            solverV2.solve(testInstance.graph, td);
             auto stop = std::chrono::high_resolution_clock::now();
-
-            DataStructures::BasicMHVEvaluator evaluator{};
+            int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
 
             std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
-            std::cout << "True evaluation: " << evaluator.evaluate(testInstance.graph) << "\n";
             std::cout  << "\n";
 
             std::cout << "--------------------------------------------\n";
@@ -171,7 +171,8 @@ int main(int argc, char** argv)
                 graph->removeColours();
 
                 SolverV2::HeuristicMHVSolverV2 solverV2{1024};
-                int tdEvaluation{solverV2.solve(graph, niceTreeDecomposition)};
+                solverV2.solve(graph, niceTreeDecomposition);
+                int tdEvaluation = problemEvaluator->evaluate(graph);
 //                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, niceTreeDecomposition)};
                 int tdColouringEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
