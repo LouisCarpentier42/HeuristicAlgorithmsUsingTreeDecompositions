@@ -31,8 +31,8 @@ namespace DataStructures
             std::shared_ptr<ColourAssignment>& other);
         ColourAssignment(
             const std::shared_ptr<Node>& node,
-            std::shared_ptr<ColourAssignment>& primaryColourAssignment,
-            std::shared_ptr<ColourAssignment>& secondaryColourAssignment);
+            const std::shared_ptr<ColourAssignment>& primaryColourAssignment,
+            const std::shared_ptr<ColourAssignment>& secondaryColourAssignment);
 
         [[nodiscard]] size_t getSize() const;
         [[nodiscard]] ColourType getColour(VertexType vertex);

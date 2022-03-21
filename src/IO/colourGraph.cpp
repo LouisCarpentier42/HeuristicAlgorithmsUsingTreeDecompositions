@@ -35,7 +35,8 @@ std::string IO::Reader::colourGraph(const std::string& str, std::shared_ptr<Data
         double percentColouredVertices{std::stod(parameters[2])};
 
         colourGraphRandom(nbColours, percentColouredVertices, graph);
-        return "random";
+
+        return "random_" + parameters[1] + "_" + parameters[2];
     }
 
     throw std::runtime_error("Invalid colouring identifier is given: " + str + "!");

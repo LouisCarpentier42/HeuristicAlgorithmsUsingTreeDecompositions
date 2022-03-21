@@ -50,8 +50,18 @@ int main(int argc, char** argv)
 //        std::string experimentFile{"lewis_random_greedy_vs_growth.exp"};
 
         std::string solverFile{"greedy_vs_growth.sol"};
-        std::string experimentFile{"initial_experiment.exp"};
+        std::string experimentFile{"grid_graphs.exp"};
+
+//        std::string solverFile{"greedy_vs_growth.sol"};
+//        std::string experimentFile{"initial_experiment.exp"};
 //        std::string experimentFile{"small_random_graphs.exp"};
+        std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
+        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
+    }
+    else if (strcmp(argv[1], "v2") == 0)
+    {
+        std::string solverFile{"greedy_vs_growth.sol"};
+        std::string experimentFile{"small_random_graphs.exp"};
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
 
         for (ExperimentalAnalysis::TestInstance& testInstance : experiment->testInstances)
@@ -72,13 +82,17 @@ int main(int argc, char** argv)
                 std::cout  << "\n";
             }
 
-            int nbSolutionsToKeep{24};
+            int nbSolutionsToKeep;
+            if (argc == 3)
+                nbSolutionsToKeep = IO::Reader::convertToInt(argv[2]);
+            else
+                nbSolutionsToKeep = 8;
 //            MaximumHappyVertices::ExactTreeDecompositionMHV solverV2{};
             SolverV2::HeuristicMHVSolverV2 solverV2{nbSolutionsToKeep};
             std::cout << "Solver V2 with " << nbSolutionsToKeep << " entries to keep\n";
 
             std::shared_ptr<DataStructures::NiceTreeDecomposition> td = defaultReader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
-            std::cout << *td << "\n";
+//            std::cout << *td << "\n";
 
             testInstance.graph->removeColours();
             auto start = std::chrono::high_resolution_clock::now();
@@ -87,16 +101,12 @@ int main(int argc, char** argv)
 
             DataStructures::BasicMHVEvaluator evaluator{};
 
-
             std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
             std::cout << "True evaluation: " << evaluator.evaluate(testInstance.graph) << "\n";
             std::cout  << "\n";
 
             std::cout << "--------------------------------------------\n";
         }
-
-
-//        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
     }
     else if (strcmp(argv[1], "construct") == 0 || strcmp(argv[1], "construct-nice") == 0)
     {
@@ -160,7 +170,9 @@ int main(int argc, char** argv)
                 int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
-                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, niceTreeDecomposition)};
+                SolverV2::HeuristicMHVSolverV2 solverV2{1024};
+                int tdEvaluation{solverV2.solve(graph, niceTreeDecomposition)};
+//                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, niceTreeDecomposition)};
                 int tdColouringEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 

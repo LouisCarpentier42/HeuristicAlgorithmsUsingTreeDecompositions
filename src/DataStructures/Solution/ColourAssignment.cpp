@@ -28,8 +28,8 @@ DataStructures::ColourAssignment::ColourAssignment(
 
 DataStructures::ColourAssignment::ColourAssignment(
         const std::shared_ptr<Node>& node,
-        std::shared_ptr<ColourAssignment>& primaryColourAssignment,
-        std::shared_ptr<ColourAssignment>& secondaryColourAssignment)
+        const std::shared_ptr<ColourAssignment>& primaryColourAssignment,
+        const std::shared_ptr<ColourAssignment>& secondaryColourAssignment)
     : assignments{std::vector<ColourType>(primaryColourAssignment->assignments.size(), 0)},
       vertexKnownToBeUncoloured{std::vector<bool>(primaryColourAssignment->assignments.size(), false)},
       childAssignments{primaryColourAssignment, secondaryColourAssignment}
