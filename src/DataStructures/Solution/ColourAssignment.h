@@ -28,7 +28,7 @@ namespace DataStructures
         explicit ColourAssignment(const std::shared_ptr<Graph>& graph);
         ColourAssignment(
             const std::shared_ptr<Node>& node,
-            std::shared_ptr<ColourAssignment>& other);
+            const std::shared_ptr<ColourAssignment>& other);
         ColourAssignment(
             const std::shared_ptr<Node>& node,
             const std::shared_ptr<ColourAssignment>& primaryColourAssignment,

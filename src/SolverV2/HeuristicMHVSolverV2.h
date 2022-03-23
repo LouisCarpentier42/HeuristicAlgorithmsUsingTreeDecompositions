@@ -22,6 +22,9 @@ namespace SolverV2
     {
     private:
         const int nbSolutionsToKeep;
+        const int weightHappyVertices{2};
+        const int weightPotentialHappyVertices{1};
+        const int weightUnhappyVertices{0};
 
     public:
         explicit HeuristicMHVSolverV2(int nbSolutionsToKeep);
@@ -30,31 +33,43 @@ namespace SolverV2
                 std::shared_ptr<DataStructures::Graph>& graph,
                 std::shared_ptr<DataStructures::NiceTreeDecomposition>& treeDecomposition) const;
 
-        HeuristicSolverRankingV2 solveAtNode(
+        [[nodiscard]] HeuristicSolverRankingV2 solveAtNode(
                 const std::shared_ptr<DataStructures::NiceNode>& node,
-                std::shared_ptr<DataStructures::Graph>& graph,
-                std::set<DataStructures::VertexType>& S) const;
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                const std::set<DataStructures::VertexType>& S) const;
 
     private:
-        HeuristicSolverRankingV2 handleLeafNode(
+        [[nodiscard]] int getEvaluation(const HappyVertexAssignmentV2& happyVertexAssignment) const;
+
+        [[nodiscard]] HeuristicSolverRankingV2 handleLeafNode(
                 const std::shared_ptr<DataStructures::LeafNode>& node,
-                std::shared_ptr<DataStructures::Graph>& graph,
-                std::set<DataStructures::VertexType>& S) const;
-        HeuristicSolverRankingV2 handleIntroduceNode(
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                const std::set<DataStructures::VertexType>& S) const;
+        [[nodiscard]] HeuristicSolverRankingV2 handleIntroduceNode(
                 const std::shared_ptr<DataStructures::IntroduceNode>& node,
-                std::shared_ptr<DataStructures::Graph>& graph,
-                std::set<DataStructures::VertexType>& S) const;
-        HeuristicSolverRankingV2 handleForgetNode(
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                const std::set<DataStructures::VertexType>& S) const;
+        [[nodiscard]] HeuristicSolverRankingV2 handleForgetNode(
                 const std::shared_ptr<DataStructures::ForgetNode>& node,
-                std::shared_ptr<DataStructures::Graph>& graph,
-                std::set<DataStructures::VertexType>& S) const;
-        HeuristicSolverRankingV2 handleJoinNode(
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                const std::set<DataStructures::VertexType>& S) const;
+        [[nodiscard]] HeuristicSolverRankingV2 handleJoinNode(
                 const std::shared_ptr<DataStructures::JoinNode>& node,
-                std::shared_ptr<DataStructures::Graph>& graph,
-                std::set<DataStructures::VertexType>& S) const;
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                const std::set<DataStructures::VertexType>& S) const;
+
+        void mergeAndAddDifferingEntries(
+                SolverV2::HeuristicSolverRankingV2& ranking,
+                const std::shared_ptr<DataStructures::JoinNode>& node,
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                const ColourAssignmentV2& primaryColouring,
+                const SolverV2::HappyVertexAssignmentV2& primaryHappiness,
+                int evaluationPrimary,
+                const ColourAssignmentV2& secondaryColouring,
+                const SolverV2::HappyVertexAssignmentV2& secondaryHappiness,
+                int evaluationSecondary) const;
     };
 }
-
 
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_HEURISTICMHVSOLVERV2_H

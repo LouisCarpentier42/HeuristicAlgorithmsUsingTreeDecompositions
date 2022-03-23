@@ -63,6 +63,7 @@ int main(int argc, char** argv)
     else if (strcmp(argv[1], "v2") == 0)
     {
         std::string solverFile{"greedy_vs_growth.sol"};
+//        std::string experimentFile{"initial_experiment.exp"};
         std::string experimentFile{"small_random_graphs.exp"};
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
 
@@ -170,17 +171,17 @@ int main(int argc, char** argv)
                 int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
-                SolverV2::HeuristicMHVSolverV2 solverV2{1024};
+                SolverV2::HeuristicMHVSolverV2 solverV2{1000}; // TODO set back to exact algo
                 solverV2.solve(graph, niceTreeDecomposition);
                 int tdEvaluation = problemEvaluator->evaluate(graph);
 //                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, niceTreeDecomposition)};
                 int tdColouringEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
-                std::cout << "[brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "]\n";
+                std::cout << counter << ": [brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "]\n";
                 if (bruteForceEvaluation != tdEvaluation)
                 {
-                    std::cout << "[ERROR] line: '" << line << "': brute force and td have different evaluation \n";
+                    std::cout << "[ERROR]: brute force and td have different evaluation:" << tokens[0] << " " << tokens[1] << "\n";
                     nbMistakes++;
                 }
 
@@ -188,11 +189,6 @@ int main(int argc, char** argv)
                 {
                     std::cout << "[ERROR] evaluation graph differs from evaluation td algorithm: [" << tdEvaluation << ", " << tdColouringEvaluation << "]\n";
                     nbMistakes++;
-                }
-
-                if (counter % 50 == 0)
-                {
-                    std::cout << "Done with stress test " << counter << "\n";
                 }
             }
 

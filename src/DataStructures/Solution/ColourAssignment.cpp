@@ -17,7 +17,7 @@ DataStructures::ColourAssignment::ColourAssignment(const std::shared_ptr<Graph>&
 
 DataStructures::ColourAssignment::ColourAssignment(
         const std::shared_ptr<Node>& node,
-        std::shared_ptr<ColourAssignment>& other)
+        const std::shared_ptr<ColourAssignment>& other)
     : assignments{std::vector<ColourType>(other->assignments.size(), 0)},
       vertexKnownToBeUncoloured{std::vector<bool>(other->assignments.size(), false)},
       childAssignments{other}

@@ -5,8 +5,9 @@
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_HEURISTICSOLVERRANKINGV2_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_HEURISTICSOLVERRANKINGV2_H
 
-#include "../DataStructures/Solution/HappyVerticesAssignments.h"
-#include "../DataStructures/Solution/ColourAssignment.h"
+#include <set>
+#include "HappyVertexAssignmentV2.h"
+#include "ColourAssignmentV2.h"
 
 namespace SolverV2
 {
@@ -14,8 +15,8 @@ namespace SolverV2
     {
     public:
         using Entry = std::tuple<
-                std::shared_ptr<DataStructures::ColourAssignment>,
-                DataStructures::HappyVerticesAssignments,
+                ColourAssignmentV2,
+                HappyVertexAssignmentV2,
                 int>;
 
     private:
@@ -29,8 +30,8 @@ namespace SolverV2
         explicit HeuristicSolverRankingV2(int capacity);
 
         void push(
-                const std::shared_ptr<DataStructures::ColourAssignment>& colourAssignment,
-                const DataStructures::HappyVerticesAssignments& happyVerticesAssignments,
+                const ColourAssignmentV2& colourAssignment,
+                const HappyVertexAssignmentV2& happyVerticesAssignments,
                 int evaluation);
 
         [[nodiscard]] bool hasReachedCapacity() const;
@@ -39,7 +40,6 @@ namespace SolverV2
 
         [[nodiscard]] std::vector<Entry>::iterator begin();
         [[nodiscard]] std::vector<Entry>::iterator end();
-
     };
 
     std::ostream& operator<<(std::ostream& out, HeuristicSolverRankingV2& ranking);
