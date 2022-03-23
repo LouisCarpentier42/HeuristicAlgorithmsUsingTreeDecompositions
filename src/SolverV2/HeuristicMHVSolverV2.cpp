@@ -520,7 +520,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
             }
         }
         bestEntries.insert(bestEntry);
-        ranking.push(std::get<0>(bestEntry), std::get<1>(bestEntry), std::get<2>(bestEntry)); // TODO add method in ranking to push entry as a whole (+ maybe call then this method from the already existing one)
+        ranking.push(bestEntry);
     }
 
     return ranking;

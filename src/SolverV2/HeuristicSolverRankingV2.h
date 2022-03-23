@@ -14,21 +14,21 @@ namespace SolverV2
     class HeuristicSolverRankingV2
     {
     public:
-        using Entry = std::tuple<
-                ColourAssignmentV2,
-                HappyVertexAssignmentV2,
-                int>;
+        using Entry = std::tuple<ColourAssignmentV2, HappyVertexAssignmentV2, int>;
 
     private:
-        const int capacity;
-        std::vector<Entry> entries{};
+        struct EntryComparator
+        {
+            bool operator()(const Entry& entry1, const Entry& entry2) const;
+        };
 
-        int worstEvaluation{0};
-        std::set<Entry> worstEntries{};
+        const int capacity;
+        std::set<Entry, EntryComparator> entries{};
 
     public:
         explicit HeuristicSolverRankingV2(int capacity);
 
+        void push(const Entry& entry);
         void push(
                 const ColourAssignmentV2& colourAssignment,
                 const HappyVertexAssignmentV2& happyVerticesAssignments,
@@ -38,8 +38,8 @@ namespace SolverV2
         [[nodiscard]] int size() const;
         [[nodiscard]] Entry getBestEntry() const;
 
-        [[nodiscard]] std::vector<Entry>::iterator begin();
-        [[nodiscard]] std::vector<Entry>::iterator end();
+        [[nodiscard]] std::set<Entry>::iterator begin();
+        [[nodiscard]] std::set<Entry>::iterator end();
     };
 
     std::ostream& operator<<(std::ostream& out, HeuristicSolverRankingV2& ranking);
