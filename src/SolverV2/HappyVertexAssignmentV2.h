@@ -43,17 +43,6 @@ namespace SolverV2
         [[nodiscard]] HappinessValue getHappiness(DataStructures::VertexType vertex) const;
         [[nodiscard]] int getCountOf(HappinessValue happinessValue) const;
 
-        // TODO remove methods below
-        void makeHappy(DataStructures::VertexType vertex);
-        void makePotentiallyHappy(DataStructures::VertexType vertex);
-        void makeUnhappy(DataStructures::VertexType vertex);
-
-        [[nodiscard]] bool isUnknown(DataStructures::VertexType vertex) const;
-        [[nodiscard]] bool isHappy(DataStructures::VertexType vertex) const;
-        [[nodiscard]] bool isPotentiallyHappy(DataStructures::VertexType vertex) const;
-        [[nodiscard]] bool isUnHappy(DataStructures::VertexType vertex) const;
-
-
         friend bool operator==(const HappyVertexAssignmentV2& h1, const HappyVertexAssignmentV2& h2);
         friend bool operator<(const HappyVertexAssignmentV2& h1, const HappyVertexAssignmentV2& h2);
         friend std::ostream& operator<<(std::ostream& out, const HappyVertexAssignmentV2& happyVertexAssignment);

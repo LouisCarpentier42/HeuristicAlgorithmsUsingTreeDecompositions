@@ -38,50 +38,6 @@ SolverV2::HappinessValue SolverV2::HappyVertexAssignmentV2::getHappiness(DataStr
     return happiness.at(vertex);
 }
 
-void SolverV2::HappyVertexAssignmentV2::makeHappy(DataStructures::VertexType vertex)
-{
-    happinessValuesCounts[happiness[vertex]]--;
-    happinessValuesCounts[HappinessValue::happy]++;
-
-    happiness[vertex] = HappinessValue::happy;
-}
-
-void SolverV2::HappyVertexAssignmentV2::makePotentiallyHappy(DataStructures::VertexType vertex)
-{
-    happinessValuesCounts[happiness[vertex]]--;
-    happinessValuesCounts[HappinessValue::potentiallyHappy]++;
-
-    happiness[vertex] = HappinessValue::potentiallyHappy;
-}
-
-void SolverV2::HappyVertexAssignmentV2::makeUnhappy(DataStructures::VertexType vertex)
-{
-    happinessValuesCounts[happiness[vertex]]--;
-    happinessValuesCounts[HappinessValue::unhappy]++;
-
-    happiness[vertex] = HappinessValue::unhappy;
-}
-
-bool SolverV2::HappyVertexAssignmentV2::isUnknown(DataStructures::VertexType vertex) const
-{
-    return happiness[vertex] == HappinessValue::unknown;;
-}
-
-bool SolverV2::HappyVertexAssignmentV2::isHappy(DataStructures::VertexType vertex) const
-{
-    return happiness[vertex] == HappinessValue::happy;
-}
-
-bool SolverV2::HappyVertexAssignmentV2::isPotentiallyHappy(DataStructures::VertexType vertex) const
-{
-    return happiness[vertex] == HappinessValue::potentiallyHappy;
-}
-
-bool SolverV2::HappyVertexAssignmentV2::isUnHappy(DataStructures::VertexType vertex) const
-{
-    return happiness[vertex] == HappinessValue::unhappy;
-}
-
 int SolverV2::HappyVertexAssignmentV2::getCountOf(SolverV2::HappinessValue happinessValue) const
 {
     return happinessValuesCounts.at(happinessValue);
