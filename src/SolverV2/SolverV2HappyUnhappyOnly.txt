@@ -253,7 +253,7 @@
 //
 //int SolverV2::HeuristicMHVSolverV2::getEvaluation(const HappyVertexAssignmentV2& happyVertexAssignment) const
 //{
-//    return weightHappyVertices * happyVertexAssignment.getCountOf(HappinessValues::happy);
+//    return weightHappyVertices * happyVertexAssignment.getCountOf(HappinessValue::happy);
 //}
 //
 //SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleLeafNode(

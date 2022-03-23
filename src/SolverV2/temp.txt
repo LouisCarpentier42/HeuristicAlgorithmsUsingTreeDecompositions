@@ -59,9 +59,9 @@
 //
 //int SolverV2::HeuristicMHVSolverV2::getEvaluation(const HappyVertexAssignmentV2& happyVertexAssignment) const
 //{
-//    return weightHappyVertices * happyVertexAssignment.getCountOf(HappinessValues::happy) +
-//           weightPotentialHappyVertices * happyVertexAssignment.getCountOf(HappinessValues::potentiallyHappy) +
-//           weightUnhappyVertices * happyVertexAssignment.getCountOf(HappinessValues::unhappy);
+//    return weightHappyVertices * happyVertexAssignment.getCountOf(HappinessValue::happy) +
+//           weightPotentialHappyVertices * happyVertexAssignment.getCountOf(HappinessValue::potentiallyHappy) +
+//           weightUnhappyVertices * happyVertexAssignment.getCountOf(HappinessValue::unhappy);
 //}
 //
 //SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleLeafNode(

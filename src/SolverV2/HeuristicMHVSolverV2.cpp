@@ -65,9 +65,9 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::solveAtNode(
 
 int SolverV2::HeuristicMHVSolverV2::getEvaluation(const HappyVertexAssignmentV2& happyVertexAssignment) const
 {
-    return weightHappyVertices * happyVertexAssignment.getCountOf(HappinessValues::happy) +
-           weightPotentialHappyVertices * happyVertexAssignment.getCountOf(HappinessValues::potentiallyHappy) +
-           weightUnhappyVertices * happyVertexAssignment.getCountOf(HappinessValues::unhappy);
+    return weightHappyVertices * happyVertexAssignment.getCountOf(HappinessValue::happy) +
+           weightPotentialHappyVertices * happyVertexAssignment.getCountOf(HappinessValue::potentiallyHappy) +
+           weightUnhappyVertices * happyVertexAssignment.getCountOf(HappinessValue::unhappy);
 }
 
 SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleLeafNode(
@@ -194,7 +194,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
     HeuristicSolverRankingV2 ranking{nbSolutionsToKeep};
 
     // Iterate over the entries of the child to create a colouring and happy vertex assignment for the given node
-    for (auto& [colourAssignmentChild, happyVerticesAssignmentsChild, evaluationChild] : rankingChild)
+    for (auto& [colourAssignmentChild, happyVerticesAssignmentsChild, evaluationChild] : rankingChild) // TODO maybe use entry?
     {
         // TODO is either unhappy already or potentially happy? -> First implement join node
         for (DataStructures::ColourType colour{1}; colour <= graph->getNbColours(); colour++)
@@ -335,7 +335,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
 
     // A vector to keep track of the unique entries to add, that is the entries with unique colour and happiness for
     // the vertices to consider
-    std::vector<HeuristicSolverRankingV2::Entry> entriesToAdd{}; // TODO maybe make a set, thus efficiently find matches + cleaner code
+    std::vector<HeuristicSolverRankingV2::Entry> entriesToAdd{};
 
     // Iterate over the entries of the child and check if it should be added to the new ranking
     for (HeuristicSolverRankingV2::Entry entry : rankingChild)
@@ -383,13 +383,72 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
     return ranking;
 }
 
-
-
 SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNode(
         const std::shared_ptr<DataStructures::JoinNode>& node,
         const std::shared_ptr<DataStructures::Graph>& graph,
         const std::set<DataStructures::VertexType>& S) const
 {
+//    HeuristicSolverRankingV2 rankingLeftChild = solveAtNode(node->getLeftChild(), graph, S);
+//    HeuristicSolverRankingV2 rankingRightChild = solveAtNode(node->getRightChild(), graph, S);
+//    HeuristicSolverRankingV2 ranking{nbSolutionsToKeep};
+//
+//    // Gather all vertices that should be coloured, that is the vertices in S and the vertices in the bag
+//    std::set<DataStructures::VertexType> verticesToConsider{S};
+//    for (DataStructures::VertexType vertex : node->getBagContent())
+//        verticesToConsider.insert(vertex);
+//
+//    for (const HeuristicSolverRankingV2::Entry& entryLeft : rankingLeftChild) // TODO maybe change to entry
+//    {
+//        int bestNbMistakes = graph->getNbVertices() + 1;
+//        HeuristicSolverRankingV2::Entry bestBackupEntry = *rankingRightChild.begin();
+//
+//        for (const HeuristicSolverRankingV2::Entry& entryRight : rankingRightChild)
+//        {
+//            int nbMistakes{0};
+//            for (DataStructures::VertexType vertex : verticesToConsider)
+//            {
+//                if (std::get<0>(entryLeft).getColour(vertex) != std::get<0>(entryRight).getColour(vertex) ||
+//                    std::get<1>(entryLeft).getHappiness((vertex) != std::get<1>(entryLeft).getHappiness(vertex)))
+//                {
+//                    nbMistakes++;
+//                }
+//            }
+//
+//            if (nbMistakes == 0)
+//            {
+//                bestNbMistakes = 0;
+//                HappyVertexAssignmentV2 mergedHappiness{std::get<1>(entryLeft), std::get<1>(entryRight)};
+//                ranking.push(
+//                        ColourAssignmentV2{std::get<0>(entryLeft), std::get<0>(entryRight)},
+//                        mergedHappiness,
+//                        getEvaluation(mergedHappiness));
+//
+//                break;
+//            }
+//
+//            if (nbMistakes < bestNbMistakes)
+//            {
+//                bestNbMistakes = nbMistakes;
+//                bestBackupEntry = entryRight;
+//            }
+//        }
+//
+////        if (bestNbMistakes > 0)
+////        {
+////            mergeAndAddDifferingEntries(
+////                    ranking, node, graph,
+////                    colourAssignmentLeft, happyVerticesAssignmentsLeft, evaluationLeft,
+////                    bestColouringRight, bestHappinessRight, bestEvaluationRight);
+////            mergeAndAddDifferingEntries(
+////                    ranking, node, graph,
+////                    bestColouringRight, bestHappinessRight, bestEvaluationRight,
+////                    colourAssignmentLeft, happyVerticesAssignmentsLeft, evaluationLeft);
+////        }
+//    }
+//
+//    return ranking;
+
+
     HeuristicSolverRankingV2 rankingLeftChild = solveAtNode(node->getLeftChild(), graph, S);
     HeuristicSolverRankingV2 rankingRightChild = solveAtNode(node->getRightChild(), graph, S);
     HeuristicSolverRankingV2 ranking{nbSolutionsToKeep};
@@ -399,22 +458,19 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
     for (DataStructures::VertexType vertex : node->getBagContent())
         verticesToConsider.insert(vertex);
 
-    for (auto& [colourAssignmentLeft, happyVerticesAssignmentsLeft, evaluationLeft] : rankingLeftChild) // TODO maybe change to entry
+    // TODO first iterate over child with fewest entries in ranking
+    for (HeuristicSolverRankingV2::Entry entryLeft : rankingLeftChild)
     {
         int bestNbMistakes = graph->getNbVertices() + 1;
-        ColourAssignmentV2 bestColouringRight{graph};
-        HappyVertexAssignmentV2 bestHappinessRight{graph};
-        int bestEvaluationRight;
+        HeuristicSolverRankingV2::Entry bestEntry = *rankingRightChild.begin();
 
-        std::set<HeuristicSolverRankingV2::Entry> matches;
-        for (auto& [colourAssignmentRight, happyVerticesAssignmentsRight, evaluationRight] : rankingRightChild)
+        for (HeuristicSolverRankingV2::Entry entryRight : rankingRightChild)
         {
             int nbMistakes{0};
             for (DataStructures::VertexType vertex : verticesToConsider)
             {
-                bool sameColour = colourAssignmentLeft.getColour(vertex) == colourAssignmentRight.getColour(vertex);
-                bool sameHappiness = happyVerticesAssignmentsLeft.isHappy(vertex) == happyVerticesAssignmentsRight.isHappy(vertex);
-                if (!(sameColour && sameHappiness))
+                if (std::get<0>(entryLeft).getColour(vertex) != std::get<0>(entryRight).getColour(vertex) ||
+                    std::get<1>(entryLeft).getHappiness(vertex) != std::get<1>(entryRight).getHappiness(vertex))
                 {
                     nbMistakes++;
                 }
@@ -422,30 +478,27 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
 
             if (nbMistakes == 0)
             {
-                bestNbMistakes = 0;
-                matches.insert(std::make_tuple(colourAssignmentRight, happyVerticesAssignmentsRight, evaluationRight));
+//                HappyVertexAssignmentV2 mergedHappiness{std::get<1>(entryLeft), std::get<1>(entryRight)};
                 HappyVertexAssignmentV2 mergedHappiness{graph};
                 for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
                 {
-                    if (happyVerticesAssignmentsLeft.isHappy(vertex) || happyVerticesAssignmentsRight.isHappy(vertex))
+                    if (std::get<1>(entryLeft).isHappy(vertex) || std::get<1>(entryRight).isHappy(vertex))
                         mergedHappiness.makeHappy(vertex);
                     else
                         mergedHappiness.makeUnhappy(vertex);
                 }
                 ranking.push(
-                        ColourAssignmentV2{colourAssignmentLeft, colourAssignmentRight},
+                        ColourAssignmentV2{std::get<0>(entryLeft), std::get<0>(entryRight)},
                         mergedHappiness,
                         getEvaluation(mergedHappiness));
-
+                bestNbMistakes = 0;
                 break;
             }
 
             if (nbMistakes < bestNbMistakes)
             {
                 bestNbMistakes = nbMistakes;
-                bestColouringRight = colourAssignmentRight;
-                bestHappinessRight = happyVerticesAssignmentsRight;
-                bestEvaluationRight = evaluationRight;
+                bestEntry = entryRight;
             }
         }
 
@@ -453,19 +506,19 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
         {
             mergeAndAddDifferingEntries(
                     ranking, node, graph,
-                    colourAssignmentLeft, happyVerticesAssignmentsLeft, evaluationLeft,
-                    bestColouringRight, bestHappinessRight, bestEvaluationRight);
+                    std::get<0>(entryLeft), std::get<1>(entryLeft), std::get<2>(entryLeft),
+                    std::get<0>(bestEntry), std::get<1>(bestEntry), std::get<2>(bestEntry));
             mergeAndAddDifferingEntries(
                     ranking, node, graph,
-                    bestColouringRight, bestHappinessRight, bestEvaluationRight,
-                    colourAssignmentLeft, happyVerticesAssignmentsLeft, evaluationLeft);
+                    std::get<0>(bestEntry), std::get<1>(bestEntry), std::get<2>(bestEntry),
+                    std::get<0>(entryLeft), std::get<1>(entryLeft), std::get<2>(entryLeft));
         }
     }
 
     return ranking;
 }
 
-void SolverV2::HeuristicMHVSolverV2::mergeAndAddDifferingEntries(
+void SolverV2::HeuristicMHVSolverV2::mergeAndAddDifferingEntries( // TODO simply pass the entry
         SolverV2::HeuristicSolverRankingV2 &ranking,
         const std::shared_ptr<DataStructures::JoinNode> &node,
         const std::shared_ptr<DataStructures::Graph> &graph,
