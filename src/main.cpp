@@ -171,7 +171,7 @@ int main(int argc, char** argv)
                 int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
-                SolverV2::HeuristicMHVSolverV2 solverV2{1000}; // TODO set back to exact algo
+                SolverV2::HeuristicMHVSolverV2 solverV2{100000}; // TODO set back to exact algo
                 solverV2.solve(graph, niceTreeDecomposition);
                 int tdEvaluation = problemEvaluator->evaluate(graph);
 //                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, niceTreeDecomposition)};
