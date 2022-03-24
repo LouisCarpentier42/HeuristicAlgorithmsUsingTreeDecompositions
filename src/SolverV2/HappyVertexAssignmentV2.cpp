@@ -18,7 +18,7 @@ SolverV2::HappyVertexAssignmentV2::HappyVertexAssignmentV2(
 {
     for (DataStructures::VertexType vertex{0}; vertex < happiness.size(); vertex++)
     {
-        if (getHappiness(vertex) == HappinessValue::unknown)
+        if (getHappiness(vertex) != HappinessValue::happy || getHappiness(vertex) != HappinessValue::unhappy)
             setHappiness(vertex, secondaryHappyVertexAssignment.getHappiness(vertex));
     }
 }

@@ -63,8 +63,8 @@ int main(int argc, char** argv)
     else if (strcmp(argv[1], "v2") == 0)
     {
         std::string solverFile{"greedy_vs_growth.sol"};
-//        std::string experimentFile{"initial_experiment.exp"};
-        std::string experimentFile{"small_random_graphs.exp"};
+        std::string experimentFile{"initial_experiment.exp"};
+//        std::string experimentFile{"small_random_graphs.exp"};
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
 
         for (ExperimentalAnalysis::TestInstance& testInstance : experiment->testInstances)
@@ -98,6 +98,9 @@ int main(int argc, char** argv)
 //            std::cout << *td << "\n";
 
             testInstance.graph->removeColours();
+            testInstance.graph->removeInitialColours(); // TODO remove pre colour
+            testInstance.graph->setInitialColour(2, 1);
+            testInstance.graph->setInitialColour(3, 2);
             auto start = std::chrono::high_resolution_clock::now();
             solverV2.solve(testInstance.graph, td);
             auto stop = std::chrono::high_resolution_clock::now();
@@ -181,8 +184,9 @@ int main(int argc, char** argv)
                 std::cout << counter << ": [brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "]\n";
                 if (bruteForceEvaluation != tdEvaluation)
                 {
-                    std::cout << "[ERROR]: brute force and td have different evaluation:" << tokens[0] << " " << tokens[1] << "\n";
+                    std::cout << "[ERROR]: brute force and td have different evaluation: " << tokens[0] << " " << tokens[1] << "\n";
                     nbMistakes++;
+                    return -1;
                 }
 
                 if (tdColouringEvaluation != tdEvaluation)

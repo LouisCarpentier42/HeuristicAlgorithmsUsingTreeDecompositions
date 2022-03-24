@@ -62,12 +62,8 @@ namespace SolverV2
                 SolverV2::HeuristicSolverRankingV2& ranking,
                 const std::shared_ptr<DataStructures::JoinNode>& node,
                 const std::shared_ptr<DataStructures::Graph>& graph,
-                const ColourAssignmentV2& primaryColouring,
-                const SolverV2::HappyVertexAssignmentV2& primaryHappiness,
-                int evaluationPrimary,
-                const ColourAssignmentV2& secondaryColouring,
-                const SolverV2::HappyVertexAssignmentV2& secondaryHappiness,
-                int evaluationSecondary) const;
+                const HeuristicSolverRankingV2::Entry& primaryEntry,
+                const HeuristicSolverRankingV2::Entry& secondaryEntry) const;
     };
 }
 
