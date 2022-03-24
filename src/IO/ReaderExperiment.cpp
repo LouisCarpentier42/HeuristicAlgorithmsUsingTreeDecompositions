@@ -6,6 +6,7 @@
 #include "../Solvers/MaximumHappyVertices/ConstructionAlgorithms/GreedyMHV.h"
 #include "../Solvers/MaximumHappyVertices/ConstructionAlgorithms/GrowthMHV.h"
 #include "../Solvers/MaximumHappyVertices/ExactAlgorithms/ExactTreeDecompositionMHV.h"
+#include "../SolverV2/HeuristicMHVSolverV2.h"
 
 
 std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(const std::string& solversFilename, const std::string& experimentsFilename) const
@@ -26,6 +27,7 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
     std::unique_ptr<DataStructures::Evaluator> evaluator{};
     std::map<std::string, std::shared_ptr<Solvers::SolverBase>> baselines{};
     std::map<std::string, std::shared_ptr<Solvers::HeuristicTreeDecompositionSolver>> treeDecompositionSolvers{};
+    std::map<std::string, std::shared_ptr<SolverV2::HeuristicMHVSolverV2>> treeDecompositionSolversV2{};
     size_t nbRepetitionsPerInstance{1};
     while (solverFile)
     {
@@ -69,6 +71,15 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
                 introduceNodeHandler,
                 forgetNodeHandler,
                 joinNodeHandler
+            );
+        }
+        else if (tokens[0] == "heuristicTD_V2")
+        {
+            treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
+                convertToInt(tokens[2]),
+                convertToInt(tokens[3]),
+                convertToInt(tokens[4]),
+                convertToInt(tokens[5])
             );
         }
         else
@@ -145,6 +156,7 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
         std::move(evaluator),
         baselines,
         treeDecompositionSolvers,
+        treeDecompositionSolversV2,
         testInstances,
         nbRepetitionsPerInstance
     );

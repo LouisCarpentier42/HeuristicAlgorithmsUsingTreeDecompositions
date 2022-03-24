@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 //        std::string experimentFile{"small_random_graphs.exp"};
 
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
-        ExperimentalAnalysis::executeExperiment(defaultReader, experiment);
+        ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
     }
     else if (strcmp(argv[1], "v2") == 0)
     {
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
             else
                 nbSolutionsToKeep = 8;
 //            MaximumHappyVertices::ExactTreeDecompositionMHV solverV2{};
-            SolverV2::HeuristicMHVSolverV2 solverV2{nbSolutionsToKeep};
+            SolverV2::HeuristicMHVSolverV2 solverV2{nbSolutionsToKeep, 2, 1, 0};
             std::cout << "Solver V2 with " << nbSolutionsToKeep << " entries to keep\n";
 
             std::shared_ptr<DataStructures::NiceTreeDecomposition> td = defaultReader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
                 int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
-                SolverV2::HeuristicMHVSolverV2 solverV2{1024}; // TODO set back to exact algo
+                SolverV2::HeuristicMHVSolverV2 solverV2{1024, 1, 0, 0}; // TODO set back to exact algo
                 solverV2.solve(graph, niceTreeDecomposition);
                 int tdEvaluation = problemEvaluator->evaluate(graph);
 //                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, niceTreeDecomposition)};

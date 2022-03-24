@@ -15,6 +15,7 @@
 namespace ExperimentalAnalysis
 {
     void executeExperiment(IO::Reader& reader, std::shared_ptr<Experiment>& experiment);
+    void executeExperimentV2(IO::Reader& reader, std::shared_ptr<Experiment>& experiment);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXPERIMENTALANALYSIS_H

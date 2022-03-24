@@ -35,13 +35,12 @@ c heuristicTD fewColNeigh032 32 basicMHVEvaluator passive bestColour bestColour 
 c heuristicTD fewColNeigh128 128 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,fewestColouredNeighboursFirst)
 c heuristicTD mostSameColNeigh 16 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,mostSameColouredNeighboursFirst)
 c heuristicTD most%SameColNeigh 16 basicMHVEvaluator passive bestColour bestColour dynamicOrder(avg,0.01,mostPercentSameColouredNeighboursFirst)
-
-
 c heuristicTD growthColourBag 16 basicMHVEvaluator passive bestColour bestColour growthColourBag(avg,0.01)
 c heuristicTD useChildColours 16 basicMHVEvaluator passive bestColour bestColour useChildColours(avg,0.01)
-
-
 c heuristicTD bestColour16 16 basicMHVEvaluator passive bestColour bestColour greedyColourBag(avg,0.01)
 c heuristicTD bestColour32 32 basicMHVEvaluator passive bestColour bestColour greedyColourBag(avg,0.01)
 c heuristicTD potential 16 potentialHappyMHVEvaluator(6,2,-1) passive bestColour bestColour staticOrder(avg,0.01,gdf)
 c heuristicTD growth 16 growthMHVEvaluator(6,-1,4,2,2,-1,0) passive bestColour bestColour staticOrder(avg,0.01,gdf)
+
+heuristicTD_V2 solverV2_8 8 2 1 0
+heuristicTD_V2 solverV2_16 16 2 1 0

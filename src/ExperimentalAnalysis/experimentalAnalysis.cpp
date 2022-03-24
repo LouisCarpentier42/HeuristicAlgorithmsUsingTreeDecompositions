@@ -3,6 +3,7 @@
 //
 
 #include "experimentalAnalysis.h"
+#include "../SolverV2/HeuristicMHVSolverV2.h"
 
 #include <chrono>
 
@@ -305,4 +306,50 @@ void ExperimentalAnalysis::executeExperiment(IO::Reader& reader, std::shared_ptr
     resultFile.close();
     for (auto& [treeDecompositionName, file] : accuracyFiles)
         file.close();
+}
+
+
+void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_ptr<Experiment>& experiment)
+{
+    std::ofstream resultFile;
+    resultFile.open(experiment->resultFileName + ".csv");
+    resultFile << "Solver name,graph name,tree decomposition name,#vertices,#colours,%precoloured,%happy,evaluation,time(micro s)\n";
+
+    for (TestInstance& testInstance : experiment->testInstances)
+    {
+        std::cout << "Experimental analysis: solving graph '" << testInstance.graphName << "' with tree decomposition '" << testInstance.treeDecompositionName << "'\n";
+
+        // Test the baselines
+        for (auto const& [name, baseline] : experiment->baselines)
+        {
+            resultFile << name << "," << testInstance.graphName << ",/," << testInstance.graph->getNbVertices() << "," << testInstance.graph->getNbColours() << "," << testInstance.graph->getPercentPrecoloured() << ",";
+            testInstance.graph->removeColours();
+            auto start = std::chrono::high_resolution_clock::now();
+            baseline->solve(testInstance.graph);
+            auto stop = std::chrono::high_resolution_clock::now();
+            int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
+            resultFile << (double)evaluation / (double)testInstance.graph->getNbVertices() << ",";
+            resultFile << evaluation << ",";
+            resultFile << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "\n";
+        }
+
+        std::shared_ptr<DataStructures::NiceTreeDecomposition> niceTreeDecomposition = reader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
+
+        for (auto const& [name, solver] : experiment->treeDecompositionSolversV2)
+        {
+            resultFile << name << "," << testInstance.graphName << "," << testInstance.treeDecompositionName << "," << testInstance.graph->getNbVertices() << "," << testInstance.graph->getNbColours() << "," << testInstance.graph->getPercentPrecoloured() << ",";
+            testInstance.graph->removeColours();
+            auto start = std::chrono::high_resolution_clock::now();
+            solver->solve(testInstance.graph, niceTreeDecomposition);
+            auto stop = std::chrono::high_resolution_clock::now();
+            int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
+            resultFile << (double)evaluation / (double)testInstance.graph->getNbVertices() << ",";
+            resultFile << evaluation << ",";
+            resultFile << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "\n";
+        }
+
+
+    }
+
+    resultFile.close();
 }

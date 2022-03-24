@@ -6,8 +6,13 @@
 #include "HeuristicMHVSolverV2.h"
 #include "../DataStructures/Evaluator/BasicMHVEvaluator.h"
 
-
-SolverV2::HeuristicMHVSolverV2::HeuristicMHVSolverV2(int nbSolutionsToKeep) : nbSolutionsToKeep(nbSolutionsToKeep) {}
+SolverV2::HeuristicMHVSolverV2::HeuristicMHVSolverV2(
+        int nbSolutionsToKeep, int weightHappyVertices, int weightPotentialHappyVertices, int weightUnhappyVertices)
+    : nbSolutionsToKeep(nbSolutionsToKeep),
+      weightHappyVertices{weightHappyVertices},
+      weightPotentialHappyVertices{weightPotentialHappyVertices},
+      weightUnhappyVertices{weightUnhappyVertices}
+{ }
 
 void SolverV2::HeuristicMHVSolverV2::solve(
         std::shared_ptr<DataStructures::Graph>& graph,
@@ -304,7 +309,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
 
     // A vector to keep track of the unique entries to add, that is the entries with unique colour and happiness for
     // the vertices to consider
-    std::vector<HeuristicSolverRankingV2::Entry> entriesToAdd{};
+    std::vector<HeuristicSolverRankingV2::Entry> entriesToAdd{}; // TODO miss toch nog eens proberen met een set
 
     // Iterate over the entries of the child and check if it should be added to the new ranking
     for (const HeuristicSolverRankingV2::Entry& entry : rankingChild)
@@ -496,3 +501,4 @@ void SolverV2::HeuristicMHVSolverV2::mergeAndAddDifferingEntries(
     // Add colouring
     ranking.push(mergedColouring, mergedHappiness, getEvaluation(mergedHappiness));
 }
+

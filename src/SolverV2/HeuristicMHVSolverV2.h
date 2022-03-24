@@ -27,7 +27,11 @@ namespace SolverV2
         const int weightUnhappyVertices{0};
 
     public:
-        explicit HeuristicMHVSolverV2(int nbSolutionsToKeep);
+        HeuristicMHVSolverV2(
+                int nbSolutionsToKeep,
+                int weightHappyVertices,
+                int weightPotentialHappyVertices,
+                int weightUnhappyVertices);
 
         void solve(
                 std::shared_ptr<DataStructures::Graph>& graph,

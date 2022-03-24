@@ -51,6 +51,18 @@ const std::vector<DataStructures::VertexType>& DataStructures::Graph::getNeighbo
     return vertices[vertexType].neighbours;
 }
 
+double DataStructures::Graph::getPercentPrecoloured() const
+{
+    double nbPrecoloured{0.0};
+    for (const Vertex& vertex : vertices)
+    {
+        if (vertex.isPrecoloured)
+            nbPrecoloured += 1.0;
+    }
+    return nbPrecoloured / (double)vertices.size();
+}
+
+
 void DataStructures::Graph::setColour(DataStructures::VertexType vertexType, DataStructures::ColourType colour)
 {
     if (!vertices[vertexType].isPrecoloured && colour != 0)

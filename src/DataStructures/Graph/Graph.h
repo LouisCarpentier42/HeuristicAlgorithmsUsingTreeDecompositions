@@ -29,6 +29,7 @@ namespace DataStructures
         [[nodiscard]] bool isColoured(VertexType vertexType) const;
         [[nodiscard]] size_t getDegree(VertexType vertexType) const;
         [[nodiscard]] const std::vector<VertexType>& getNeighbours(VertexType vertexType) const;
+        [[nodiscard]] double getPercentPrecoloured() const; 
 
         void setColour(VertexType vertexType, ColourType colour);
         void setInitialColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
