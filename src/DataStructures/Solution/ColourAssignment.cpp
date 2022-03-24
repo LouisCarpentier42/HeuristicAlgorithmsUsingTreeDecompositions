@@ -65,7 +65,7 @@ DataStructures::ColourType DataStructures::ColourAssignment::getColour(VertexTyp
     return 0;
 }
 
-DataStructures::ColourType DataStructures::ColourAssignment::getColourConst(const VertexType& vertex) const // TODO rename back to non const
+DataStructures::ColourType DataStructures::ColourAssignment::getColourConst(const VertexType& vertex) const
 {
     if (assignments[vertex] != 0)
         return assignments[vertex];
@@ -89,7 +89,7 @@ bool DataStructures::ColourAssignment::isColoured(VertexType vertex)
     return getColour(vertex) != 0;
 }
 
-bool DataStructures::ColourAssignment::isColouredConst(VertexType vertex) const // TODO rename back to non const
+bool DataStructures::ColourAssignment::isColouredConst(VertexType vertex) const
 {
     return getColourConst(vertex) != 0;
 }

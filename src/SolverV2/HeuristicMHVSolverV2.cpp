@@ -307,43 +307,42 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
     for (DataStructures::VertexType vertex : node->getBagContent())
         verticesToConsider.insert(vertex);
 
-    // A vector to keep track of the unique entries to add, that is the entries with unique colour and happiness for
+    // A set to keep track of the unique entries to add, that is the entries with unique colour and happiness for
     // the vertices to consider
-    std::vector<HeuristicSolverRankingV2::Entry> entriesToAdd{}; // TODO miss toch nog eens proberen met een set
+    auto comparator =
+            [verticesToConsider]
+            (const HeuristicSolverRankingV2::Entry& e1, const HeuristicSolverRankingV2::Entry& e2)
+            {
+                for (DataStructures::VertexType vertex : verticesToConsider)
+                {
+                    if (std::get<0>(e1).getColour(vertex) != std::get<0>(e2).getColour(vertex))
+                        return std::get<0>(e1).getColour(vertex) < std::get<0>(e2).getColour(vertex);
+                    else if (std::get<1>(e1).getHappiness(vertex) != std::get<1>(e2).getHappiness(vertex))
+                        return std::get<1>(e1).getHappiness(vertex) < std::get<1>(e2).getHappiness(vertex);
+                }
+                return false;
+            };
+    std::set<HeuristicSolverRankingV2::Entry, decltype(comparator)> entriesToAdd(comparator);
 
     // Iterate over the entries of the child and check if it should be added to the new ranking
     for (const HeuristicSolverRankingV2::Entry& entry : rankingChild)
     {
-        // Find an entry with equal vertices to consider
-        auto it = entriesToAdd.begin();
-        while (it != entriesToAdd.end())
-        {
-            bool equalVerticesToConsider = true;
-            for (DataStructures::VertexType vertex : verticesToConsider)
-            {
-                if (std::get<0>(entry).getColour(vertex) != std::get<0>(*it).getColour(vertex) ||
-                    std::get<1>(entry).getHappiness(vertex) != std::get<1>(*it).getHappiness(vertex))
-                {
-                    equalVerticesToConsider = false;
-                    break;
-                }
-            }
-            if (equalVerticesToConsider) break;
+        // Find if the entry is already present in the set
+        auto it = entriesToAdd.find(entry);
 
-            it++;
-        }
-
-        // If no match is found, then the entry must be added, and if a match is found then the match must be replaced
-        // by the current entry if the current entry has a better evaluation
         if (it == entriesToAdd.end())
         {
-            entriesToAdd.push_back(entry);
+            // If the entry is not yet present in the set, then it must be inserted
+            entriesToAdd.insert(entry);
         }
         else
         {
+            // If the entry is already present in the set, then it should replace the existing entry if it
+            // has a higher evaluation
             if (std::get<2>(*it) < std::get<2>(entry))
             {
-                *it = entry;
+                entriesToAdd.erase(it);
+                entriesToAdd.insert(entry);
             }
         }
     }
