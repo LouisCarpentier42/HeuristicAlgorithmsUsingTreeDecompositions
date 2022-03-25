@@ -24,6 +24,7 @@ namespace SolverV2
 
         const int capacity;
         std::set<Entry, EntryComparator> entries{};
+        // TODO maybe a vector and then write custom binary search on eval => non const iterator for caching colour/hapiness
 
     public:
         explicit HeuristicSolverRankingV2(int capacity);
