@@ -182,6 +182,7 @@ int main(int argc, char** argv)
                 {
                     std::cout << "[ERROR]: brute force and td have different evaluation: " << tokens[0] << " " << tokens[1] << "\n";
                     nbMistakes++;
+                    return -1;
                 }
 
                 if (tdColouringEvaluation != tdEvaluation)

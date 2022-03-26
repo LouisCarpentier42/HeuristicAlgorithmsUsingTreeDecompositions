@@ -39,28 +39,23 @@ namespace SolverV2
 
         [[nodiscard]] HeuristicSolverRankingV2 solveAtNode(
                 const std::shared_ptr<DataStructures::NiceNode>& node,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                const std::set<DataStructures::VertexType>& S) const;
+                const std::shared_ptr<DataStructures::Graph>& graph) const;
 
     private:
         [[nodiscard]] int getEvaluation(const HappyVertexAssignmentV2& happyVertexAssignment) const;
 
         [[nodiscard]] HeuristicSolverRankingV2 handleLeafNode(
                 const std::shared_ptr<DataStructures::LeafNode>& node,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                const std::set<DataStructures::VertexType>& S) const;
+                const std::shared_ptr<DataStructures::Graph>& graph) const;
         [[nodiscard]] HeuristicSolverRankingV2 handleIntroduceNode(
                 const std::shared_ptr<DataStructures::IntroduceNode>& node,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                const std::set<DataStructures::VertexType>& S) const;
+                const std::shared_ptr<DataStructures::Graph>& graph) const;
         [[nodiscard]] HeuristicSolverRankingV2 handleForgetNode(
                 const std::shared_ptr<DataStructures::ForgetNode>& node,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                const std::set<DataStructures::VertexType>& S) const;
+                const std::shared_ptr<DataStructures::Graph>& graph) const;
         [[nodiscard]] HeuristicSolverRankingV2 handleJoinNode(
                 const std::shared_ptr<DataStructures::JoinNode>& node,
-                const std::shared_ptr<DataStructures::Graph>& graph,
-                const std::set<DataStructures::VertexType>& S) const;
+                const std::shared_ptr<DataStructures::Graph>& graph) const;
 
         void mergeAndAddDifferingEntries(
                 SolverV2::HeuristicSolverRankingV2& ranking,
