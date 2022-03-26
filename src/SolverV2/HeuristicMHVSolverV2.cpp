@@ -107,7 +107,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
         }
     }
 
-    for (const HeuristicSolverRankingV2::Entry& entry : rankingChild)
+    for (HeuristicSolverRankingV2::Entry& entry : rankingChild)
     {
         // An assignment based on the happiness assignment of the child
         HappyVertexAssignmentV2 happyVertexAssignmentWithNeighbours{std::get<1>(entry)};
@@ -454,12 +454,12 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
         smallestRanking = &rankingLeftChild;
     }
 
-    for (const HeuristicSolverRankingV2::Entry& entryLeft : *smallestRanking)
+    for (HeuristicSolverRankingV2::Entry& entryLeft : *smallestRanking)
     {
         int bestNbMistakes = graph->getNbVertices() + 1;
         HeuristicSolverRankingV2::Entry bestEntry = *biggestRanking->begin();
 
-        for (const HeuristicSolverRankingV2::Entry& entryRight : *biggestRanking)
+        for (HeuristicSolverRankingV2::Entry& entryRight : *biggestRanking)
         {
             int nbMistakes{0};
             for (DataStructures::VertexType vertex : node->getBagContent())

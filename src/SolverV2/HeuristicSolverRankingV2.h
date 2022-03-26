@@ -23,7 +23,8 @@ namespace SolverV2
         };
 
         const int capacity;
-        std::set<Entry, EntryComparator> entries{};
+        std::vector<Entry> entries{};
+//        std::set<Entry, EntryComparator> entries{};
         // TODO maybe a vector and then write custom binary search on eval => non const iterator for caching colour/hapiness
 
     public:
@@ -39,8 +40,11 @@ namespace SolverV2
         [[nodiscard]] int size() const;
         [[nodiscard]] Entry getBestEntry() const;
 
-        [[nodiscard]] std::set<Entry>::iterator begin();
-        [[nodiscard]] std::set<Entry>::iterator end();
+        [[nodiscard]] std::vector<Entry>::iterator begin();
+        [[nodiscard]] std::vector<Entry>::iterator end();
+
+    private:
+        void insertEntry(const Entry& entry);
     };
 
     std::ostream& operator<<(std::ostream& out, HeuristicSolverRankingV2& ranking);
