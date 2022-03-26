@@ -46,52 +46,19 @@ int main(int argc, char** argv)
 
     if (argc == 1)
     {
+//        std::string solverFile{"greedy_vs_growth.sol"};
+//        std::string experimentFile{"lewis_random_greedy_vs_growth.exp"};
 
-        std::set<int> indices{1,2,3};
-        auto comparator =
-                [indices]
-                (auto& v1, auto& v2)
-                {
-                    for (int index : indices)
-                    {
-                        if (v1[index] != v2[index])
-                            return v1[index] < v2[index];
-                    }
-                    return false;
-                };
-        std::set<std::vector<int>, decltype(comparator)> s(comparator);
-//        std::set<std::vector<int>> s{};
+        std::string solverFile{"initial_solvers.sol"};
+//        std::string experimentFile{"grid_graphs.exp"};
+        std::string experimentFile{"small_random_graphs.exp"};
 
-        s.insert(std::vector<int>{1,2,3});
-        s.insert(std::vector<int>{2,3,4});
-        s.insert(std::vector<int>{1,3,3});
-
-
-        int counter{1};
-        for (const std::vector<int>& vector : s)
-        {
-            std::cout << "vector " << counter++ << ": [";
-            for (int i : vector) std::cout << i << ", ";
-            std::cout << "]\n";
-        }
-
-
-
-
-
-////        std::string solverFile{"greedy_vs_growth.sol"};
-////        std::string experimentFile{"lewis_random_greedy_vs_growth.exp"};
-//
-//        std::string solverFile{"initial_solvers.sol"};
-////        std::string experimentFile{"grid_graphs.exp"};
+//        std::string solverFile{"greedy_vs_growth.sol"};
+//        std::string experimentFile{"initial_experiment.exp"};
 //        std::string experimentFile{"small_random_graphs.exp"};
-//
-////        std::string solverFile{"greedy_vs_growth.sol"};
-////        std::string experimentFile{"initial_experiment.exp"};
-////        std::string experimentFile{"small_random_graphs.exp"};
-//
-//        std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
-//        ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
+
+        std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
+        ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
     }
     else if (strcmp(argv[1], "v2") == 0)
     {
