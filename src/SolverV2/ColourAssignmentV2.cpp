@@ -15,7 +15,8 @@ SolverV2::ColourAssignmentV2::ColourAssignmentV2(
     for (DataStructures::VertexType vertex{0}; vertex < colours.size(); vertex++)
     {
         if (!isColoured(vertex))
-            setColour(vertex, secondaryColourAssignment.getColour(vertex));
+            setColour(vertex, secondaryColourAssignment.colours[vertex]);
+//            setColour(vertex, secondaryColourAssignment.getColour(vertex)); // TODO
     }
 }
 

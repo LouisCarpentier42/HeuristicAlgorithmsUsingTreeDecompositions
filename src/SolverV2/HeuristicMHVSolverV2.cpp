@@ -107,7 +107,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
         }
     }
 
-    for (HeuristicSolverRankingV2::Entry& entry : rankingChild)
+    for (const HeuristicSolverRankingV2::Entry& entry : rankingChild)
     {
         // An assignment based on the happiness assignment of the child
         HappyVertexAssignmentV2 happyVertexAssignmentWithNeighbours{std::get<1>(entry)};
@@ -390,7 +390,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
     HeuristicSolverRankingV2 rankingChild = solveAtNode(node->getChild(), graph);
 
     // A set to keep track of the unique entries to add, that is the entries with unique colour and happiness for
-    // the vertices to consider
+    // the vertices in the node's bag
     auto comparator =
             [node]
             (const HeuristicSolverRankingV2::Entry& e1, const HeuristicSolverRankingV2::Entry& e2)
@@ -454,12 +454,12 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
         smallestRanking = &rankingLeftChild;
     }
 
-    for (HeuristicSolverRankingV2::Entry& entryLeft : *smallestRanking)
+    for (const HeuristicSolverRankingV2::Entry& entryLeft : *smallestRanking)
     {
         int bestNbMistakes = graph->getNbVertices() + 1;
         HeuristicSolverRankingV2::Entry bestEntry = *biggestRanking->begin();
 
-        for (HeuristicSolverRankingV2::Entry& entryRight : *biggestRanking)
+        for (const HeuristicSolverRankingV2::Entry& entryRight : *biggestRanking)
         {
             int nbMistakes{0};
             for (DataStructures::VertexType vertex : node->getBagContent())
@@ -579,4 +579,3 @@ void SolverV2::HeuristicMHVSolverV2::mergeAndAddDifferingEntries(
     // Add colouring
     ranking.push(mergedColouring, mergedHappiness, getEvaluation(mergedHappiness));
 }
-

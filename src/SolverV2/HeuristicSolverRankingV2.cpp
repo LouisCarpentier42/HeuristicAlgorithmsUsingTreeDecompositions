@@ -28,8 +28,8 @@ void SolverV2::HeuristicSolverRankingV2::push(const SolverV2::HeuristicSolverRan
     if (!hasReachedCapacity())
     {
         // If the capacity is not reached yet, then the new entry can be inserted without any computation
-        insertEntry(entry);
-//        entries.insert(entry);
+//        insertEntry(entry);
+        entries.insert(entry);
     }
     else
     {
@@ -39,8 +39,8 @@ void SolverV2::HeuristicSolverRankingV2::push(const SolverV2::HeuristicSolverRan
         if (std::get<2>(entry) >= worstEvaluation)
         {
             // Insert the entry
-            insertEntry(entry);
-//            entries.insert(entry);
+//            insertEntry(entry);
+            entries.insert(entry);
 
             // Find the range of elements that have the worst evaluation
             auto worstEntriesStart = entries.begin();
@@ -81,43 +81,14 @@ SolverV2::HeuristicSolverRankingV2::Entry SolverV2::HeuristicSolverRankingV2::ge
     return *entries.rbegin();
 }
 
-std::vector<SolverV2::HeuristicSolverRankingV2::Entry>::iterator SolverV2::HeuristicSolverRankingV2::begin()
+std::set<SolverV2::HeuristicSolverRankingV2::Entry>::iterator SolverV2::HeuristicSolverRankingV2::begin()
 {
     return entries.begin();
 }
 
-std::vector<SolverV2::HeuristicSolverRankingV2::Entry>::iterator SolverV2::HeuristicSolverRankingV2::end()
+std::set<SolverV2::HeuristicSolverRankingV2::Entry>::iterator SolverV2::HeuristicSolverRankingV2::end()
 {
     return entries.end();
-}
-
-void SolverV2::HeuristicSolverRankingV2::insertEntry(const Entry& entry)
-{
-    auto left = entries.begin();
-    auto right = entries.end();
-
-    while (left < right)
-    {
-        auto middle = left;
-        std::advance(middle, std::distance(left, right)/2);
-
-        if (std::get<2>(entry) == std::get<2>(*middle))
-        {
-            left = middle;
-            right = middle;
-        }
-        if (std::get<2>(entry) > std::get<2>(*middle))
-        {
-            left = middle;
-            left++;
-        }
-        else
-        {
-            right = middle;
-        }
-    }
-
-    entries.insert(left, entry);
 }
 
 std::ostream& SolverV2::operator<<(std::ostream& out, SolverV2::HeuristicSolverRankingV2& ranking)
