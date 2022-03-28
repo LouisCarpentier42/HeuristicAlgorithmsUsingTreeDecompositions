@@ -12,12 +12,12 @@ c Really small graphs
 c experiment PACE_heuristic/he005.gr PACE_heuristic/he005_nice.tw random(3,0.01) exactTD(true,true)
 c experiment graph4c/graph1.gr graph4c/graph1_nice.tw random(2,0.01) exactTD(true,true)
 c experiment graph5c/graph13.gr graph5c/graph13_nice.tw random(2,0.01) exactTD(true,true)
-experiment graph5c/graph4.gr graph5c/graph4_nice.tw random(2,0.01) exactTD(true,true)
+c experiment graph5c/graph4.gr graph5c/graph4_nice.tw random(2,0.01) exactTD(true,true)
 c experiment graph4c/graph3.gr graph4c/graph3_nice.tw random(2,0.01) exactTD(true,true)
 c experiment my_first_graph.gr my_first_graph_nice.tw random(2,0.01) exactTD(false,false)
 c experiment graph6c/graph49.gr graph6c/graph49_nice.tw random(2,0.01) exactTD(false,false)
 c experiment graph5c/graph1.gr graph5c/graph1_nice.tw random(2,0.01) exactTD(false,false)
-c experiment graph6c/graph18.gr graph6c/graph18_nice.tw random(2,0.01) exactTD(false,false)
+experiment graph6c/graph18.gr graph6c/graph18_nice.tw random(2,0.01) exactTD(false,false)
 
 c A bigger graph
 c experiment PACE_exact/ex001.gr PACE_exact/ex001_nice.tw random(8,0.1) exactTD(false,false)

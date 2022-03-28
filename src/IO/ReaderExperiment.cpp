@@ -75,12 +75,31 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
         }
         else if (tokens[0] == "heuristicTD_V2")
         {
-            treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
-                convertToInt(tokens[2]),
-                convertToInt(tokens[3]),
-                convertToInt(tokens[4]),
-                convertToInt(tokens[5])
-            );
+            if (tokens[6] == "smallestOut")
+            {
+                treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
+                        convertToInt(tokens[2]),
+                        convertToInt(tokens[3]),
+                        convertToInt(tokens[4]),
+                        convertToInt(tokens[5]),
+                        SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut
+                    );
+            }
+            else if (tokens[6] == "largestOut")
+            {
+                treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
+                        convertToInt(tokens[2]),
+                        convertToInt(tokens[3]),
+                        convertToInt(tokens[4]),
+                        convertToInt(tokens[5]),
+                        SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::largestRankingOut
+                    );
+            }
+            else
+            {
+                throw std::runtime_error("Invalid join node ranking order given: " + tokens[6] + "!");
+            }
+
         }
         else
         {

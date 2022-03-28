@@ -313,7 +313,7 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
 {
     std::ofstream resultFile;
     resultFile.open(experiment->resultFileName + ".csv");
-    resultFile << "Solver name,graph name,tree decomposition name,#vertices,#colours,%precoloured,%happy,evaluation,time(micro s)\n";
+    resultFile << "Solver name,graph name,tree decomposition name,treewidth,#vertices,#colours,%precoloured,%happy,evaluation,exact solution,time(micro s)\n";
 
     for (TestInstance& testInstance : experiment->testInstances)
     {
@@ -322,7 +322,7 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
         // Test the baselines
         for (auto const& [name, baseline] : experiment->baselines)
         {
-            resultFile << name << "," << testInstance.graphName << ",/," << testInstance.graph->getNbVertices() << "," << testInstance.graph->getNbColours() << "," << testInstance.graph->getPercentPrecoloured() << ",";
+            resultFile << name << "," << testInstance.graphName << ",/,/," << testInstance.graph->getNbVertices() << "," << testInstance.graph->getNbColours() << "," << testInstance.graph->getPercentPrecoloured() << ",";
             testInstance.graph->removeColours();
             auto start = std::chrono::high_resolution_clock::now();
             baseline->solve(testInstance.graph);
@@ -330,6 +330,7 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
             int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
             resultFile << (double)evaluation / (double)testInstance.graph->getNbVertices() << ",";
             resultFile << evaluation << ",";
+            resultFile << "?" << ",";
             resultFile << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "\n";
         }
 
@@ -337,7 +338,14 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
 
         for (auto const& [name, solver] : experiment->treeDecompositionSolversV2)
         {
-            resultFile << name << "," << testInstance.graphName << "," << testInstance.treeDecompositionName << "," << testInstance.graph->getNbVertices() << "," << testInstance.graph->getNbColours() << "," << testInstance.graph->getPercentPrecoloured() << ",";
+            resultFile << name << ",";
+            resultFile << testInstance.graphName << ",";
+            resultFile  << testInstance.treeDecompositionName << ",";
+            resultFile  << niceTreeDecomposition->getTreeWidth() << ",";
+            resultFile  << testInstance.graph->getNbVertices() << ",";
+            resultFile  << testInstance.graph->getNbColours() << ",";
+            resultFile  << testInstance.graph->getPercentPrecoloured() << ",";
+
             testInstance.graph->removeColours();
             auto start = std::chrono::high_resolution_clock::now();
             solver->solve(testInstance.graph, niceTreeDecomposition);
@@ -345,6 +353,7 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
             int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
             resultFile << (double)evaluation / (double)testInstance.graph->getNbVertices() << ",";
             resultFile << evaluation << ",";
+            resultFile << std::boolalpha << solver->hasFoundExactSolution() << ",";
             resultFile << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "\n";
         }
 

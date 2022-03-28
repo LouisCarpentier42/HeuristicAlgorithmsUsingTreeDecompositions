@@ -91,7 +91,12 @@ int main(int argc, char** argv)
             else
                 nbSolutionsToKeep = 8;
 //            MaximumHappyVertices::ExactTreeDecompositionMHV solverV2{};
-            SolverV2::HeuristicMHVSolverV2 solverV2{nbSolutionsToKeep, 2, 1, 0};
+            SolverV2::HeuristicMHVSolverV2 solverV2{
+                nbSolutionsToKeep,
+                2,
+                1,
+                0,
+                SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut};
             std::cout << "Solver V2 with " << nbSolutionsToKeep << " entries to keep\n";
 
             std::shared_ptr<DataStructures::NiceTreeDecomposition> td = defaultReader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
@@ -102,8 +107,9 @@ int main(int argc, char** argv)
             auto stop = std::chrono::high_resolution_clock::now();
             int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
 
-            std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
-            std::cout  << "\n";
+            std::cout << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
+            std::cout << "Found an exact solution: " << std::boolalpha << solverV2.hasFoundExactSolution() << "\n";
+            std::cout << "\n";
 
             std::cout << "--------------------------------------------\n";
         }
@@ -170,14 +176,14 @@ int main(int argc, char** argv)
                 int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
-                SolverV2::HeuristicMHVSolverV2 solverV2{1024, 1, 0, 0}; // TODO set back to exact algo
+                SolverV2::HeuristicMHVSolverV2 solverV2{1024, 1, 0, 0, SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut}; // TODO set back to exact algo
                 solverV2.solve(graph, niceTreeDecomposition);
                 int tdEvaluation = problemEvaluator->evaluate(graph);
 //                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, niceTreeDecomposition)};
                 int tdColouringEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
-                std::cout << counter << ": [brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "]\n";
+                std::cout << counter << ": [brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "] " << std::boolalpha << solverV2.hasFoundExactSolution() << "\n";
                 if (bruteForceEvaluation != tdEvaluation)
                 {
                     std::cout << "[ERROR]: brute force and td have different evaluation: " << tokens[0] << " " << tokens[1] << "\n";

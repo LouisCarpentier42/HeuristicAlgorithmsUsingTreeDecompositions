@@ -35,9 +35,6 @@ namespace SolverV2
     public:
         explicit HappyVertexAssignmentV2(const std::shared_ptr<DataStructures::Graph>& graph);
         HappyVertexAssignmentV2(const HappyVertexAssignmentV2& other) = default;
-        HappyVertexAssignmentV2(
-                const HappyVertexAssignmentV2& primaryHappyVertexAssignment,
-                const HappyVertexAssignmentV2& secondaryHappyVertexAssignment);
 
         void setHappiness(DataStructures::VertexType vertex, HappinessValue happinessValue);
         [[nodiscard]] HappinessValue getHappiness(DataStructures::VertexType vertex) const;

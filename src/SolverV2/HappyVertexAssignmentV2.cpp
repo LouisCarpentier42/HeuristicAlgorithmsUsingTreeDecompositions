@@ -10,19 +10,6 @@ SolverV2::HappyVertexAssignmentV2::HappyVertexAssignmentV2(const std::shared_ptr
     happinessValuesCounts[HappinessValue::unknown] = graph->getNbVertices();
 }
 
-SolverV2::HappyVertexAssignmentV2::HappyVertexAssignmentV2(
-        const SolverV2::HappyVertexAssignmentV2& primaryHappyVertexAssignment,
-        const SolverV2::HappyVertexAssignmentV2& secondaryHappyVertexAssignment)
-    : happiness{primaryHappyVertexAssignment.happiness},
-      happinessValuesCounts{primaryHappyVertexAssignment.happinessValuesCounts}
-{
-    for (DataStructures::VertexType vertex{0}; vertex < happiness.size(); vertex++)
-    {
-        if (getHappiness(vertex) != HappinessValue::happy || getHappiness(vertex) != HappinessValue::unhappy)
-            setHappiness(vertex, secondaryHappyVertexAssignment.getHappiness(vertex));
-    }
-}
-
 void SolverV2::HappyVertexAssignmentV2::setHappiness(
         DataStructures::VertexType vertex,
         SolverV2::HappinessValue happinessValue)
