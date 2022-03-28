@@ -75,7 +75,7 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
         }
         else if (tokens[0] == "heuristicTD_V2")
         {
-            if (tokens[6] == "smallestOut")
+            if (tokens[6] == "smallestRankingOut")
             {
                 treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
                         convertToInt(tokens[2]),
@@ -85,7 +85,7 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
                         SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut
                     );
             }
-            else if (tokens[6] == "largestOut")
+            else if (tokens[6] == "largestRankingOut")
             {
                 treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
                         convertToInt(tokens[2]),
@@ -94,6 +94,16 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
                         convertToInt(tokens[5]),
                         SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::largestRankingOut
                     );
+            }
+            else if (tokens[6] == "randomRankingOut")
+            {
+                treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
+                        convertToInt(tokens[2]),
+                        convertToInt(tokens[3]),
+                        convertToInt(tokens[4]),
+                        convertToInt(tokens[5]),
+                        SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::randomRankingOut
+                        );
             }
             else
             {

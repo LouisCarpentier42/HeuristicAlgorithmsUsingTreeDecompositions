@@ -16,5 +16,6 @@ problem MaximumHappyVertices
 baseline greedyMHV
 baseline growthMHV
 nbRepetitions 1
-heuristicTD_V2 solverV2_8 8 2 1 0 smallestOut
-heuristicTD_V2 solverV2_16 16 2 1 0 smallestOut
+heuristicTD_V2 solverV2_small 16 2 1 0 smallestRankingOut
+heuristicTD_V2 solverV2_large 16 2 1 0 largestRankingOut
+heuristicTD_V2 solverV2_random 16 2 1 0 randomRankingOut
