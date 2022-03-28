@@ -23,7 +23,8 @@ namespace SolverV2
     public:
         enum class JoinNodeRankingOrder {
             largestRankingOut,
-            smallestRankingOut
+            smallestRankingOut,
+            randomRankingOut
         };
 
     private:

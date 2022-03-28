@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "HeuristicMHVSolverV2.h"
 #include "../DataStructures/Evaluator/BasicMHVEvaluator.h"
+#include "../rng.h"
 
 SolverV2::HeuristicMHVSolverV2::HeuristicMHVSolverV2(
         int nbSolutionsToKeep, int weightHappyVertices, int weightPotentialHappyVertices, int weightUnhappyVertices, JoinNodeRankingOrder joinNodeRankingOrder)
@@ -469,6 +470,21 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
         case JoinNodeRankingOrder::smallestRankingOut:
         {
             if (rankingLeftChild.size() > rankingRightChild.size())
+            {
+                outerRanking = &rankingRightChild;
+                innerRanking = &rankingLeftChild;
+            }
+            else
+            {
+                outerRanking = &rankingLeftChild;
+                innerRanking = &rankingRightChild;
+            }
+            break;
+        }
+        case JoinNodeRankingOrder::randomRankingOut:
+        {
+            std::uniform_real_distribution<> dist(0, 1);
+            if (dist(RNG::rng) < 0.5)
             {
                 outerRanking = &rankingRightChild;
                 innerRanking = &rankingLeftChild;

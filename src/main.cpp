@@ -252,6 +252,63 @@ int main(int argc, char** argv)
 
         std::cout << "Evaluation for '" << argv[2] << "': " << problemEvaluator->evaluate(graph) << "." << std::endl;
     }
+    else if (strcmp(argv[1], "heuristic-algorithm-v2") == 0)
+    {
+        DataStructures::Evaluator* problemEvaluator;
+        if (strcmp(argv[2], "MHV") == 0)
+            problemEvaluator = new DataStructures::BasicMHVEvaluator{};
+        else
+            throw std::runtime_error("'" + std::string(argv[2]) + "' is not a valid problem!");
+
+        IO::Reader reader{
+            IO::Reader::getParameter(argc, argv, "--graphFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--g6GraphFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--treeDecompositionFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--experimentFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--resultFilesDir", false)
+        };
+
+        std::string seed = IO::Reader::getParameter(argc, argv, "--seed", false);
+        if (!seed.empty())
+            RNG::setRNG(std::strtoll(seed.c_str(), nullptr, 10));
+
+        std::string joinNodeRankingOrderString = IO::Reader::getParameter(argc, argv, "--joinNodeRankingOrder", true);
+        SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder joinNodeRankingOrder;
+        if (joinNodeRankingOrderString == "largestRankingOut")
+        {
+            joinNodeRankingOrder = SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::largestRankingOut;
+        }
+        else if (joinNodeRankingOrderString == "smallestRankingOut")
+        {
+            joinNodeRankingOrder = SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut;
+        }
+        else if (joinNodeRankingOrderString == "randomRankingOut")
+        {
+            joinNodeRankingOrder = SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::randomRankingOut;
+        }
+        else
+        {
+            throw std::invalid_argument("Invalid order for rankings in join node: '" + joinNodeRankingOrderString + "'!");
+        }
+
+        SolverV2::HeuristicMHVSolverV2 solverV2{
+            IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--nbSolutionsToKeep", false)),
+            IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--happyVertexWeight", false)),
+            IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--potentialHappyVertexWeight", false)),
+            IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--unhappyVertexWeight", false)),
+            joinNodeRankingOrder
+        };
+
+        std::shared_ptr<DataStructures::Graph> graph = reader.readGraph(IO::Reader::getParameter(argc, argv, "--graphFile", true));
+        std::string colourType = IO::Reader::colourGraph(argc, argv, graph);
+        std::shared_ptr<DataStructures::NiceTreeDecomposition> treeDecomposition = reader.readNiceTreeDecomposition(IO::Reader::getParameter(argc, argv, "--treeDecompositionFile", true));
+
+        auto start = std::chrono::high_resolution_clock::now();
+        solverV2.solve(graph, treeDecomposition);
+        auto stop = std::chrono::high_resolution_clock::now();
+
+        std::cout << "Evaluation for '" << argv[2] << "': " << problemEvaluator->evaluate(graph) << " in " << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "micro seconds" << std::endl;
+    }
     else
     {
         throw std::runtime_error("Invalid argument '" + std::string{argv[1]} + "'!");
