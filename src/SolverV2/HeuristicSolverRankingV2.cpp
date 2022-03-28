@@ -39,8 +39,10 @@ void SolverV2::HeuristicSolverRankingV2::push(const SolverV2::HeuristicSolverRan
         if (std::get<2>(entry) >= worstEvaluation)
         {
             // Insert the entry
-//            insertEntry(entry);
-            entries.insert(entry);
+            auto insertResult = entries.insert(entry);
+
+            // If the entry already existed, then no other entry should be removed
+            if (!insertResult.second) return;
 
             // Find the range of elements that have the worst evaluation
             auto worstEntriesStart = entries.begin();

@@ -44,7 +44,7 @@ std::string IO::Reader::colourGraph(const std::string& str, std::shared_ptr<Data
 
 std::string IO::Reader::colourGraph(int argc, char** argv, std::shared_ptr<DataStructures::Graph>& graph)
 {
-    std::string colouring = getParameter(argc, argv, "--colouring", true);
+    std::string colouring = getParameter(argc, argv, "--colouring", false);
     if (colouring == "random")
     {
         colourGraphRandom(
@@ -54,7 +54,7 @@ std::string IO::Reader::colourGraph(int argc, char** argv, std::shared_ptr<DataS
         );
         return "random";
     }
-    else if (colouring == "genereted")
+    else if (colouring == "genereted" || colouring == "")
     {
         return "generated";
     }

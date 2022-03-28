@@ -51,14 +51,21 @@ int main(int argc, char** argv)
 
         std::string solverFile{"initial_solvers.sol"};
 //        std::string experimentFile{"grid_graphs.exp"};
-        std::string experimentFile{"small_random_graphs.exp"};
+//        std::string experimentFile{"small_random_graphs.exp"};
+        std::string experimentFile{"initial_experiment.exp"};
 
 //        std::string solverFile{"greedy_vs_growth.sol"};
 //        std::string experimentFile{"initial_experiment.exp"};
 //        std::string experimentFile{"small_random_graphs.exp"};
 
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
-        ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
+//        ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
+
+        SolverV2::HeuristicMHVSolverV2 s{1,12,16,-8,SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::largestRankingOut};
+
+        auto td = defaultReader.readNiceTreeDecomposition(experiment->testInstances[0].treeDecompositionName);
+        s.solve(experiment->testInstances[0].graph, td);
+
     }
     else if (strcmp(argv[1], "v2") == 0)
     {
@@ -303,11 +310,9 @@ int main(int argc, char** argv)
         std::string colourType = IO::Reader::colourGraph(argc, argv, graph);
         std::shared_ptr<DataStructures::NiceTreeDecomposition> treeDecomposition = reader.readNiceTreeDecomposition(IO::Reader::getParameter(argc, argv, "--treeDecompositionFile", true));
 
-        auto start = std::chrono::high_resolution_clock::now();
         solverV2.solve(graph, treeDecomposition);
-        auto stop = std::chrono::high_resolution_clock::now();
 
-        std::cout << "Evaluation for '" << argv[2] << "': " << problemEvaluator->evaluate(graph) << " in " << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "micro seconds" << std::endl;
+        std::cout << "Evaluation for '" << argv[2] << "': " << problemEvaluator->evaluate(graph) << "." << std::endl;
     }
     else
     {
