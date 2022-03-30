@@ -15,8 +15,7 @@ SolverV2::ColourAssignmentV2::ColourAssignmentV2(
     for (DataStructures::VertexType vertex{0}; vertex < colours.size(); vertex++)
     {
         if (!isColoured(vertex))
-            setColour(vertex, secondaryColourAssignment.colours[vertex]);
-//            setColour(vertex, secondaryColourAssignment.getColour(vertex)); // TODO
+            setColour(vertex, secondaryColourAssignment.getColour(vertex));
     }
 }
 
@@ -33,6 +32,11 @@ bool SolverV2::ColourAssignmentV2::isColoured(DataStructures::VertexType vertex)
 void SolverV2::ColourAssignmentV2::setColour(DataStructures::VertexType vertex, DataStructures::ColourType colour)
 {
     colours[vertex] = colour;
+}
+
+void SolverV2::ColourAssignmentV2::removeColour(DataStructures::VertexType vertex)
+{
+    colours[vertex] = 0;
 }
 
 bool SolverV2::operator==(const SolverV2::ColourAssignmentV2& c1, const SolverV2::ColourAssignmentV2& c2)

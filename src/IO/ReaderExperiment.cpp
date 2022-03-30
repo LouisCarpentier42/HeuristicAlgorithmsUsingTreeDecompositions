@@ -75,41 +75,68 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
         }
         else if (tokens[0] == "heuristicTD_V2")
         {
-            if (tokens[6] == "smallestRankingOut")
+            std::string joinNodeRankingOrderString = tokens[6];
+            SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder joinNodeRankingOrder;
+            if (joinNodeRankingOrderString == "largestRankingOut")
             {
-                treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
-                        convertToInt(tokens[2]),
-                        convertToInt(tokens[3]),
-                        convertToInt(tokens[4]),
-                        convertToInt(tokens[5]),
-                        SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut
-                    );
+                joinNodeRankingOrder = SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::largestRankingOut;
             }
-            else if (tokens[6] == "largestRankingOut")
+            else if (joinNodeRankingOrderString == "smallestRankingOut")
             {
-                treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
-                        convertToInt(tokens[2]),
-                        convertToInt(tokens[3]),
-                        convertToInt(tokens[4]),
-                        convertToInt(tokens[5]),
-                        SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::largestRankingOut
-                    );
+                joinNodeRankingOrder = SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut;
             }
-            else if (tokens[6] == "randomRankingOut")
+            else if (joinNodeRankingOrderString == "randomRankingOut")
             {
-                treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
-                        convertToInt(tokens[2]),
-                        convertToInt(tokens[3]),
-                        convertToInt(tokens[4]),
-                        convertToInt(tokens[5]),
-                        SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::randomRankingOut
-                        );
+                joinNodeRankingOrder = SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::randomRankingOut;
             }
             else
             {
-                throw std::runtime_error("Invalid join node ranking order given: " + tokens[6] + "!");
+                throw std::invalid_argument("Invalid order for rankings in join node: '" + joinNodeRankingOrderString + "'!");
             }
 
+            std::string vertexWeightJoinBagString = tokens[7];
+            SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag vertexWeightJoinBag;
+            if (vertexWeightJoinBagString == "unitary")
+            {
+                vertexWeightJoinBag = SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::unitary;
+            }
+            else if (vertexWeightJoinBagString == "nbColouredNeighboursOutsideBag")
+            {
+                vertexWeightJoinBag =  SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbColouredNeighboursOutsideBag;
+            }
+            else if (vertexWeightJoinBagString == "hasColouredNeighbourOutsideBag")
+            {
+                vertexWeightJoinBag = SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::hasColouredNeighbourOutsideBag;
+            }
+            else if (vertexWeightJoinBagString == "nbNeighboursOutsideBag")
+            {
+                vertexWeightJoinBag =  SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbNeighboursOutsideBag;
+            }
+            else if (vertexWeightJoinBagString == "hasNeighboursOutsideBag")
+            {
+                vertexWeightJoinBag = SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::hasNeighboursOutsideBag;
+            }
+            else if (vertexWeightJoinBagString == "nbNeighboursInBorder")
+            {
+                vertexWeightJoinBag =  SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbNeighboursInBorder;
+            }
+            else if (vertexWeightJoinBagString == "hasNeighbourInBorder")
+            {
+                vertexWeightJoinBag = SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::hasNeighbourInBorder;
+            }
+            else
+            {
+                throw std::invalid_argument("Invalid vertex weight for join node given: '" + joinNodeRankingOrderString + "'!");
+            }
+
+            treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
+                    convertToInt(tokens[2]),
+                    convertToInt(tokens[3]),
+                    convertToInt(tokens[4]),
+                    convertToInt(tokens[5]),
+                    joinNodeRankingOrder,
+                    vertexWeightJoinBag
+                );
         }
         else
         {

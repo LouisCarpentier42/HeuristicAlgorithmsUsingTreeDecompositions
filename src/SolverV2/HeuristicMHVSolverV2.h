@@ -26,6 +26,15 @@ namespace SolverV2
             smallestRankingOut,
             randomRankingOut
         };
+        enum class VertexWeightJoinBag {
+            unitary,
+            nbColouredNeighboursOutsideBag,
+            hasColouredNeighbourOutsideBag,
+            nbNeighboursOutsideBag,
+            hasNeighboursOutsideBag,
+            nbNeighboursInBorder,
+            hasNeighbourInBorder
+        };
 
     private:
         bool foundExactSolution{false};
@@ -34,6 +43,7 @@ namespace SolverV2
         const int weightPotentialHappyVertices;
         const int weightUnhappyVertices;
         const JoinNodeRankingOrder joinNodeRankingOrder;
+        const VertexWeightJoinBag vertexWeightJoinBag;
 
     public:
         HeuristicMHVSolverV2(
@@ -41,7 +51,8 @@ namespace SolverV2
                 int weightHappyVertices,
                 int weightPotentialHappyVertices,
                 int weightUnhappyVertices,
-                JoinNodeRankingOrder joinNodeRankingOrder);
+                JoinNodeRankingOrder joinNodeRankingOrder,
+                VertexWeightJoinBag vertexWeightJoinBag);
 
         bool hasFoundExactSolution() const;
 

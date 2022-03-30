@@ -30,6 +30,7 @@ namespace SolverV2
         [[nodiscard]] bool isColoured(DataStructures::VertexType vertex) const;
 
         void setColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
+        void removeColour(DataStructures::VertexType vertex);
 
         friend bool operator==(const ColourAssignmentV2& c1, const ColourAssignmentV2& c2);
         friend bool operator<(const ColourAssignmentV2& c1, const ColourAssignmentV2& c2);

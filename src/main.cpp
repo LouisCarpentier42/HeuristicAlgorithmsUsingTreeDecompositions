@@ -46,25 +46,13 @@ int main(int argc, char** argv)
 
     if (argc == 1)
     {
-//        std::string solverFile{"greedy_vs_growth.sol"};
-//        std::string experimentFile{"lewis_random_greedy_vs_growth.exp"};
-
         std::string solverFile{"initial_solvers.sol"};
-//        std::string experimentFile{"grid_graphs.exp"};
-//        std::string experimentFile{"small_random_graphs.exp"};
-        std::string experimentFile{"initial_experiment.exp"};
-
-//        std::string solverFile{"greedy_vs_growth.sol"};
 //        std::string experimentFile{"initial_experiment.exp"};
+        std::string experimentFile{"initial_v2_experiment.exp"};
 //        std::string experimentFile{"small_random_graphs.exp"};
 
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
-//        ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
-
-        SolverV2::HeuristicMHVSolverV2 s{1,12,16,-8,SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::largestRankingOut};
-
-        auto td = defaultReader.readNiceTreeDecomposition(experiment->testInstances[0].treeDecompositionName);
-        s.solve(experiment->testInstances[0].graph, td);
+        ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
 
     }
     else if (strcmp(argv[1], "v2") == 0)
@@ -103,7 +91,8 @@ int main(int argc, char** argv)
                 2,
                 1,
                 0,
-                SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut};
+                SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut,
+                SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::unitary};
             std::cout << "Solver V2 with " << nbSolutionsToKeep << " entries to keep\n";
 
             std::shared_ptr<DataStructures::NiceTreeDecomposition> td = defaultReader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
@@ -183,19 +172,15 @@ int main(int argc, char** argv)
                 int bruteForceEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
-                SolverV2::HeuristicMHVSolverV2 solverV2{1024, 1, 0, 0, SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut}; // TODO set back to exact algo
-                solverV2.solve(graph, niceTreeDecomposition);
-                int tdEvaluation = problemEvaluator->evaluate(graph);
-//                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, niceTreeDecomposition)};
+                int tdEvaluation{exactTreeDecompositionSolver->solve(graph, niceTreeDecomposition)};
                 int tdColouringEvaluation{problemEvaluator->evaluate(graph)};
                 graph->removeColours();
 
-                std::cout << counter << ": [brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "] " << std::boolalpha << solverV2.hasFoundExactSolution() << "\n";
+                std::cout << counter << ": [brute force eval, exact td eval] = [" << bruteForceEvaluation << ", " << tdEvaluation << "] " << "\n";
                 if (bruteForceEvaluation != tdEvaluation)
                 {
                     std::cout << "[ERROR]: brute force and td have different evaluation: " << tokens[0] << " " << tokens[1] << "\n";
                     nbMistakes++;
-                    return -1;
                 }
 
                 if (tdColouringEvaluation != tdEvaluation)
@@ -298,12 +283,48 @@ int main(int argc, char** argv)
             throw std::invalid_argument("Invalid order for rankings in join node: '" + joinNodeRankingOrderString + "'!");
         }
 
+        std::string vertexWeightJoinBagString = IO::Reader::getParameter(argc, argv, "--vertexWeightJoinBag", true);
+        SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag vertexWeightJoinBag;
+        if (vertexWeightJoinBagString == "unitary")
+        {
+            vertexWeightJoinBag = SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::unitary;
+        }
+        else if (vertexWeightJoinBagString == "nbColouredNeighboursOutsideBag")
+        {
+            vertexWeightJoinBag =  SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbColouredNeighboursOutsideBag;
+        }
+        else if (vertexWeightJoinBagString == "hasColouredNeighbourOutsideBag")
+        {
+            vertexWeightJoinBag = SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::hasColouredNeighbourOutsideBag;
+        }
+        else if (vertexWeightJoinBagString == "nbNeighboursOutsideBag")
+        {
+            vertexWeightJoinBag =  SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbNeighboursOutsideBag;
+        }
+        else if (vertexWeightJoinBagString == "hasNeighboursOutsideBag")
+        {
+            vertexWeightJoinBag = SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::hasNeighboursOutsideBag;
+        }
+        else if (vertexWeightJoinBagString == "nbNeighboursInBorder")
+        {
+            vertexWeightJoinBag =  SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbNeighboursInBorder;
+        }
+        else if (vertexWeightJoinBagString == "hasNeighbourInBorder")
+        {
+            vertexWeightJoinBag = SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::hasNeighbourInBorder;
+        }
+        else
+        {
+            throw std::invalid_argument("Invalid vertex weight for join node given: '" + joinNodeRankingOrderString + "'!");
+        }
+
         SolverV2::HeuristicMHVSolverV2 solverV2{
             IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--nbSolutionsToKeep", false)),
             IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--happyVertexWeight", false)),
             IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--potentialHappyVertexWeight", false)),
             IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--unhappyVertexWeight", false)),
-            joinNodeRankingOrder
+            joinNodeRankingOrder,
+            vertexWeightJoinBag
         };
 
         std::shared_ptr<DataStructures::Graph> graph = reader.readGraph(IO::Reader::getParameter(argc, argv, "--graphFile", true));
@@ -312,7 +333,7 @@ int main(int argc, char** argv)
 
         solverV2.solve(graph, treeDecomposition);
 
-        std::cout << "Evaluation for '" << argv[2] << "': " << problemEvaluator->evaluate(graph) << "." << std::endl;
+        std::cout << "Evaluation for '" << argv[2] << "': " << (float)problemEvaluator->evaluate(graph)/(float)graph->getNbVertices() << "." << std::endl;
     }
     else
     {

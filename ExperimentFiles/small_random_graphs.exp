@@ -1,5 +1,9 @@
-experiment LewisGeneratedRandom_25_3_0.2/graph1.gr LewisGeneratedRandom_25_3_0.2/graph1_7.tw generated
-experiment LewisGeneratedRandom_25_3_0.2/graph2.gr LewisGeneratedRandom_25_3_0.2/graph2_6.tw generated
-experiment LewisGeneratedRandom_25_3_0.2/graph3.gr LewisGeneratedRandom_25_3_0.2/graph3_8.tw generated
+c experiment LewisGeneratedRandom_25_3_0.2/graph1.gr LewisGeneratedRandom_25_3_0.2/graph1_7.tw generated
+c experiment LewisGeneratedRandom_25_3_0.2/graph2.gr LewisGeneratedRandom_25_3_0.2/graph2_6.tw generated
+c experiment LewisGeneratedRandom_25_3_0.2/graph3.gr LewisGeneratedRandom_25_3_0.2/graph3_8.tw generated
+
 experiment LewisGeneratedRandom_100_3_0.1/graph12353.gr LewisGeneratedRandom_100_3_0.1/graph12353_nice.tw generated
 c experiment LewisGeneratedRandom_1000_10_0.1/graph6.gr LewisGeneratedRandom_1000_10_0.1/graph6_270.tw generated
+
+c experiment PACE_heuristic/he005.gr PACE_heuristic/he005_nice.tw random(3,0.01) exactTD(true,true)
+
