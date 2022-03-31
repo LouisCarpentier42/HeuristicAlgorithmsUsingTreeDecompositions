@@ -7,6 +7,7 @@
 
 
 #include <set>
+#include <queue>
 
 #include "../DataStructures/TreeDecomposition/NiceNode.h"
 #include "../DataStructures/TreeDecomposition/LeafNode.h"
@@ -35,6 +36,10 @@ namespace SolverV2
             nbNeighboursInBorder,
             hasNeighbourInBorder
         };
+        enum class JoinNodeCombineHeuristic {
+            copyBag,
+            merge
+        };
 
     private:
         bool foundExactSolution{false};
@@ -42,8 +47,10 @@ namespace SolverV2
         const int weightHappyVertices;
         const int weightPotentialHappyVertices;
         const int weightUnhappyVertices;
+        const int weightPotentialUnhappyVertices;
         const JoinNodeRankingOrder joinNodeRankingOrder;
         const VertexWeightJoinBag vertexWeightJoinBag;
+        const JoinNodeCombineHeuristic joinNodeCombineHeuristic;
 
     public:
         HeuristicMHVSolverV2(
@@ -51,8 +58,10 @@ namespace SolverV2
                 int weightHappyVertices,
                 int weightPotentialHappyVertices,
                 int weightUnhappyVertices,
+                int weightPotentialUnhappyVertices,
                 JoinNodeRankingOrder joinNodeRankingOrder,
-                VertexWeightJoinBag vertexWeightJoinBag);
+                VertexWeightJoinBag vertexWeightJoinBag,
+                JoinNodeCombineHeuristic joinNodeCombineHeuristic);
 
         bool hasFoundExactSolution() const;
 
@@ -80,12 +89,33 @@ namespace SolverV2
                 const std::shared_ptr<DataStructures::JoinNode>& node,
                 const std::shared_ptr<DataStructures::Graph>& graph);
 
-        void mergeAndAddDifferingEntries(
+        void copyBag(
                 SolverV2::HeuristicSolverRankingV2& ranking,
                 const std::shared_ptr<DataStructures::JoinNode>& node,
                 const std::shared_ptr<DataStructures::Graph>& graph,
                 const HeuristicSolverRankingV2::Entry& primaryEntry,
-                const HeuristicSolverRankingV2::Entry& secondaryEntry) const;
+                const HeuristicSolverRankingV2::Entry& secondaryEntry,
+                const std::set<DataStructures::VertexType>& verticesBorder,
+                const std::set<DataStructures::VertexType>& verticesBorderPrimary,
+                const std::set<DataStructures::VertexType>& verticesBorderSecondary) const;
+        void merge(
+                SolverV2::HeuristicSolverRankingV2& ranking,
+                const std::shared_ptr<DataStructures::JoinNode>& node,
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                const HeuristicSolverRankingV2::Entry& primaryEntry,
+                const HeuristicSolverRankingV2::Entry& secondaryEntry,
+                const std::set<DataStructures::VertexType>& verticesBorder,
+                const std::set<DataStructures::VertexType>& verticesBorderPrimary,
+                const std::set<DataStructures::VertexType>& verticesBorderSecondary) const;
+        static void colourNeighboursWithSameColour(
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                const SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,
+                const SolverV2::HeuristicSolverRankingV2::Entry& secondaryEntry,
+                DataStructures::VertexType vertex,
+                SolverV2::ColourAssignmentV2& mergedColouring,
+                SolverV2::HappyVertexAssignmentV2& mergedHappiness,
+                std::map<DataStructures::VertexType, DataStructures::ColourType>& potentialHappyNeighbours,
+                std::queue<DataStructures::VertexType>& colouredVerticesWithoutHappiness);
     };
 }
 

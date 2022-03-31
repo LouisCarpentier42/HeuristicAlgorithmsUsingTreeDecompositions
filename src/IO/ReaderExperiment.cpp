@@ -75,7 +75,7 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
         }
         else if (tokens[0] == "heuristicTD_V2")
         {
-            std::string joinNodeRankingOrderString = tokens[6];
+            std::string joinNodeRankingOrderString = tokens[7];
             SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder joinNodeRankingOrder;
             if (joinNodeRankingOrderString == "largestRankingOut")
             {
@@ -94,7 +94,7 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
                 throw std::invalid_argument("Invalid order for rankings in join node: '" + joinNodeRankingOrderString + "'!");
             }
 
-            std::string vertexWeightJoinBagString = tokens[7];
+            std::string vertexWeightJoinBagString = tokens[8];
             SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag vertexWeightJoinBag;
             if (vertexWeightJoinBagString == "unitary")
             {
@@ -129,13 +129,30 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
                 throw std::invalid_argument("Invalid vertex weight for join node given: '" + joinNodeRankingOrderString + "'!");
             }
 
+            std::string joinNodeCombineHeuristicString = tokens[9];
+            SolverV2::HeuristicMHVSolverV2::JoinNodeCombineHeuristic joinNodeCombineHeuristic;
+            if (joinNodeCombineHeuristicString == "copyBag")
+            {
+                joinNodeCombineHeuristic = SolverV2::HeuristicMHVSolverV2::JoinNodeCombineHeuristic::copyBag;
+            }
+            else if (joinNodeCombineHeuristicString == "merge")
+            {
+                joinNodeCombineHeuristic = SolverV2::HeuristicMHVSolverV2::JoinNodeCombineHeuristic::merge;
+            }
+            else
+            {
+                throw std::invalid_argument("Invalid join node combine heuristic given: '" + joinNodeRankingOrderString + "'!");
+            }
+
             treeDecompositionSolversV2[tokens[1]] = std::make_shared<SolverV2::HeuristicMHVSolverV2>(
                     convertToInt(tokens[2]),
                     convertToInt(tokens[3]),
                     convertToInt(tokens[4]),
                     convertToInt(tokens[5]),
+                    convertToInt(tokens[6]),
                     joinNodeRankingOrder,
-                    vertexWeightJoinBag
+                    vertexWeightJoinBag,
+                    joinNodeCombineHeuristic
                 );
         }
         else

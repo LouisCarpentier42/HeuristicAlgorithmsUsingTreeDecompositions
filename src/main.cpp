@@ -65,20 +65,20 @@ int main(int argc, char** argv)
         for (ExperimentalAnalysis::TestInstance& testInstance : experiment->testInstances)
         {
             std::cout << " --- Graph: " << testInstance.graphName << " ---\n";
-            // Test the baselines
-            for (auto const& [name, baseline] : experiment->baselines)
-            {
-                std::cout << "Baseline: " << name << "\n";
-
-                testInstance.graph->removeColours();
-                auto start = std::chrono::high_resolution_clock::now();
-                baseline->solve(testInstance.graph);
-                auto stop = std::chrono::high_resolution_clock::now();
-                int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
-
-                std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
-                std::cout  << "\n";
-            }
+//            // Test the baselines // TODO
+//            for (auto const& [name, baseline] : experiment->baselines)
+//            {
+//                std::cout << "Baseline: " << name << "\n";
+//
+//                testInstance.graph->removeColours();
+//                auto start = std::chrono::high_resolution_clock::now();
+//                baseline->solve(testInstance.graph);
+//                auto stop = std::chrono::high_resolution_clock::now();
+//                int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
+//
+//                std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
+//                std::cout  << "\n";
+//            }
 
             int nbSolutionsToKeep;
             if (argc == 3)
@@ -91,8 +91,10 @@ int main(int argc, char** argv)
                 2,
                 1,
                 0,
+                0,
                 SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut,
-                SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::unitary};
+                SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::unitary,
+                SolverV2::HeuristicMHVSolverV2::JoinNodeCombineHeuristic::copyBag};
             std::cout << "Solver V2 with " << nbSolutionsToKeep << " entries to keep\n";
 
             std::shared_ptr<DataStructures::NiceTreeDecomposition> td = defaultReader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
@@ -318,13 +320,30 @@ int main(int argc, char** argv)
             throw std::invalid_argument("Invalid vertex weight for join node given: '" + joinNodeRankingOrderString + "'!");
         }
 
+        std::string joinNodeCombineHeuristicString = IO::Reader::getParameter(argc, argv, "--joinNodeCombineHeuristic", true);
+        SolverV2::HeuristicMHVSolverV2::JoinNodeCombineHeuristic joinNodeCombineHeuristic;
+        if (joinNodeCombineHeuristicString == "copyBag")
+        {
+            joinNodeCombineHeuristic = SolverV2::HeuristicMHVSolverV2::JoinNodeCombineHeuristic::copyBag;
+        }
+        else if (joinNodeCombineHeuristicString == "merge")
+        {
+            joinNodeCombineHeuristic = SolverV2::HeuristicMHVSolverV2::JoinNodeCombineHeuristic::merge;
+        }
+        else
+        {
+            throw std::invalid_argument("Invalid join node combine heuristic given: '" + joinNodeRankingOrderString + "'!");
+        }
+
         SolverV2::HeuristicMHVSolverV2 solverV2{
             IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--nbSolutionsToKeep", false)),
             IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--happyVertexWeight", false)),
             IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--potentialHappyVertexWeight", false)),
             IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--unhappyVertexWeight", false)),
+            IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--potentialUnhappyVertexWeight", false)),
             joinNodeRankingOrder,
-            vertexWeightJoinBag
+            vertexWeightJoinBag,
+            joinNodeCombineHeuristic
         };
 
         std::shared_ptr<DataStructures::Graph> graph = reader.readGraph(IO::Reader::getParameter(argc, argv, "--graphFile", true));

@@ -18,7 +18,8 @@ namespace SolverV2
         unknown,
         happy,
         unhappy,
-        potentiallyHappy
+        potentiallyHappy,
+        potentiallyUnhappy // TODO
     };
 
     class HappyVertexAssignmentV2
@@ -26,10 +27,11 @@ namespace SolverV2
     private:
         std::vector<HappinessValue> happiness{};
         std::map<HappinessValue, int> happinessValuesCounts{
-            {HappinessValue::unknown,          0},
-            {HappinessValue::happy,            0},
-            {HappinessValue::potentiallyHappy, 0},
-            {HappinessValue::unhappy,          0}
+            {HappinessValue::unknown,           0},
+            {HappinessValue::happy,             0},
+            {HappinessValue::potentiallyHappy,  0},
+            {HappinessValue::unhappy,           0},
+            {HappinessValue::potentiallyUnhappy,0}
         };
 
     public:
