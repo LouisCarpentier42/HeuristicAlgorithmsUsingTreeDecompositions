@@ -55,7 +55,8 @@ std::ostream& SolverV2::operator<<(std::ostream& out, const SolverV2::HappinessV
         case unknown: return out << ".";
         case happy: return out << "H";
         case unhappy: return out << "U";
-        case potentiallyHappy: return out << "P";
+        case potentiallyHappy: return out << "PH";
+        case potentiallyUnhappy: return out << "PU";
     }
 }
 

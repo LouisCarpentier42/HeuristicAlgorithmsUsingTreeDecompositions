@@ -95,9 +95,8 @@ namespace SolverV2
                 const std::shared_ptr<DataStructures::Graph>& graph,
                 const HeuristicSolverRankingV2::Entry& primaryEntry,
                 const HeuristicSolverRankingV2::Entry& secondaryEntry,
-                const std::set<DataStructures::VertexType>& verticesBorder,
-                const std::set<DataStructures::VertexType>& verticesBorderPrimary,
-                const std::set<DataStructures::VertexType>& verticesBorderSecondary) const;
+                const std::set<DataStructures::VertexType>& verticesBorderSecondary,
+                const std::set<DataStructures::VertexType>& verticesInBagConnectingSecondary) const;
         void merge(
                 SolverV2::HeuristicSolverRankingV2& ranking,
                 const std::shared_ptr<DataStructures::JoinNode>& node,
