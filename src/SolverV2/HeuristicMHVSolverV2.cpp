@@ -57,7 +57,7 @@ void SolverV2::HeuristicMHVSolverV2::solve(
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
         if (!graph->isPrecoloured(vertex))
-            graph->setColour(vertex, std::get<0>(bestEntry).getColour(vertex));
+            graph->setColour(vertex, bestEntry.colourAssignment.getColour(vertex));
     }
 
 
@@ -69,28 +69,28 @@ void SolverV2::HeuristicMHVSolverV2::solve(
 
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
-        if (std::get<1>(bestEntry).getHappiness(vertex) == HappinessValue::unhappy)
+        if (bestEntry.happyVertexAssignment.getHappiness(vertex) == HappinessValue::unhappy)
         {
             if (std::all_of(
                     graph->getNeighbours(vertex).begin(),
                     graph->getNeighbours(vertex).end(),
                     [bestEntry, vertex](DataStructures::VertexType neighbour)
                     {
-                        return std::get<0>(bestEntry).getColour(neighbour) == std::get<0>(bestEntry).getColour(vertex);
+                        return bestEntry.colourAssignment.getColour(neighbour) == bestEntry.colourAssignment.getColour(vertex);
                     }))
             {
                 std::cout << "Vertex " << vertex << " is set unhappy but all neighbours have same colour\n";
                 std::cout << vertex << " is precoloured: " << std::boolalpha << graph->isPrecoloured(vertex) << "\n";
             }
         }
-        else if (std::get<1>(bestEntry).getHappiness(vertex) == HappinessValue::happy)
+        else if (bestEntry.happyVertexAssignment.getHappiness(vertex) == HappinessValue::happy)
         {
             if (std::any_of(
                     graph->getNeighbours(vertex).begin(),
                     graph->getNeighbours(vertex).end(),
                     [bestEntry, vertex](DataStructures::VertexType neighbour)
                     {
-                        return std::get<0>(bestEntry).getColour(neighbour) != std::get<0>(bestEntry).getColour(vertex);
+                        return bestEntry.colourAssignment.getColour(neighbour) != bestEntry.colourAssignment.getColour(vertex);
                     }))
             {
                 std::cout << "Vertex " << vertex << " is set happy but has differently coloured neighbour\n";
@@ -234,7 +234,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
     std::vector<DataStructures::VertexType> uncolouredNeighbours{};
     for (DataStructures::VertexType neighbour : graph->getNeighbours(node->getIntroducedVertex()))
     {
-        if (std::get<0>(firstEntry).isColoured(neighbour))
+        if (firstEntry.colourAssignment.isColoured(neighbour))
         {
             colouredNeighbours.push_back(neighbour);
         }
@@ -256,7 +256,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
                 graph->getNeighbours(vertex).end(),
                 [firstEntry, node](DataStructures::VertexType neighbour)
                 {
-                    return std::get<0>(firstEntry).isColoured(neighbour) || neighbour == node->getIntroducedVertex();
+                    return firstEntry.colourAssignment.isColoured(neighbour) || neighbour == node->getIntroducedVertex();
                 }))
         {
             neighboursWithAllNeighboursColoured.push_back(vertex);
@@ -266,7 +266,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
     for (const HeuristicSolverRankingV2::Entry& entry : rankingChild)
     {
         // An assignment based on the happiness assignment of the child
-        HappyVertexAssignmentV2 happyVertexAssignmentWithNeighbours{std::get<1>(entry)};
+        HappyVertexAssignmentV2 happyVertexAssignmentWithNeighbours{entry.happyVertexAssignment};
 
         // A map of neighbours onto the colour that is currently makes them potentially happy
         // Thus if the introduced vertex receives that colour, the vertex remains potentially happy, and otherwise
@@ -275,13 +275,13 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
 
         // Check if all the coloured and happy neighbours have the same colour
         std::set<DataStructures::ColourType> coloursHappyNeighbours{};
-        std::set<DataStructures::ColourType> coloursNeighbours{}; // TODO needed?
+        std::set<DataStructures::ColourType> coloursNeighbours{};
         for (DataStructures::VertexType colouredNeighbour : colouredNeighbours)
         {
-            coloursNeighbours.insert(std::get<0>(entry).getColour(colouredNeighbour));
-            if (std::get<1>(entry).getHappiness(colouredNeighbour) == HappinessValue::happy)
+            coloursNeighbours.insert(entry.colourAssignment.getColour(colouredNeighbour));
+            if (entry.happyVertexAssignment.getHappiness(colouredNeighbour) == HappinessValue::happy)
             {
-                coloursHappyNeighbours.insert(std::get<0>(entry).getColour(colouredNeighbour));
+                coloursHappyNeighbours.insert(entry.colourAssignment.getColour(colouredNeighbour));
             }
         }
 
@@ -289,13 +289,13 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
         for (DataStructures::VertexType precolouredNeighbour : precolouredNeighbours)
         {
             coloursNeighbours.insert(graph->getColour(precolouredNeighbour));
-            if (std::get<1>(entry).getHappiness(precolouredNeighbour) == HappinessValue::potentiallyHappy)
+            if (entry.happyVertexAssignment.getHappiness(precolouredNeighbour) == HappinessValue::potentiallyHappy)
             {
                 // If the vertex is potentially happy, then it will only remain potentially happy if the introduced
                 // vertex is coloured in the predefined colour
                 potentialHappyNeighbours.insert(std::make_pair(precolouredNeighbour, graph->getColour(precolouredNeighbour)));
             }
-            else if (std::get<1>(entry).getHappiness(precolouredNeighbour) == HappinessValue::unknown)
+            else if (entry.happyVertexAssignment.getHappiness(precolouredNeighbour) == HappinessValue::unknown)
             {
                 // If the happiness of the precoloured vertex is unknown, but if any of its neighbours is precoloured in
                 // a different colour, then it will be unhappy in any colouring
@@ -319,7 +319,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
         // Check the happiness of all uncoloured neighbours of the introduced vertex
         for (DataStructures::VertexType uncolouredNeighbour : uncolouredNeighbours)
         {
-            if (std::get<1>(entry).getHappiness(uncolouredNeighbour) == HappinessValue::potentiallyHappy)
+            if (entry.happyVertexAssignment.getHappiness(uncolouredNeighbour) == HappinessValue::potentiallyHappy)
             {
                 // If the vertex is potentially happy, then it has neighbours of only one colour, that is both
                 // the vertices coloured in the colouring and the vertices that are precoloured
@@ -328,9 +328,9 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
                     // If the neighbour is connected to any vertex that is precoloured but not coloured in the colouring,
                     // then that precoloured vertex must have the same colour as the other connected vertices already
                     // coloured because otherwise neighbour would be unhappy
-                    if (std::get<0>(entry).isColoured(neighbourOfNeighbour))
+                    if (entry.colourAssignment.isColoured(neighbourOfNeighbour))
                     {
-                        potentialHappyNeighbours.insert(std::make_pair(uncolouredNeighbour, std::get<0>(entry).getColour(neighbourOfNeighbour)));
+                        potentialHappyNeighbours.insert(std::make_pair(uncolouredNeighbour, entry.colourAssignment.getColour(neighbourOfNeighbour)));
                         break;
                     }
                     else if (graph->isPrecoloured(neighbourOfNeighbour))
@@ -340,7 +340,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
                     }
                 }
             }
-            else if (std::get<1>(entry).getHappiness(uncolouredNeighbour) == HappinessValue::unknown)
+            else if (entry.happyVertexAssignment.getHappiness(uncolouredNeighbour) == HappinessValue::unknown)
             {
                 // If the uncoloured vertex has no known type, then it can't have any neighbours that are already coloured
                 // because then it would receive some happiness, but it can have pre coloured neighbours which decide its
@@ -390,14 +390,14 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
 
         // Check which colours can make the introduced vertex happy
         std::set<DataStructures::ColourType> coloursThatMakeIntroducedVertexHappy{};
-        if (std::get<1>(entry).getHappiness(node->getIntroducedVertex()) == HappinessValue::potentiallyHappy)
+        if (entry.happyVertexAssignment.getHappiness(node->getIntroducedVertex()) == HappinessValue::potentiallyHappy)
         {
             // If the introduced vertex is potentially happy, then the vertex can be made happy
             // The assignment of the neighbouring colour can not conflict with any already coloured vertex because the
             // neighbours all have the same colour due to the 'potential happiness'
             // Even if the introduced vertex is pre coloured, it still can be made happy because if the vertex was
             // precoloured differently than any of its neighbours it would be unhappy
-            coloursThatMakeIntroducedVertexHappy.insert(std::get<0>(entry).getColour(*colouredNeighbours.begin()));
+            coloursThatMakeIntroducedVertexHappy.insert(entry.colourAssignment.getColour(*colouredNeighbours.begin()));
         }
         else if (colouredNeighbours.empty())
         {
@@ -432,7 +432,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
             if (graph->isPrecoloured(node->getIntroducedVertex()) && colourForIntroducedVertex != graph->getColour(node->getIntroducedVertex())) continue;
 
             // The introduced vertex can be made happy by colouring it in the colourForIntroducedVertex of the neighbours
-            ColourAssignmentV2 colourAssignment{std::get<0>(entry)};
+            ColourAssignmentV2 colourAssignment{entry.colourAssignment};
             colourAssignment.setColour(node->getIntroducedVertex(), colourForIntroducedVertex);
 
             // Check the vertices that were potentially happy to see if they can still be happy
@@ -466,14 +466,14 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
         {
             if (colouredNeighbours.empty()) continue;
 
-            DataStructures::ColourType colourNeighbours = std::get<0>(entry).getColour(colouredNeighbours.front());
+            DataStructures::ColourType colourNeighbours = entry.colourAssignment.getColour(colouredNeighbours.front());
 
             if (std::all_of(
                     graph->getNeighbours(node->getIntroducedVertex()).begin(),
                     graph->getNeighbours(node->getIntroducedVertex()).end(),
                     [entry, colourNeighbours](DataStructures::VertexType neighbour)
                     {
-                        return std::get<0>(entry).getColour(neighbour) == colourNeighbours;
+                        return entry.colourAssignment.getColour(neighbour) == colourNeighbours;
                     }))
             {
                 continue;
@@ -496,7 +496,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
                 if (ranking.size() > 0) continue;
 
                 // Create a new colouring and colour the forgotten vertex
-                ColourAssignmentV2 colourAssignment{std::get<0>(entry)};
+                ColourAssignmentV2 colourAssignment{entry.colourAssignment};
                 colourAssignment.setColour(node->getIntroducedVertex(), colourForIntroducedVertex);
 
                 // Make the introduced vertex unhappy, as well as all coloured neighbours that have a different colour
@@ -504,9 +504,9 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
                 happyVertexAssignment.setHappiness(node->getIntroducedVertex(), HappinessValue::unhappy);
                 for (DataStructures::VertexType neighbour : colouredNeighbours)
                 {
-                    if ((std::get<1>(entry).getHappiness(neighbour) == HappinessValue::happy ||
-                        std::get<1>(entry).getHappiness(neighbour) == HappinessValue::potentiallyUnhappy) &&
-                        std::get<0>(entry).getColour(neighbour) != colourForIntroducedVertex)
+                    if ((entry.happyVertexAssignment.getHappiness(neighbour) == HappinessValue::happy ||
+                        entry.happyVertexAssignment.getHappiness(neighbour) == HappinessValue::potentiallyUnhappy) &&
+                        entry.colourAssignment.getColour(neighbour) != colourForIntroducedVertex)
                     {
                         happyVertexAssignment.setHappiness(neighbour, HappinessValue::unhappy);
                     }
@@ -526,7 +526,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
                 for (DataStructures::VertexType vertex : neighboursWithAllNeighboursColoured)
                 {
                     if (happyVertexAssignment.getHappiness(vertex) == HappinessValue::potentiallyUnhappy &&
-                        std::get<0>(entry).getColour(vertex) == colourForIntroducedVertex)
+                        entry.colourAssignment.getColour(vertex) == colourForIntroducedVertex)
                     {
                         happyVertexAssignment.setHappiness(vertex, HappinessValue::happy);
                     }
@@ -538,7 +538,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
             else
             {
                 // The introduced vertex can be made happy by colouring it in the colourForIntroducedVertex of the neighbours
-                ColourAssignmentV2 colourAssignment{std::get<0>(entry)};
+                ColourAssignmentV2 colourAssignment{entry.colourAssignment};
                 colourAssignment.setColour(node->getIntroducedVertex(), colourForIntroducedVertex);
 
                 // Check the vertices that were potentially happy to see if they can still be happy
@@ -548,12 +548,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
                 if (std::any_of( // TODO maybe this check costs some time?
                         coloursNeighbours.begin(),
                         coloursNeighbours.end(),
-                        [colourForIntroducedVertex](DataStructures::ColourType otherColour){ return colourForIntroducedVertex != otherColour; })
-                    ||
-                    std::any_of(
-                            precolouredNeighbours.begin(),
-                            precolouredNeighbours.end(),
-                            [colourForIntroducedVertex](DataStructures::ColourType otherColour){ return colourForIntroducedVertex != otherColour; }))
+                        [colourForIntroducedVertex](DataStructures::ColourType otherColour){ return colourForIntroducedVertex != otherColour; }))
                 {
                     happyVertexAssignment.setHappiness(node->getIntroducedVertex(), HappinessValue::unhappy);
                 }
@@ -561,8 +556,6 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
                 {
                     happyVertexAssignment.setHappiness(node->getIntroducedVertex(), HappinessValue::potentiallyUnhappy);
                 }
-
-//                happyVertexAssignment.setHappiness(node->getIntroducedVertex(), HappinessValue::unhappy);
 
 
                 for (const auto& [potentiallyHappyNeighbour, colourPotentiallyHappyNeighbour] : potentialHappyNeighbours)
@@ -625,10 +618,10 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
             {
                 for (DataStructures::VertexType vertex : node->getBagContent())
                 {
-                    if (std::get<0>(e1).getColour(vertex) != std::get<0>(e2).getColour(vertex))
-                        return std::get<0>(e1).getColour(vertex) < std::get<0>(e2).getColour(vertex);
-                    else if (std::get<1>(e1).getHappiness(vertex) != std::get<1>(e2).getHappiness(vertex))
-                        return std::get<1>(e1).getHappiness(vertex) < std::get<1>(e2).getHappiness(vertex);
+                    if (e1.colourAssignment.getColour(vertex) != e2.colourAssignment.getColour(vertex))
+                        return e1.colourAssignment.getColour(vertex) < e2.colourAssignment.getColour(vertex);
+                    else if (e1.happyVertexAssignment.getHappiness(vertex) != e2.happyVertexAssignment.getHappiness(vertex))
+                        return e1.happyVertexAssignment.getHappiness(vertex) < e2.happyVertexAssignment.getHappiness(vertex);
                 }
                 return false;
             };
@@ -649,7 +642,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
         {
             // If the entry is already present in the set, then it should replace the existing entry if it
             // has a higher evaluation
-            if (std::get<2>(*it) < std::get<2>(entry))
+            if (it->evaluation < entry.evaluation)
             {
                 entriesToAdd.erase(it);
                 entriesToAdd.insert(entry);
@@ -752,7 +745,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                             graph->getNeighbours(vertex).end(),
                             [outerRanking, innerRanking](DataStructures::VertexType neighbour)
                             {
-                                return std::get<0>(*outerRanking->begin()).isColoured(neighbour) != std::get<0>(*innerRanking->begin()).isColoured(neighbour);
+                                return outerRanking->begin()->colourAssignment.isColoured(neighbour) != innerRanking->begin()->colourAssignment.isColoured(neighbour);
                             })
                     ));
             }
@@ -770,7 +763,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                             graph->getNeighbours(vertex).end(),
                             [outerRanking, innerRanking](DataStructures::VertexType neighbour)
                             {
-                                return std::get<0>(*outerRanking->begin()).isColoured(neighbour) != std::get<0>(*innerRanking->begin()).isColoured(neighbour);
+                                return outerRanking->begin()->colourAssignment.isColoured(neighbour) != innerRanking->begin()->colourAssignment.isColoured(neighbour);
                             })
                         ));
             }
@@ -788,7 +781,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                             graph->getNeighbours(vertex).end(),
                             [outerRanking, innerRanking](DataStructures::VertexType neighbour)
                             {
-                                return !std::get<0>(*outerRanking->begin()).isColoured(neighbour) || !std::get<0>(*innerRanking->begin()).isColoured(neighbour);
+                                return !outerRanking->begin()->colourAssignment.isColoured(neighbour) || !innerRanking->begin()->colourAssignment.isColoured(neighbour);
                             })
                         ));
             }
@@ -806,7 +799,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                             graph->getNeighbours(vertex).end(),
                             [outerRanking, innerRanking](DataStructures::VertexType neighbour)
                             {
-                                return !std::get<0>(*outerRanking->begin()).isColoured(neighbour) || !std::get<0>(*innerRanking->begin()).isColoured(neighbour);
+                                return !outerRanking->begin()->colourAssignment.isColoured(neighbour) || !innerRanking->begin()->colourAssignment.isColoured(neighbour);
                             })
                         ));
             }
@@ -824,7 +817,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                             graph->getNeighbours(vertex).end(),
                             [outerRanking, innerRanking](DataStructures::VertexType neighbour)
                             {
-                                return !std::get<0>(*outerRanking->begin()).isColoured(neighbour) && !std::get<0>(*innerRanking->begin()).isColoured(neighbour);
+                                return !outerRanking->begin()->colourAssignment.isColoured(neighbour) && !innerRanking->begin()->colourAssignment.isColoured(neighbour);
                             })
                         ));
             }
@@ -842,7 +835,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                          graph->getNeighbours(vertex).end(),
                          [outerRanking, innerRanking](DataStructures::VertexType neighbour)
                          {
-                             return !std::get<0>(*outerRanking->begin()).isColoured(neighbour) && !std::get<0>(*innerRanking->begin()).isColoured(neighbour);
+                             return !outerRanking->begin()->colourAssignment.isColoured(neighbour) && !innerRanking->begin()->colourAssignment.isColoured(neighbour);
                          })
                     ));
             }
@@ -853,25 +846,25 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
     // Find the vertices that are bordering the bag
     std::set<DataStructures::VertexType> verticesBorder{};
     std::set<DataStructures::VertexType> verticesBorderOuter{};
-    std::set<DataStructures::VertexType> verticesBagConnectingOuter{};
+    std::deque<DataStructures::VertexType> verticesBagConnectingOuter{};
     std::set<DataStructures::VertexType> verticesBorderInner{};
-    std::set<DataStructures::VertexType> verticesBagConnectingInner{};
+    std::deque<DataStructures::VertexType> verticesBagConnectingInner{};
     for (DataStructures::VertexType vertex : node->getBagContent())
     {
         bool neighbourInOuter{false};
         bool neighbourInInner{false};
         for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
         {
-            if (!std::get<0>(*outerRanking->begin()).isColoured(neighbour) && !std::get<0>(*innerRanking->begin()).isColoured(neighbour))
+            if (!outerRanking->begin()->colourAssignment.isColoured(neighbour) && !innerRanking->begin()->colourAssignment.isColoured(neighbour))
             {
                 verticesBorder.insert(neighbour);
             }
-            else if (std::get<0>(*outerRanking->begin()).isColoured(neighbour) && !std::get<0>(*innerRanking->begin()).isColoured(neighbour))
+            else if (outerRanking->begin()->colourAssignment.isColoured(neighbour) && !innerRanking->begin()->colourAssignment.isColoured(neighbour))
             {
                 verticesBorderOuter.insert(neighbour);
                 neighbourInOuter = true;
             }
-            else if (!std::get<0>(*outerRanking->begin()).isColoured(neighbour) && std::get<0>(*innerRanking->begin()).isColoured(neighbour))
+            else if (!outerRanking->begin()->colourAssignment.isColoured(neighbour) && innerRanking->begin()->colourAssignment.isColoured(neighbour))
             {
                 verticesBorderInner.insert(neighbour);
                 neighbourInInner = true;
@@ -879,11 +872,11 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
         }
         if (neighbourInOuter)
         {
-            verticesBagConnectingOuter.insert(vertex); // TODO can be queue?
+            verticesBagConnectingOuter.push_back(vertex);
         }
         if (neighbourInInner)
         {
-            verticesBagConnectingInner.insert(vertex); // TODO can be queue?
+            verticesBagConnectingInner.push_back(vertex);
         }
     }
 
@@ -904,14 +897,14 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
             for (const std::pair<const DataStructures::VertexType, int>& vertexWeight : verticesAndWeight)
             {
                 // Check if there is a mistake in the colouring
-                if (std::get<0>(entryOuterLoop).getColour(vertexWeight.first) != std::get<0>(entryInnerLoop).getColour(vertexWeight.first))
+                if (entryOuterLoop.colourAssignment.getColour(vertexWeight.first) != entryInnerLoop.colourAssignment.getColour(vertexWeight.first))
                 {
                     hasDifferenceInBag = true;
                     if (ranking.size() > 0) break;
                     nbMistakes += vertexWeight.second;
                 }
                 // Check if there is a mistake in the happiness
-                if (std::get<1>(entryOuterLoop).getHappiness(vertexWeight.first) != std::get<1>(entryInnerLoop).getHappiness(vertexWeight.first))
+                if (entryOuterLoop.happyVertexAssignment.getHappiness(vertexWeight.first) != entryInnerLoop.happyVertexAssignment.getHappiness(vertexWeight.first))
                 {
                     hasDifferenceInBag = true;
                     if (ranking.size() > 0) break;
@@ -923,18 +916,18 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
             if (!hasDifferenceInBag)
             {
                 // Merge the happiness of the two entries
-                HappyVertexAssignmentV2 mergedHappiness{std::get<1>(entryOuterLoop)};
+                HappyVertexAssignmentV2 mergedHappiness{entryOuterLoop.happyVertexAssignment};
                 for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
                 {
-                    if (!std::get<0>(entryOuterLoop).isColoured(vertex) && std::get<0>(entryInnerLoop).isColoured(vertex))
+                    if (!entryOuterLoop.colourAssignment.isColoured(vertex) && entryInnerLoop.colourAssignment.isColoured(vertex))
                     {
-                        mergedHappiness.setHappiness(vertex, std::get<1>(entryInnerLoop).getHappiness(vertex));
+                        mergedHappiness.setHappiness(vertex, entryInnerLoop.happyVertexAssignment.getHappiness(vertex));
                     }
                 }
 
                 // Push the merged happiness and a merged colouring to the ranking
                 ranking.push(
-                        ColourAssignmentV2{std::get<0>(entryOuterLoop), std::get<0>(entryInnerLoop)},
+                        ColourAssignmentV2{entryOuterLoop.colourAssignment, entryInnerLoop.colourAssignment},
                         mergedHappiness,
                         getEvaluation(mergedHappiness));
 
@@ -991,16 +984,16 @@ void SolverV2::HeuristicMHVSolverV2::copyBag(
         const SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,
         const SolverV2::HeuristicSolverRankingV2::Entry& secondaryEntry,
         const std::set<DataStructures::VertexType>& verticesBorderSecondary,
-        const std::set<DataStructures::VertexType>& verticesBagConnectingSecondary) const
+        const std::deque<DataStructures::VertexType>& verticesBagConnectingSecondary) const
 {
-    ColourAssignmentV2 mergedColouring{std::get<0>(primaryEntry), std::get<0>(secondaryEntry)};
-    SolverV2::HappyVertexAssignmentV2 mergedHappiness{std::get<1>(primaryEntry)};
+    ColourAssignmentV2 mergedColouring{primaryEntry.colourAssignment, secondaryEntry.colourAssignment};
+    SolverV2::HappyVertexAssignmentV2 mergedHappiness{primaryEntry.happyVertexAssignment};
 
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
-        if (!std::get<0>(primaryEntry).isColoured(vertex) && std::get<0>(secondaryEntry).isColoured(vertex))
+        if (!primaryEntry.colourAssignment.isColoured(vertex) && secondaryEntry.colourAssignment.isColoured(vertex))
         {
-            mergedHappiness.setHappiness(vertex, std::get<1>(secondaryEntry).getHappiness(vertex));
+            mergedHappiness.setHappiness(vertex, secondaryEntry.happyVertexAssignment.getHappiness(vertex));
         }
     }
 
@@ -1024,7 +1017,7 @@ void SolverV2::HeuristicMHVSolverV2::copyBag(
 
     for (DataStructures::VertexType vertex : verticesBagConnectingSecondary)
     {
-        if (std::get<1>(primaryEntry).getHappiness(vertex) == HappinessValue::happy || std::get<1>(primaryEntry).getHappiness(vertex) == HappinessValue::potentiallyUnhappy)
+        if (primaryEntry.happyVertexAssignment.getHappiness(vertex) == HappinessValue::happy || primaryEntry.happyVertexAssignment.getHappiness(vertex) == HappinessValue::potentiallyUnhappy)
         {
             if (std::any_of(
                     graph->getNeighbours(vertex).begin(),
@@ -1043,7 +1036,6 @@ void SolverV2::HeuristicMHVSolverV2::copyBag(
     ranking.push(mergedColouring, mergedHappiness, getEvaluation(mergedHappiness));
 }
 
-
 void SolverV2::HeuristicMHVSolverV2::merge( // TODO
         SolverV2::HeuristicSolverRankingV2& ranking,
         const std::shared_ptr<DataStructures::JoinNode>& node,
@@ -1061,9 +1053,9 @@ void SolverV2::HeuristicMHVSolverV2::merge( // TODO
     std::set<DataStructures::VertexType> verticesDifferentHappiness{};
     for (DataStructures::VertexType vertex : node->getBagContent())
     {
-        if (std::get<0>(primaryEntry).getColour(vertex) == std::get<0>(secondaryEntry).getColour(vertex))
+        if (primaryEntry.colourAssignment.getColour(vertex) == secondaryEntry.colourAssignment.getColour(vertex))
         {
-            if (std::get<1>(primaryEntry).getHappiness(vertex) == std::get<1>(secondaryEntry).getHappiness(vertex))
+            if (primaryEntry.happyVertexAssignment.getHappiness(vertex) == secondaryEntry.happyVertexAssignment.getHappiness(vertex))
             {
                 verticesEqual.insert(vertex);
             }
@@ -1079,8 +1071,8 @@ void SolverV2::HeuristicMHVSolverV2::merge( // TODO
     }
 
     // Create a merged happiness and colouring
-    ColourAssignmentV2 mergedColouring{std::get<0>(primaryEntry), std::get<0>(secondaryEntry)};
-    HappyVertexAssignmentV2 mergedHappiness{std::get<1>(primaryEntry)};
+    ColourAssignmentV2 mergedColouring{primaryEntry.colourAssignment, secondaryEntry.colourAssignment};
+    HappyVertexAssignmentV2 mergedHappiness{primaryEntry.happyVertexAssignment};
     for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
     {
         if (!mergedColouring.isColoured(vertex))
@@ -1088,12 +1080,12 @@ void SolverV2::HeuristicMHVSolverV2::merge( // TODO
             // Remove the happiness from the vertices in the border
             mergedHappiness.setHappiness(vertex, HappinessValue::unknown);
         }
-        else if (!std::get<0>(primaryEntry).isColoured(vertex) && std::get<0>(secondaryEntry).isColoured(vertex))
+        else if (!primaryEntry.colourAssignment.isColoured(vertex) && secondaryEntry.colourAssignment.isColoured(vertex))
         {
             // Copy the happiness of the vertices coloured in the secondary entry but not in the first
-            mergedHappiness.setHappiness(vertex, std::get<1>(secondaryEntry).getHappiness(vertex));
+            mergedHappiness.setHappiness(vertex, secondaryEntry.happyVertexAssignment.getHappiness(vertex));
         }
-        else if (std::get<0>(primaryEntry).isColoured(vertex) && std::get<0>(secondaryEntry).isColoured(vertex))
+        else if (primaryEntry.colourAssignment.isColoured(vertex) && secondaryEntry.colourAssignment.isColoured(vertex))
         {
             // Remove all information in the bag from the merged colouring and happiness assignment
             mergedColouring.removeColour(vertex);
@@ -1110,8 +1102,8 @@ void SolverV2::HeuristicMHVSolverV2::merge( // TODO
     for (DataStructures::VertexType vertex : verticesEqual)
     {
         // Set the colour and happiness of the vertex
-        mergedColouring.setColour(vertex, std::get<0>(primaryEntry).getColour(vertex));
-        mergedHappiness.setHappiness(vertex, std::get<1>(primaryEntry).getHappiness(vertex));
+        mergedColouring.setColour(vertex, primaryEntry.colourAssignment.getColour(vertex));
+        mergedHappiness.setHappiness(vertex, primaryEntry.happyVertexAssignment.getHappiness(vertex));
 
         if (mergedHappiness.getHappiness(vertex) == HappinessValue::happy)
         {
@@ -1122,7 +1114,7 @@ void SolverV2::HeuristicMHVSolverV2::merge( // TODO
     // Colour all the vertices which have an equal colour but different happiness
     for (DataStructures::VertexType vertex : verticesDifferentHappiness)
     {
-        mergedColouring.setColour(vertex, std::get<0>(primaryEntry).getColour(vertex));
+        mergedColouring.setColour(vertex, primaryEntry.colourAssignment.getColour(vertex));
         bool vertexCanBeHappy = std::all_of(
                 graph->getNeighbours(vertex).begin(),
                 graph->getNeighbours(vertex).end(),
@@ -1189,11 +1181,11 @@ void SolverV2::HeuristicMHVSolverV2::merge( // TODO
         std::uniform_real_distribution<> dist(0, 1);
         if (dist(RNG::rng) < 0.5)
         {
-            mergedColouring.setColour(vertexToColour, std::get<0>(primaryEntry).getColour(vertexToColour));
+            mergedColouring.setColour(vertexToColour, primaryEntry.colourAssignment.getColour(vertexToColour));
         }
         else
         {
-            mergedColouring.setColour(vertexToColour, std::get<0>(secondaryEntry).getColour(vertexToColour));
+            mergedColouring.setColour(vertexToColour, secondaryEntry.colourAssignment.getColour(vertexToColour));
         }
 
         colouredVerticesWithoutHappiness.push(vertexToColour);
@@ -1255,19 +1247,19 @@ void SolverV2::HeuristicMHVSolverV2::colourNeighboursWithSameColour( // TODO
         if (mergedColouring.isColoured(neighbour))
         {
             if (mergedHappiness.getHappiness(neighbour) == HappinessValue::happy &&
-                (!std::get<0>(primaryEntry).isColoured(neighbour) || !std::get<0>(primaryEntry).isColoured(neighbour)))
+                (!primaryEntry.colourAssignment.isColoured(neighbour) || !secondaryEntry.colourAssignment.isColoured(neighbour)))
             {
                 mergedHappiness.setHappiness(neighbour, HappinessValue::unhappy);
             }
         }
         else
         {
-            if (std::get<0>(primaryEntry).isColoured(neighbour) && std::get<0>(secondaryEntry).isColoured(neighbour))
+            if (primaryEntry.colourAssignment.isColoured(neighbour) && secondaryEntry.colourAssignment.isColoured(neighbour))
             {
                 mergedColouring.setColour(neighbour, mergedColouring.getColour(vertex));
                 colouredVerticesWithoutHappiness.push(neighbour);
             }
-            else if (!std::get<0>(primaryEntry).isColoured(neighbour) && !std::get<0>(secondaryEntry).isColoured(neighbour))
+            else if (!primaryEntry.colourAssignment.isColoured(neighbour) && !secondaryEntry.colourAssignment.isColoured(neighbour))
             {
                 // Skip vertices that are already known to be unhappy
                 if (mergedHappiness.getHappiness(neighbour) == HappinessValue::unhappy) continue;

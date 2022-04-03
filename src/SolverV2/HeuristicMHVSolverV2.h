@@ -63,7 +63,7 @@ namespace SolverV2
                 VertexWeightJoinBag vertexWeightJoinBag,
                 JoinNodeCombineHeuristic joinNodeCombineHeuristic);
 
-        bool hasFoundExactSolution() const;
+        [[nodiscard]] bool hasFoundExactSolution() const;
 
         void solve(
                 std::shared_ptr<DataStructures::Graph>& graph,
@@ -96,7 +96,7 @@ namespace SolverV2
                 const HeuristicSolverRankingV2::Entry& primaryEntry,
                 const HeuristicSolverRankingV2::Entry& secondaryEntry,
                 const std::set<DataStructures::VertexType>& verticesBorderSecondary,
-                const std::set<DataStructures::VertexType>& verticesInBagConnectingSecondary) const;
+                const std::deque<DataStructures::VertexType>& verticesInBagConnectingSecondary) const;
         void merge(
                 SolverV2::HeuristicSolverRankingV2& ranking,
                 const std::shared_ptr<DataStructures::JoinNode>& node,

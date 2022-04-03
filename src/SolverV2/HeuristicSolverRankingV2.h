@@ -14,7 +14,17 @@ namespace SolverV2
     class HeuristicSolverRankingV2
     {
     public:
-        using Entry = std::tuple<ColourAssignmentV2, HappyVertexAssignmentV2, int>;
+
+        struct Entry
+        {
+            int id{0};
+            ColourAssignmentV2 colourAssignment;
+            HappyVertexAssignmentV2 happyVertexAssignment;
+            int evaluation;
+
+            Entry(int id, const ColourAssignmentV2& colourAssignment, const HappyVertexAssignmentV2& happyVertexAssignment, int evaluation);
+        };
+//        using Entry = std::tuple<ColourAssignmentV2, HappyVertexAssignmentV2, int>;
 
     private:
         struct EntryComparator
@@ -22,6 +32,7 @@ namespace SolverV2
             bool operator()(const Entry& entry1, const Entry& entry2) const;
         };
 
+        int currentEntryId{-1};
         const int capacity;
         std::set<Entry, EntryComparator> entries{};
 

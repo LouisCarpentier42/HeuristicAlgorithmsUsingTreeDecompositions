@@ -7,17 +7,37 @@
 #include "../rng.h"
 
 
+
+SolverV2::HeuristicSolverRankingV2::Entry::Entry(
+        int id,
+        const SolverV2::ColourAssignmentV2& colourAssignment,
+        const SolverV2::HappyVertexAssignmentV2& happyVertexAssignment,
+        int evaluation)
+    : id{id},
+      colourAssignment{colourAssignment},
+      happyVertexAssignment{happyVertexAssignment},
+      evaluation{evaluation}
+{ }
+
 bool SolverV2::HeuristicSolverRankingV2::EntryComparator::operator()(
         const SolverV2::HeuristicSolverRankingV2::Entry &entry1,
         const SolverV2::HeuristicSolverRankingV2::Entry &entry2) const
 {
-    if (std::get<2>(entry1) != std::get<2>(entry2))
+//    if (std::get<2>(entry1) != std::get<2>(entry2)) // TODO
+//    {
+//        return std::get<2>(entry1) < std::get<2>(entry2);
+//    }
+//    else
+//    {
+//        return entry1 < entry2;
+//    }
+    if (entry1.evaluation != entry2.evaluation)
     {
-        return std::get<2>(entry1) < std::get<2>(entry2);
+        return entry1.evaluation < entry2.evaluation;
     }
     else
     {
-        return entry1 < entry2;
+        return entry1.id < entry2.id;
     }
 }
 
@@ -28,15 +48,16 @@ void SolverV2::HeuristicSolverRankingV2::push(const SolverV2::HeuristicSolverRan
     if (!hasReachedCapacity())
     {
         // If the capacity is not reached yet, then the new entry can be inserted without any computation
-//        insertEntry(entry);
         entries.insert(entry);
     }
     else
     {
         // If the capacity has been reached, then the entry should only be added if it is at least as good
         // as the worst entry
-        int worstEvaluation = std::get<2>(*entries.begin());
-        if (std::get<2>(entry) >= worstEvaluation)
+//        int worstEvaluation = std::get<2>(*entries.begin());
+        int worstEvaluation = entries.begin()->evaluation; // TODO
+//        if (std::get<2>(entry) >= worstEvaluation)
+        if (entry.evaluation >= worstEvaluation)  // TODO
         {
             // Insert the entry
             auto insertResult = entries.insert(entry);
@@ -50,7 +71,8 @@ void SolverV2::HeuristicSolverRankingV2::push(const SolverV2::HeuristicSolverRan
             do {
                 worstEntriesEnd++;
             }
-            while (worstEntriesEnd != entries.end() && std::get<2>(*worstEntriesEnd) == worstEvaluation);
+//            while (worstEntriesEnd != entries.end() && std::get<2>(*worstEntriesEnd) == worstEvaluation);
+            while (worstEntriesEnd != entries.end() && worstEntriesEnd->evaluation == worstEvaluation);  // TODO
 
             // Remove a random entry from those that have the worst evaluation
             std::uniform_int_distribution<> dis(0, std::distance(worstEntriesStart, worstEntriesEnd) - 1);
@@ -65,7 +87,7 @@ void SolverV2::HeuristicSolverRankingV2::push(
         const HappyVertexAssignmentV2& happyVerticesAssignments,
         int evaluation)
 {
-    push(std::make_tuple(colourAssignment, happyVerticesAssignments, evaluation));
+    push(Entry{++currentEntryId, colourAssignment, happyVerticesAssignments, evaluation});
 }
 
 bool SolverV2::HeuristicSolverRankingV2::hasReachedCapacity() const
@@ -105,5 +127,6 @@ std::ostream& SolverV2::operator<<(std::ostream& out, SolverV2::HeuristicSolverR
 
 std::ostream& SolverV2::operator<<(std::ostream& out, const SolverV2::HeuristicSolverRankingV2::Entry& entry)
 {
-    return out << std::get<2>(entry) << "\t" << std::get<0>(entry) << "\t" << std::get<1>(entry);
+//    return out << std::get<2>(entry) << "\t" << std::get<1>(entry) << "\t" << std::get<0>(entry);
+    return out << entry.evaluation << "\t" << entry.colourAssignment << "\t" << entry.happyVertexAssignment; // TODO
 }
