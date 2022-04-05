@@ -14,26 +14,24 @@ namespace SolverV2
     class HeuristicSolverRankingV2
     {
     public:
-
-        struct Entry
+        struct Key
         {
-            int id{0};
+            const int id;
+            const int evaluation;
+            Key(int id, int evaluation);
+        };
+        struct Value
+        {
             ColourAssignmentV2 colourAssignment;
             HappyVertexAssignmentV2 happyVertexAssignment;
-            int evaluation;
-
-            Entry(int id, const ColourAssignmentV2& colourAssignment, const HappyVertexAssignmentV2& happyVertexAssignment, int evaluation);
+            Value(const ColourAssignmentV2& colourAssignment, const HappyVertexAssignmentV2& happyVertexAssignment);
         };
+        using Entry = std::pair<const Key, Value>;
 
     private:
-        struct EntryComparator
-        {
-            bool operator()(const Entry& entry1, const Entry& entry2) const;
-        };
-
         int currentEntryId{-1};
         const int capacity;
-        std::set<Entry, EntryComparator> entries{};
+        std::map<Key, Value> entries{};
 
     public:
         explicit HeuristicSolverRankingV2(int capacity);
@@ -46,14 +44,15 @@ namespace SolverV2
 
         [[nodiscard]] bool hasReachedCapacity() const;
         [[nodiscard]] int size() const;
-        [[nodiscard]] Entry getBestEntry() const;
+        [[nodiscard]] Value getBestValue() const;
 
-        [[nodiscard]] std::set<Entry>::iterator begin();
-        [[nodiscard]] std::set<Entry>::iterator end();
+        [[nodiscard]] std::map<Key, Value>::iterator begin();
+        [[nodiscard]] std::map<Key, Value>::iterator end();
     };
 
     std::ostream& operator<<(std::ostream& out, HeuristicSolverRankingV2& ranking);
     std::ostream& operator<<(std::ostream& out, const HeuristicSolverRankingV2::Entry& entry);
+    bool operator<(const HeuristicSolverRankingV2::Key& k1, const HeuristicSolverRankingV2::Key& k2);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_HEURISTICSOLVERRANKINGV2_H

@@ -6,32 +6,27 @@
 #include "HeuristicSolverRankingV2.h"
 #include "../rng.h"
 
+SolverV2::HeuristicSolverRankingV2::Key::Key(int id, int evaluation)
+    : id{id}, evaluation{evaluation} { }
 
-
-SolverV2::HeuristicSolverRankingV2::Entry::Entry(
-        int id,
-        const SolverV2::ColourAssignmentV2& colourAssignment,
-        const SolverV2::HappyVertexAssignmentV2& happyVertexAssignment,
-        int evaluation)
-    : id{id},
-      colourAssignment{colourAssignment},
-      happyVertexAssignment{happyVertexAssignment},
-      evaluation{evaluation}
-{ }
-
-bool SolverV2::HeuristicSolverRankingV2::EntryComparator::operator()(
-        const SolverV2::HeuristicSolverRankingV2::Entry &entry1,
-        const SolverV2::HeuristicSolverRankingV2::Entry &entry2) const
+bool SolverV2::operator<(const SolverV2::HeuristicSolverRankingV2::Key& k1, const SolverV2::HeuristicSolverRankingV2::Key& k2)
 {
-    if (entry1.evaluation != entry2.evaluation)
+    if (k1.evaluation != k2.evaluation)
     {
-        return entry1.evaluation < entry2.evaluation;
+        return k1.evaluation < k2.evaluation;
     }
     else
     {
-        return entry1.id < entry2.id;
+        return k1.id < k2.id;
     }
 }
+
+SolverV2::HeuristicSolverRankingV2::Value::Value(
+        const SolverV2::ColourAssignmentV2& colourAssignment,
+        const SolverV2::HappyVertexAssignmentV2& happyVertexAssignment)
+    : colourAssignment{colourAssignment},
+      happyVertexAssignment{happyVertexAssignment}
+{ }
 
 SolverV2::HeuristicSolverRankingV2::HeuristicSolverRankingV2(int capacity) : capacity{capacity} { }
 
@@ -46,8 +41,8 @@ void SolverV2::HeuristicSolverRankingV2::push(const SolverV2::HeuristicSolverRan
     {
         // If the capacity has been reached, then the entry should only be added if it is at least as good
         // as the worst entry
-        int worstEvaluation = entries.begin()->evaluation;
-        if (entry.evaluation >= worstEvaluation)
+        int worstEvaluation = entries.begin()->first.evaluation;
+        if (entry.first.evaluation >= worstEvaluation)
         {
             // Insert the entry
             auto insertResult = entries.insert(entry);
@@ -61,7 +56,7 @@ void SolverV2::HeuristicSolverRankingV2::push(const SolverV2::HeuristicSolverRan
             do {
                 worstEntriesEnd++;
             }
-            while (worstEntriesEnd != entries.end() && worstEntriesEnd->evaluation == worstEvaluation);
+            while (worstEntriesEnd != entries.end() && worstEntriesEnd->first.evaluation == worstEvaluation);
 
             // Remove a random entry from those that have the worst evaluation
             std::uniform_int_distribution<> dis(0, std::distance(worstEntriesStart, worstEntriesEnd) - 1);
@@ -76,7 +71,7 @@ void SolverV2::HeuristicSolverRankingV2::push(
         const HappyVertexAssignmentV2& happyVerticesAssignments,
         int evaluation)
 {
-    push(Entry{++currentEntryId, colourAssignment, happyVerticesAssignments, evaluation});
+    push(Entry{Key{++currentEntryId, evaluation}, Value{colourAssignment, happyVerticesAssignments}});
 }
 
 bool SolverV2::HeuristicSolverRankingV2::hasReachedCapacity() const
@@ -89,17 +84,17 @@ int SolverV2::HeuristicSolverRankingV2::size() const
     return entries.size();
 }
 
-SolverV2::HeuristicSolverRankingV2::Entry SolverV2::HeuristicSolverRankingV2::getBestEntry() const
+SolverV2::HeuristicSolverRankingV2::Value SolverV2::HeuristicSolverRankingV2::getBestValue() const
 {
-    return *entries.rbegin();
+    return entries.rbegin()->second;
 }
 
-std::set<SolverV2::HeuristicSolverRankingV2::Entry>::iterator SolverV2::HeuristicSolverRankingV2::begin()
+std::map<SolverV2::HeuristicSolverRankingV2::Key, SolverV2::HeuristicSolverRankingV2::Value>::iterator SolverV2::HeuristicSolverRankingV2::begin()
 {
     return entries.begin();
 }
 
-std::set<SolverV2::HeuristicSolverRankingV2::Entry>::iterator SolverV2::HeuristicSolverRankingV2::end()
+std::map<SolverV2::HeuristicSolverRankingV2::Key, SolverV2::HeuristicSolverRankingV2::Value>::iterator SolverV2::HeuristicSolverRankingV2::end()
 {
     return entries.end();
 }
@@ -107,7 +102,7 @@ std::set<SolverV2::HeuristicSolverRankingV2::Entry>::iterator SolverV2::Heuristi
 std::ostream& SolverV2::operator<<(std::ostream& out, SolverV2::HeuristicSolverRankingV2& ranking)
 {
     int count{1};
-    for (const SolverV2::HeuristicSolverRankingV2::Entry& entry : ranking)
+    for (const auto& entry : ranking)
     {
         out << "E(" << count++ << ") \t" << entry << "\n";
     }
@@ -116,5 +111,5 @@ std::ostream& SolverV2::operator<<(std::ostream& out, SolverV2::HeuristicSolverR
 
 std::ostream& SolverV2::operator<<(std::ostream& out, const SolverV2::HeuristicSolverRankingV2::Entry& entry)
 {
-    return out << entry.evaluation << "\t" << entry.colourAssignment << "\t" << entry.happyVertexAssignment;
+    return out << entry.first.evaluation << "\t" << entry.second.colourAssignment << "\t" << entry.second.happyVertexAssignment;
 }
