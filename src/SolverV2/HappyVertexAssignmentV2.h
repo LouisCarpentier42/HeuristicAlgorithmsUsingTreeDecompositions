@@ -19,7 +19,7 @@ namespace SolverV2
         happy,
         unhappy,
         potentiallyHappy,
-        potentiallyUnhappy // TODO
+        potentiallyUnhappy
     };
 
     class HappyVertexAssignmentV2

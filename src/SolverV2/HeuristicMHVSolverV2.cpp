@@ -74,7 +74,7 @@ void SolverV2::HeuristicMHVSolverV2::solve(
             if (std::all_of(
                     graph->getNeighbours(vertex).begin(),
                     graph->getNeighbours(vertex).end(),
-                    [bestValue, vertex](DataStructures::VertexType neighbour)
+                    [bestValue, vertex](DataStructures::VertexType neighbour) mutable
                     {
                         return bestValue.colourAssignment.getColour(neighbour) == bestValue.colourAssignment.getColour(vertex);
                     }))
@@ -88,7 +88,7 @@ void SolverV2::HeuristicMHVSolverV2::solve(
             if (std::any_of(
                     graph->getNeighbours(vertex).begin(),
                     graph->getNeighbours(vertex).end(),
-                    [bestValue, vertex](DataStructures::VertexType neighbour)
+                    [bestValue, vertex](DataStructures::VertexType neighbour) mutable
                     {
                         return bestValue.colourAssignment.getColour(neighbour) != bestValue.colourAssignment.getColour(vertex);
                     }))
@@ -103,8 +103,6 @@ void SolverV2::HeuristicMHVSolverV2::solve(
         }
     }
 }
-
-DataStructures::VertexType vertexToCheck = 86;
 
 SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::solveAtNode(
         const std::shared_ptr<DataStructures::NiceNode>& node,
@@ -196,7 +194,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
         if (std::all_of(
                 graph->getNeighbours(vertex).begin(),
                 graph->getNeighbours(vertex).end(),
-                [firstValue, node](DataStructures::VertexType neighbour)
+                [firstValue, node](DataStructures::VertexType neighbour) mutable
                 {
                     return firstValue.colourAssignment.isColoured(neighbour) || neighbour == node->getIntroducedVertex();
                 }))
@@ -205,7 +203,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
         }
     }
 
-    for (const HeuristicSolverRankingV2::Entry& entry : rankingChild)
+    for (HeuristicSolverRankingV2::Entry& entry : rankingChild)
     {
         // An assignment based on the happiness assignment of the child
         HappyVertexAssignmentV2 happyVertexAssignmentWithNeighbours{entry.second.happyVertexAssignment};
@@ -413,7 +411,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
             if (std::all_of(
                     graph->getNeighbours(node->getIntroducedVertex()).begin(),
                     graph->getNeighbours(node->getIntroducedVertex()).end(),
-                    [entry, colourNeighbours](DataStructures::VertexType neighbour)
+                    [entry, colourNeighbours](DataStructures::VertexType neighbour) mutable
                     {
                         return entry.second.colourAssignment.getColour(neighbour) == colourNeighbours;
                     }))
@@ -555,50 +553,88 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
     // Compute the ranking for the child node
     HeuristicSolverRankingV2 rankingChild = solveAtNode(node->getChild(), graph);
 
-    // A set to keep track of the unique entries to add, that is the entries with unique colour and happiness for
+    // A vector to keep track of the unique entries to add, that is the entries with unique colour and happiness for
     // the vertices in the node's bag
-    auto comparator =
-            [node]
-            (const HeuristicSolverRankingV2::Entry& e1, const HeuristicSolverRankingV2::Entry& e2)
-            {
-                for (DataStructures::VertexType vertex : node->getBagContent())
-                {
-                    if (e1.second.colourAssignment.getColour(vertex) != e2.second.colourAssignment.getColour(vertex))
-                        return e1.second.colourAssignment.getColour(vertex) < e2.second.colourAssignment.getColour(vertex);
-                    else if (e1.second.happyVertexAssignment.getHappiness(vertex) != e2.second.happyVertexAssignment.getHappiness(vertex))
-                        return e1.second.happyVertexAssignment.getHappiness(vertex) < e2.second.happyVertexAssignment.getHappiness(vertex);
-                }
-                return false;
-            };
-    std::set<HeuristicSolverRankingV2::Entry, decltype(comparator)> entriesToAdd(comparator);
+    std::vector<HeuristicSolverRankingV2::Entry*> entriesToAdd;
 
     // Iterate over the entries of the child and check if it should be added to the new ranking
-    for (const HeuristicSolverRankingV2::Entry& entry : rankingChild)
+    for (HeuristicSolverRankingV2::Entry& entry : rankingChild)
     {
         // Find if the entry is already present in the set
-        auto it = entriesToAdd.find(entry);
-
-        if (it == entriesToAdd.end())
+        auto left = entriesToAdd.begin();
+        auto right = entriesToAdd.end();
+        bool entryAlreadyFound{false};
+        while (left < right)
         {
-            // If the entry is not yet present in the set, then it must be inserted
-            entriesToAdd.insert(entry);
+            auto middle = left;
+            std::advance(middle, std::distance(left, right)/2);
+
+            bool entrySmallerThanMiddle{false};
+            bool entryGreaterThanMiddle{false};
+            for (DataStructures::VertexType vertex : node->getBagContent())
+            {
+                if (entry.second.colourAssignment.getColour(vertex) != (*middle)->second.colourAssignment.getColour(vertex))
+                {
+                    if (entry.second.colourAssignment.getColour(vertex) < (*middle)->second.colourAssignment.getColour(vertex))
+                    {
+                        entrySmallerThanMiddle = true;
+                    }
+                    else
+                    {
+                        entryGreaterThanMiddle = true;
+                    }
+                    break;
+                }
+                else if (entry.second.happyVertexAssignment.getHappiness(vertex) != (*middle)->second.happyVertexAssignment.getHappiness(vertex))
+                {
+                    if (entry.second.happyVertexAssignment.getHappiness(vertex) < (*middle)->second.happyVertexAssignment.getHappiness(vertex))
+                    {
+                        entrySmallerThanMiddle = true;
+                    }
+                    else
+                    {
+                        entryGreaterThanMiddle = true;
+                    }
+                    break;
+                }
+            }
+
+            if (entrySmallerThanMiddle)
+            {
+                right = middle;
+            }
+            else if (entryGreaterThanMiddle)
+            {
+                left = middle;
+                left++;
+            }
+            else
+            {
+                left = middle;
+                right = middle;
+                entryAlreadyFound = true;
+            }
+        }
+
+
+        if (entryAlreadyFound)
+        {
+            if ((*left)->first.evaluation < entry.first.evaluation)
+            {
+                entriesToAdd.erase(left);
+                entriesToAdd.insert(left, &entry);
+            }
         }
         else
         {
-            // If the entry is already present in the set, then it should replace the existing entry if it
-            // has a higher evaluation
-            if (it->first.evaluation < entry.first.evaluation)
-            {
-                entriesToAdd.erase(it);
-                entriesToAdd.insert(entry);
-            }
+            entriesToAdd.insert(left, &entry);
         }
     }
 
     // Create a new ranking for the entries that must be added
     HeuristicSolverRankingV2 ranking{nbSolutionsToKeep};
-    for (const HeuristicSolverRankingV2::Entry& entry : entriesToAdd)
-        ranking.push(entry);
+    for (HeuristicSolverRankingV2::Entry* entry : entriesToAdd)
+        ranking.push(*entry);
 
     // Return the newly created ranking
     return ranking;
@@ -690,7 +726,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                         std::count_if(
                             graph->getNeighbours(vertex).begin(),
                             graph->getNeighbours(vertex).end(),
-                            [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour)
+                            [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour) mutable
                             {
                                 return firstValueOuter.colourAssignment.isColoured(neighbour) != firstValueInner.colourAssignment.isColoured(neighbour);
                             })
@@ -708,7 +744,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                         std::any_of(
                             graph->getNeighbours(vertex).begin(),
                             graph->getNeighbours(vertex).end(),
-                            [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour)
+                            [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour) mutable
                             {
                                 return firstValueOuter.colourAssignment.isColoured(neighbour) != firstValueInner.colourAssignment.isColoured(neighbour);
                             })
@@ -726,7 +762,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                         std::count_if(
                             graph->getNeighbours(vertex).begin(),
                             graph->getNeighbours(vertex).end(),
-                            [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour)
+                            [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour) mutable
                             {
                                 return !firstValueOuter.colourAssignment.isColoured(neighbour) || !firstValueInner.colourAssignment.isColoured(neighbour);
                             })
@@ -744,7 +780,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                         std::any_of(
                             graph->getNeighbours(vertex).begin(),
                             graph->getNeighbours(vertex).end(),
-                            [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour)
+                            [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour) mutable
                             {
                                 return !firstValueOuter.colourAssignment.isColoured(neighbour) || !firstValueInner.colourAssignment.isColoured(neighbour);
                             })
@@ -762,7 +798,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                         std::count_if(
                             graph->getNeighbours(vertex).begin(),
                             graph->getNeighbours(vertex).end(),
-                            [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour)
+                            [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour) mutable
                             {
                                 return !firstValueOuter.colourAssignment.isColoured(neighbour) && !firstValueInner.colourAssignment.isColoured(neighbour);
                             })
@@ -780,7 +816,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                      std::any_of(
                          graph->getNeighbours(vertex).begin(),
                          graph->getNeighbours(vertex).end(),
-                         [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour)
+                         [firstValueOuter, firstValueInner](DataStructures::VertexType neighbour) mutable
                          {
                              return !firstValueOuter.colourAssignment.isColoured(neighbour) && !firstValueInner.colourAssignment.isColoured(neighbour);
                          })
@@ -828,15 +864,15 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
     }
 
     // For each entry in the outer ranking, try to find a match
-    for (const HeuristicSolverRankingV2::Entry& entryOuterLoop : *outerRanking)
+    for (HeuristicSolverRankingV2::Entry& entryOuterLoop : *outerRanking)
     {
         // Keep track of the best entry in the inner ranking in case no match is found
         int bestNbMistakes = 2 * node->getBagSize();
-        const HeuristicSolverRankingV2::Entry* bestEntryInnerLoop = &(*innerRanking->begin());
+        HeuristicSolverRankingV2::Entry* bestEntryInnerLoop = &(*innerRanking->begin());
 
         // Check which entry in the inner ranking matches the entry in the outer ranking
         bool foundMatch{false};
-        for (const HeuristicSolverRankingV2::Entry& entryInnerLoop : *innerRanking)
+        for (HeuristicSolverRankingV2::Entry& entryInnerLoop : *innerRanking)
         {
             // Check if all the vertices in the bag are equal or not
             bool hasDifferenceInBag{false};
@@ -928,8 +964,8 @@ void SolverV2::HeuristicMHVSolverV2::copyBag(
         SolverV2::HeuristicSolverRankingV2& ranking,
         const std::shared_ptr<DataStructures::JoinNode>& node,
         const std::shared_ptr<DataStructures::Graph>& graph,
-        const SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,
-        const SolverV2::HeuristicSolverRankingV2::Entry& secondaryEntry,
+        SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,
+        SolverV2::HeuristicSolverRankingV2::Entry& secondaryEntry,
         const std::set<DataStructures::VertexType>& verticesBorderSecondary,
         const std::deque<DataStructures::VertexType>& verticesBagConnectingSecondary) const
 {
@@ -949,7 +985,7 @@ void SolverV2::HeuristicMHVSolverV2::copyBag(
         if (std::all_of(
                 graph->getNeighbours(vertex).begin(),
                 graph->getNeighbours(vertex).end(),
-                [mergedColouring, vertex](DataStructures::VertexType neighbour)
+                [mergedColouring, vertex](DataStructures::VertexType neighbour) mutable
                 {
                     return mergedColouring.getColour(vertex) == mergedColouring.getColour(neighbour);
                 }))
@@ -969,7 +1005,7 @@ void SolverV2::HeuristicMHVSolverV2::copyBag(
             if (std::any_of(
                     graph->getNeighbours(vertex).begin(),
                     graph->getNeighbours(vertex).end(),
-                    [mergedColouring, vertex](DataStructures::VertexType neighbour)
+                    [mergedColouring, vertex](DataStructures::VertexType neighbour) mutable
                     {
                         return mergedColouring.isColoured(neighbour) && mergedColouring.getColour(neighbour) != mergedColouring.getColour(vertex);
                     }))

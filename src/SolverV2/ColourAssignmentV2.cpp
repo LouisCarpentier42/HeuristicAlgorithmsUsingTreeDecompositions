@@ -5,7 +5,8 @@
 #include "ColourAssignmentV2.h"
 
 SolverV2::ColourAssignmentV2::ColourAssignmentV2(const std::shared_ptr<DataStructures::Graph>& graph)
-    : colours(graph->getNbVertices(), 0) { }
+    : colours(graph->getNbVertices(), 0)
+{ }
 
 SolverV2::ColourAssignmentV2::ColourAssignmentV2(const SolverV2::ColourAssignmentV2& other) = default;
 
@@ -17,36 +18,58 @@ SolverV2::ColourAssignmentV2::ColourAssignmentV2(
     for (DataStructures::VertexType vertex{0}; vertex < colours.size(); vertex++)
     {
         if (!isColoured(vertex))
-            setColour(vertex, secondaryColourAssignment.getColour(vertex));
+            setColour(vertex, secondaryColourAssignment.colours[vertex]);
     }
 }
 
-//SolverV2::ColourAssignmentV2::ColourAssignmentV2( // TODO
+//SolverV2::ColourAssignmentV2::ColourAssignmentV2(const std::shared_ptr<DataStructures::Graph>& graph)
+//: colours(graph->getNbVertices(), 0),
+//childColourings{},
+//verticesKnownToBeUncoloured(graph->getNbVertices(), false)
+//{ }
+//
+//SolverV2::ColourAssignmentV2::ColourAssignmentV2(const SolverV2::ColourAssignmentV2& other) // TODO
+//    : colours(other.colours.size(), 0),
+//      childColourings{},
+//      verticesKnownToBeUncoloured(other.colours.size(), false)
+//{
+//    childColourings.emplace_back(other); // TODO
+//    for (auto v{0}; v < other.colours.size(); v++)
+//        colours[v] = other.colours[v];
+//}
+//
+//SolverV2::ColourAssignmentV2::ColourAssignmentV2(
 //        const SolverV2::ColourAssignmentV2& primaryColourAssignment,
 //        const SolverV2::ColourAssignmentV2& secondaryColourAssignment)
-//    : colours(primaryColourAssignment.colours.size(), 0)
-//{
-//    childColourings.push_back(primaryColourAssignment);
-//    childColourings.push_back(secondaryColourAssignment);
-//}
+//    : colours(primaryColourAssignment.colours.size(), 0),
+//      childColourings{primaryColourAssignment, secondaryColourAssignment},
+//      verticesKnownToBeUncoloured(primaryColourAssignment.colours.size(), false)
+//{ }
 
-DataStructures::ColourType SolverV2::ColourAssignmentV2::getColour(DataStructures::VertexType vertex) const
+DataStructures::ColourType SolverV2::ColourAssignmentV2::getColour(DataStructures::VertexType vertex)
 {
-    return colours[vertex];
-//    if (colours[vertex] != 0) // TODO
+    return colours[vertex]; // TODO
+//    if (colours[vertex] != 0)
 //        return colours[vertex];
 //
-//    for (const ColourAssignmentV2& childColouring : childColourings)
+//    if (verticesKnownToBeUncoloured[vertex])
+//        return 0;
+//
+//    for (auto& childAssignment : childColourings)
 //    {
-//        DataStructures::ColourType colourChild{childColouring.getColour(vertex)};
-//        if (colourChild != 0)
-//            return colourChild;
+//        DataStructures::ColourType colourInChild = childAssignment.getColour(vertex);
+//        if (colourInChild != 0)
+//        {
+//            colours[vertex] = colourInChild; // Cache the colour of the vertex
+//            return colourInChild;
+//        }
 //    }
 //
+//    verticesKnownToBeUncoloured[vertex] = true;
 //    return 0;
 }
 
-bool SolverV2::ColourAssignmentV2::isColoured(DataStructures::VertexType vertex) const
+bool SolverV2::ColourAssignmentV2::isColoured(DataStructures::VertexType vertex)
 {
     return getColour(vertex) != 0;
 }
@@ -54,11 +77,6 @@ bool SolverV2::ColourAssignmentV2::isColoured(DataStructures::VertexType vertex)
 void SolverV2::ColourAssignmentV2::setColour(DataStructures::VertexType vertex, DataStructures::ColourType colour)
 {
     colours[vertex] = colour;
-}
-
-void SolverV2::ColourAssignmentV2::removeColour(DataStructures::VertexType vertex)
-{
-    colours[vertex] = 0;
 }
 
 bool SolverV2::operator==(const SolverV2::ColourAssignmentV2& c1, const SolverV2::ColourAssignmentV2& c2)

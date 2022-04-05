@@ -16,7 +16,7 @@
 #include <chrono>
 
 // valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./HeuristicAlgorithmsUsingTreeDecompositions
-// valgrind --tool=callgrind --callgrind-out-file=callgrind.out.potentially.unhappy ./HeuristicAlgorithmsUsingTreeDecompositions
+// valgrind --tool=callgrind --callgrind-out-file=callgrind.out.non.const ./HeuristicAlgorithmsUsingTreeDecompositions
 int main(int argc, char** argv)
 {
     RNG::setRNG(1);
@@ -46,51 +46,13 @@ int main(int argc, char** argv)
 
     if (argc == 1)
     {
-//        std::string solverFile{"initial_solvers.sol"};
-////        std::string experimentFile{"initial_experiment.exp"};
+        std::string solverFile{"initial_solvers.sol"};
+//        std::string experimentFile{"initial_experiment.exp"};
 //        std::string experimentFile{"initial_v2_experiment.exp"};
-////        std::string experimentFile{"small_random_graphs.exp"};
-//
-//        std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
-//        ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
+        std::string experimentFile{"small_random_graphs.exp"};
 
-
-        // TODO vv remove vv
-        struct Wrapper
-        {
-            int x;
-            explicit Wrapper(int x) : x{x} {}
-        };
-
-        struct WrapperMap
-        {
-            std::map<int, Wrapper> m;
-            explicit WrapperMap(std::map<int, Wrapper>& m) : m{m} {}
-
-            std::map<int, Wrapper>::iterator begin() { return m.begin(); }
-            std::map<int, Wrapper>::iterator end() { return m.end(); }
-
-            void print()
-            {
-                for (auto e : m) std::cout << e.first << ", " << e.second.x << "\n";
-            }
-        };
-
-        std::map<int, Wrapper> m{};
-        for (int i = 1; i < 10; i++)
-            m.insert(std::make_pair(i, Wrapper(i)));
-
-        WrapperMap wm{m};
-        std::cout << "Initial map: \n";
-        wm.print();
-
-        for (auto& [key, value] : wm)
-        {
-            value.x = 0;
-        }
-
-        std::cout << "Final map: \n";
-        wm.print();
+        std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
+        ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
     }
     else if (strcmp(argv[1], "v2") == 0)
     {
@@ -102,20 +64,20 @@ int main(int argc, char** argv)
         for (ExperimentalAnalysis::TestInstance& testInstance : experiment->testInstances)
         {
             std::cout << " --- Graph: " << testInstance.graphName << " ---\n";
-            // Test the baselines // TODO
-//            for (auto const& [name, baseline] : experiment->baselines)
-//            {
-//                std::cout << "Baseline: " << name << "\n";
-//
-//                testInstance.graph->removeColours();
-//                auto start = std::chrono::high_resolution_clock::now();
-//                baseline->solve(testInstance.graph);
-//                auto stop = std::chrono::high_resolution_clock::now();
-//                int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
-//
-//                std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
-//                std::cout  << "\n";
-//            }
+            // Test the baselines
+            for (auto const& [name, baseline] : experiment->baselines)
+            {
+                std::cout << "Baseline: " << name << "\n";
+
+                testInstance.graph->removeColours();
+                auto start = std::chrono::high_resolution_clock::now();
+                baseline->solve(testInstance.graph);
+                auto stop = std::chrono::high_resolution_clock::now();
+                int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
+
+                std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
+                std::cout  << "\n";
+            }
 
             int nbSolutionsToKeep;
             if (argc == 3)

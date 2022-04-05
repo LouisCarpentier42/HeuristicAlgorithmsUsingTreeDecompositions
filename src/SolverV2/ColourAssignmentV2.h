@@ -18,7 +18,8 @@ namespace SolverV2
     {
     private:
         std::vector<DataStructures::ColourType> colours{};
-        std::vector<ColourAssignmentV2> childColourings{};
+//        std::vector<ColourAssignmentV2> childColourings{}; // TODO
+//        std::vector<bool> verticesKnownToBeUncoloured{};
 
     public:
         explicit ColourAssignmentV2(const std::shared_ptr<DataStructures::Graph>& graph);
@@ -27,11 +28,10 @@ namespace SolverV2
                 const ColourAssignmentV2& primaryColourAssignment,
                 const ColourAssignmentV2& secondaryColourAssignment);
 
-        [[nodiscard]] DataStructures::ColourType getColour(DataStructures::VertexType vertex) const;
-        [[nodiscard]] bool isColoured(DataStructures::VertexType vertex) const;
+        [[nodiscard]] DataStructures::ColourType getColour(DataStructures::VertexType vertex);
+        [[nodiscard]] bool isColoured(DataStructures::VertexType vertex);
 
         void setColour(DataStructures::VertexType vertex, DataStructures::ColourType colour);
-        void removeColour(DataStructures::VertexType vertex);
 
         friend bool operator==(const ColourAssignmentV2& c1, const ColourAssignmentV2& c2);
         friend bool operator<(const ColourAssignmentV2& c1, const ColourAssignmentV2& c2);
