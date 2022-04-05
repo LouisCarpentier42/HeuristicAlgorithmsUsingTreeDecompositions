@@ -24,7 +24,6 @@ namespace SolverV2
 
             Entry(int id, const ColourAssignmentV2& colourAssignment, const HappyVertexAssignmentV2& happyVertexAssignment, int evaluation);
         };
-//        using Entry = std::tuple<ColourAssignmentV2, HappyVertexAssignmentV2, int>;
 
     private:
         struct EntryComparator

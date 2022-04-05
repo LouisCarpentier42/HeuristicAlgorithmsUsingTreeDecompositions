@@ -18,10 +18,11 @@ namespace SolverV2
     {
     private:
         std::vector<DataStructures::ColourType> colours{};
+        std::vector<ColourAssignmentV2> childColourings{};
 
     public:
         explicit ColourAssignmentV2(const std::shared_ptr<DataStructures::Graph>& graph);
-        ColourAssignmentV2(const ColourAssignmentV2& other) = default;
+        ColourAssignmentV2(const ColourAssignmentV2& other);
         ColourAssignmentV2(
                 const ColourAssignmentV2& primaryColourAssignment,
                 const ColourAssignmentV2& secondaryColourAssignment);
