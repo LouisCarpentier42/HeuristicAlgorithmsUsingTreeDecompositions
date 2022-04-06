@@ -313,7 +313,7 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
 {
     std::ofstream resultFile;
     resultFile.open(experiment->resultFileName + ".csv");
-    resultFile << "Solver name,graph name,tree decomposition name,treewidth,#vertices,#colours,%precoloured,%happy,evaluation,exact solution,time(micro s)\n";
+    resultFile << "Solver name,graph name,tree decomposition name,treewidth,#nodes,height,#vertices,#colours,%precoloured,%happy,evaluation,exact solution,time(micro s)\n";
 
     for (TestInstance& testInstance : experiment->testInstances)
     {
@@ -322,7 +322,7 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
         // Test the baselines
         for (auto const& [name, baseline] : experiment->baselines)
         {
-            resultFile << name << "," << testInstance.graphName << ",/,/," << testInstance.graph->getNbVertices() << "," << testInstance.graph->getNbColours() << "," << testInstance.graph->getPercentPrecoloured() << ",";
+            resultFile << name << "," << testInstance.graphName << ",/,/,/,/," << testInstance.graph->getNbVertices() << "," << testInstance.graph->getNbColours() << "," << testInstance.graph->getPercentPrecoloured() << ",";
             testInstance.graph->removeColours();
             auto start = std::chrono::high_resolution_clock::now();
             baseline->solve(testInstance.graph);
@@ -335,6 +335,8 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
         }
 
         std::shared_ptr<DataStructures::NiceTreeDecomposition> niceTreeDecomposition = reader.readNiceTreeDecomposition(testInstance.treeDecompositionName);
+        int nbNodes = niceTreeDecomposition->getRoot()->getNbNodes();
+        int height = niceTreeDecomposition->getRoot()->getHeight();
 
         for (auto const& [name, solver] : experiment->treeDecompositionSolversV2)
         {
@@ -342,6 +344,8 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
             resultFile << testInstance.graphName << ",";
             resultFile  << testInstance.treeDecompositionName << ",";
             resultFile  << niceTreeDecomposition->getTreeWidth() << ",";
+            resultFile  << nbNodes << ",";
+            resultFile  << height << ",";
             resultFile  << testInstance.graph->getNbVertices() << ",";
             resultFile  << testInstance.graph->getNbColours() << ",";
             resultFile  << testInstance.graph->getPercentPrecoloured() << ",";

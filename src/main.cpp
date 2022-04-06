@@ -65,19 +65,19 @@ int main(int argc, char** argv)
         {
             std::cout << " --- Graph: " << testInstance.graphName << " ---\n";
             // Test the baselines
-            for (auto const& [name, baseline] : experiment->baselines)
-            {
-                std::cout << "Baseline: " << name << "\n";
-
-                testInstance.graph->removeColours();
-                auto start = std::chrono::high_resolution_clock::now();
-                baseline->solve(testInstance.graph);
-                auto stop = std::chrono::high_resolution_clock::now();
-                int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
-
-                std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
-                std::cout  << "\n";
-            }
+//            for (auto const& [name, baseline] : experiment->baselines)
+//            {
+//                std::cout << "Baseline: " << name << "\n";
+//
+//                testInstance.graph->removeColours();
+//                auto start = std::chrono::high_resolution_clock::now();
+//                baseline->solve(testInstance.graph);
+//                auto stop = std::chrono::high_resolution_clock::now();
+//                int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
+//
+//                std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
+//                std::cout  << "\n";
+//            }
 
             int nbSolutionsToKeep;
             if (argc == 3)

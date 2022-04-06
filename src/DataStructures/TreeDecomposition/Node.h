@@ -35,6 +35,7 @@ namespace DataStructures
         [[nodiscard]] bool isLeaf() const;
         [[nodiscard]] int getNbChildren() const;
         [[nodiscard]] int getHeight() const;
+        [[nodiscard]] int getNbNodes() const;
 
         [[nodiscard]] std::vector<std::shared_ptr<Node>>::const_iterator beginChildrenIterator() const;
         [[nodiscard]] std::vector<std::shared_ptr<Node>>::const_iterator endChildrenIterator() const;

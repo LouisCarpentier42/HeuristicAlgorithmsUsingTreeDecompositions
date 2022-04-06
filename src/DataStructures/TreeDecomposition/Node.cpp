@@ -52,6 +52,19 @@ int DataStructures::Node::getHeight() const
     return height + 1;
 }
 
+int DataStructures::Node::getNbNodes() const
+{
+    if (isLeaf()) return 1;
+
+    int nbNodes{1};
+    for (const std::shared_ptr<Node>& child : childVector)
+    {
+        nbNodes += child->getNbNodes();
+    }
+    return nbNodes;
+}
+
+
 std::vector<std::shared_ptr<DataStructures::Node>>::const_iterator DataStructures::Node::beginChildrenIterator() const
 {
     return childVector.begin();
