@@ -38,6 +38,11 @@ void SolverV2::ColourAssignmentV2::setColour(DataStructures::VertexType vertex, 
     colours[vertex] = colour;
 }
 
+void SolverV2::ColourAssignmentV2::removeColour(DataStructures::VertexType vertex)
+{
+    colours[vertex] = 0;
+}
+
 bool SolverV2::operator==(const SolverV2::ColourAssignmentV2& c1, const SolverV2::ColourAssignmentV2& c2)
 {
     return c1.colours == c2.colours;

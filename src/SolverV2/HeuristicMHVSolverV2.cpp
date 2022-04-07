@@ -1019,258 +1019,259 @@ void SolverV2::HeuristicMHVSolverV2::copyBag(
     ranking.push(mergedColouring, mergedHappiness, getEvaluation(mergedHappiness));
 }
 
-void SolverV2::HeuristicMHVSolverV2::merge( // TODO
+void SolverV2::HeuristicMHVSolverV2::merge(
         SolverV2::HeuristicSolverRankingV2& ranking,
         const std::shared_ptr<DataStructures::JoinNode>& node,
         const std::shared_ptr<DataStructures::Graph>& graph,
-        const SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,
-        const SolverV2::HeuristicSolverRankingV2::Entry& secondaryEntry,
+        SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,
+        SolverV2::HeuristicSolverRankingV2::Entry& secondaryEntry,
         const std::set<DataStructures::VertexType>& verticesBorder,
         const std::set<DataStructures::VertexType>& verticesBorderPrimary,
         const std::set<DataStructures::VertexType>& verticesBorderSecondary) const
 {
+    // Split the vertices in the bag in three categories, based on equal colour and equal happiness
+    std::set<DataStructures::VertexType> verticesEqual{}; // TODO can be queue's?
+    std::set<DataStructures::VertexType> verticesDifferentColour{};
+    std::set<DataStructures::VertexType> verticesDifferentHappiness{};
+    for (DataStructures::VertexType vertex : node->getBagContent())
+    {
+        if (primaryEntry.second.colourAssignment.getColour(vertex) == secondaryEntry.second.colourAssignment.getColour(vertex))
+        {
+            if (primaryEntry.second.happyVertexAssignment.getHappiness(vertex) == secondaryEntry.second.happyVertexAssignment.getHappiness(vertex))
+            {
+                verticesEqual.insert(vertex);
+            }
+            else
+            {
+                verticesDifferentHappiness.insert(vertex);
+            }
+        }
+        else
+        {
+            verticesDifferentColour.insert(vertex);
+        }
+    }
 
-//    // Split the vertices in the bag in three categories, based on equal colour and equal happiness
-//    std::set<DataStructures::VertexType> verticesEqual{}; // TODO can be queue's?
-//    std::set<DataStructures::VertexType> verticesDifferentColour{};
-//    std::set<DataStructures::VertexType> verticesDifferentHappiness{};
-//    for (DataStructures::VertexType vertex : node->getBagContent())
-//    {
-//        if (primaryEntry.colourAssignment.getColour(vertex) == secondaryEntry.colourAssignment.getColour(vertex))
-//        {
-//            if (primaryEntry.happyVertexAssignment.getHappiness(vertex) == secondaryEntry.happyVertexAssignment.getHappiness(vertex))
-//            {
-//                verticesEqual.insert(vertex);
-//            }
-//            else
-//            {
-//                verticesDifferentHappiness.insert(vertex);
-//            }
-//        }
-//        else
-//        {
-//            verticesDifferentColour.insert(vertex);
-//        }
-//    }
-//
-//    // Create a merged happiness and colouring
-//    ColourAssignmentV2 mergedColouring{primaryEntry.colourAssignment, secondaryEntry.colourAssignment};
-//    HappyVertexAssignmentV2 mergedHappiness{primaryEntry.happyVertexAssignment};
-//    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
-//    {
-//        if (!mergedColouring.isColoured(vertex))
-//        {
-//            // Remove the happiness from the vertices in the border
-//            mergedHappiness.setHappiness(vertex, HappinessValue::unknown);
-//        }
-//        else if (!primaryEntry.colourAssignment.isColoured(vertex) && secondaryEntry.colourAssignment.isColoured(vertex))
-//        {
-//            // Copy the happiness of the vertices coloured in the secondary entry but not in the first
-//            mergedHappiness.setHappiness(vertex, secondaryEntry.happyVertexAssignment.getHappiness(vertex));
-//        }
-//        else if (primaryEntry.colourAssignment.isColoured(vertex) && secondaryEntry.colourAssignment.isColoured(vertex))
-//        {
-//            // Remove all information in the bag from the merged colouring and happiness assignment
-//            mergedColouring.removeColour(vertex);
-//            mergedHappiness.setHappiness(vertex, HappinessValue::unknown);
-//        }
-//    }
-//
-//    // A map for the vertices in the border that could be potentially happy, if they are given the corresponding colour
-//    std::map<DataStructures::VertexType, DataStructures::ColourType> potentialHappyNeighbours{};
-//    // Keep track of the vertices that you assign a colour but no happiness
-//    std::queue<DataStructures::VertexType> colouredVerticesWithoutHappiness{};
-//
-//    // Iterate over all the vertices that have the same happiness and the same colour
-//    for (DataStructures::VertexType vertex : verticesEqual)
-//    {
-//        // Set the colour and happiness of the vertex
-//        mergedColouring.setColour(vertex, primaryEntry.colourAssignment.getColour(vertex));
-//        mergedHappiness.setHappiness(vertex, primaryEntry.happyVertexAssignment.getHappiness(vertex));
-//
-//        if (mergedHappiness.getHappiness(vertex) == HappinessValue::happy)
-//        {
-//            colourNeighboursWithSameColour(graph, primaryEntry, secondaryEntry, vertex, mergedColouring, mergedHappiness, potentialHappyNeighbours, colouredVerticesWithoutHappiness);
-//        }
-//    }
-//
-//    // Colour all the vertices which have an equal colour but different happiness
-//    for (DataStructures::VertexType vertex : verticesDifferentHappiness)
-//    {
-//        mergedColouring.setColour(vertex, primaryEntry.colourAssignment.getColour(vertex));
-//        bool vertexCanBeHappy = std::all_of(
-//                graph->getNeighbours(vertex).begin(),
-//                graph->getNeighbours(vertex).end(),
-//                [mergedColouring, vertex](DataStructures::VertexType neighbour)
-//                {
-//                   return !mergedColouring.isColoured(neighbour) || mergedColouring.getColour(neighbour) == mergedColouring.getColour(vertex);
-//                });
-//        if (vertexCanBeHappy)
-//        {
-//            // Make the vertex happy and colour the neighbours in the same colour
-//            mergedHappiness.setHappiness(vertex, HappinessValue::happy);
-//            colourNeighboursWithSameColour(graph, primaryEntry, secondaryEntry, vertex, mergedColouring, mergedHappiness, potentialHappyNeighbours, colouredVerticesWithoutHappiness);
-//        }
-//        else
-//        {
-//            mergedHappiness.setHappiness(vertex, HappinessValue::unhappy);
-//        }
-//    }
-//
-//    // Colour the vertices from the bag that have been coloured in the previous steps to assure the happiness of some vertices
-//    while (!colouredVerticesWithoutHappiness.empty())
-//    {
-//        DataStructures::VertexType vertex = colouredVerticesWithoutHappiness.front();
-//        colouredVerticesWithoutHappiness.pop();
-//
-//        if (mergedHappiness.getHappiness(vertex) != HappinessValue::unknown) continue;
-//
-//        for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
-//        {
-//            if (mergedHappiness.getHappiness(neighbour) == HappinessValue::happy && mergedColouring.getColour(vertex) != mergedColouring.getColour(neighbour))
-//            {
-//                mergedHappiness.setHappiness(neighbour, HappinessValue::unhappy);
-//            }
-//        }
-//
-//        if (std::all_of( // TODO maybe you can keep this information during previous stages?
-//                graph->getNeighbours(vertex).begin(),
-//                graph->getNeighbours(vertex).end(),
-//                [vertex, mergedColouring](DataStructures::VertexType neighbour)
-//                {
-//                    return !mergedColouring.isColoured(neighbour) || mergedColouring.getColour(vertex) == mergedColouring.getColour(neighbour);
-//                }))
-//        {
-//            mergedHappiness.setHappiness(vertex, HappinessValue::happy);
-//            colourNeighboursWithSameColour(graph, primaryEntry, secondaryEntry, vertex, mergedColouring, mergedHappiness, potentialHappyNeighbours, colouredVerticesWithoutHappiness);
-//        }
-//        else
-//        {
-//            mergedHappiness.setHappiness(vertex, HappinessValue::unhappy);
-//        }
-//    }
-//
-//
-//    while (std::any_of(
-//            verticesDifferentColour.begin(),
-//            verticesDifferentColour.end(),
-//            [mergedHappiness](DataStructures::VertexType vertex){ return mergedHappiness.getHappiness(vertex) == HappinessValue::unknown; } ))
-//    {
-//        DataStructures::VertexType vertexToColour = *std::find_if(
-//                verticesDifferentColour.begin(),
-//                verticesDifferentColour.end(),
-//                [mergedColouring](DataStructures::VertexType vertex){ return !mergedColouring.isColoured(vertex); });
-//
-//        std::uniform_real_distribution<> dist(0, 1);
-//        if (dist(RNG::rng) < 0.5)
-//        {
-//            mergedColouring.setColour(vertexToColour, primaryEntry.colourAssignment.getColour(vertexToColour));
-//        }
-//        else
-//        {
-//            mergedColouring.setColour(vertexToColour, secondaryEntry.colourAssignment.getColour(vertexToColour));
-//        }
-//
-//        colouredVerticesWithoutHappiness.push(vertexToColour);
-//
-//        while (!colouredVerticesWithoutHappiness.empty())
-//        {
-//            DataStructures::VertexType vertex = colouredVerticesWithoutHappiness.front();
-//            colouredVerticesWithoutHappiness.pop();
-//
-//            if (mergedHappiness.getHappiness(vertex) != HappinessValue::unknown) continue;
-//
-//            for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
-//            {
-//                if (mergedHappiness.getHappiness(neighbour) == HappinessValue::happy && mergedColouring.getColour(vertex) != mergedColouring.getColour(neighbour))
-//                {
-//                    mergedHappiness.setHappiness(neighbour, HappinessValue::unhappy);
-//                }
-//            }
-//
-//            if (std::all_of( // TODO maybe you can keep this information during previous stages?
-//            graph->getNeighbours(vertex).begin(),
-//            graph->getNeighbours(vertex).end(),
-//            [vertex, mergedColouring](DataStructures::VertexType neighbour)
-//            {
-//                return !mergedColouring.isColoured(neighbour) || mergedColouring.getColour(vertex) == mergedColouring.getColour(neighbour);
-//            }))
-//            {
-//                mergedHappiness.setHappiness(vertex, HappinessValue::happy);
-//                colourNeighboursWithSameColour(graph, primaryEntry, secondaryEntry, vertex, mergedColouring, mergedHappiness, potentialHappyNeighbours, colouredVerticesWithoutHappiness);
-//            }
-//            else
-//            {
-//                mergedHappiness.setHappiness(vertex, HappinessValue::unhappy);
-//            }
-//        }
-//    }
-//
-//    for (const auto& [potentiallyHappyVertex, colourPotentiallyHappyNeighbour] : potentialHappyNeighbours)
-//    {
-//        mergedHappiness.setHappiness(potentiallyHappyVertex, HappinessValue::potentiallyHappy);
-//    }
-//
-//    ranking.push(mergedColouring, mergedHappiness, getEvaluation(mergedHappiness));
+    // Create a merged happiness and colouring
+    ColourAssignmentV2 mergedColouring{primaryEntry.second.colourAssignment, secondaryEntry.second.colourAssignment};
+    HappyVertexAssignmentV2 mergedHappiness{primaryEntry.second.happyVertexAssignment};
+    for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
+    {
+        if (!mergedColouring.isColoured(vertex))
+        {
+            // Remove the happiness from the vertices in the border
+            mergedHappiness.setHappiness(vertex, HappinessValue::unknown);
+        }
+        else if (!primaryEntry.second.colourAssignment.isColoured(vertex) && secondaryEntry.second.colourAssignment.isColoured(vertex))
+        {
+            // Copy the happiness of the vertices coloured in the secondary entry but not in the first
+            mergedHappiness.setHappiness(vertex, secondaryEntry.second.happyVertexAssignment.getHappiness(vertex));
+        }
+        else if (primaryEntry.second.colourAssignment.isColoured(vertex) && secondaryEntry.second.colourAssignment.isColoured(vertex))
+        {
+            // Remove all information in the bag from the merged colouring and happiness assignment
+            mergedColouring.removeColour(vertex);
+            mergedHappiness.setHappiness(vertex, HappinessValue::unknown);
+        }
+    }
+
+    // A map for the vertices in the border that could be potentially happy, if they are given the corresponding colour
+    std::map<DataStructures::VertexType, DataStructures::ColourType> potentialHappyNeighbours{};
+    // Keep track of the vertices that you assign a colour but no happiness
+    std::queue<DataStructures::VertexType> colouredVerticesWithoutHappiness{};
+
+    // Iterate over all the vertices that have the same happiness and the same colour
+    for (DataStructures::VertexType vertex : verticesEqual)
+    {
+        // Set the colour and happiness of the vertex
+        mergedColouring.setColour(vertex, primaryEntry.second.colourAssignment.getColour(vertex));
+        mergedHappiness.setHappiness(vertex, primaryEntry.second.happyVertexAssignment.getHappiness(vertex));
+
+        colourNeighboursWithSameColour(graph, primaryEntry, secondaryEntry, vertex, mergedColouring, mergedHappiness, potentialHappyNeighbours, colouredVerticesWithoutHappiness);
+    }
+
+    // Colour all the vertices which have an equal colour but different happiness
+    for (DataStructures::VertexType vertex : verticesDifferentHappiness)
+    {
+        mergedColouring.setColour(vertex, primaryEntry.second.colourAssignment.getColour(vertex));
+        bool vertexCanBeHappy = std::all_of(
+                graph->getNeighbours(vertex).begin(),
+                graph->getNeighbours(vertex).end(),
+                [mergedColouring, vertex](DataStructures::VertexType neighbour) mutable
+                {
+                   return !mergedColouring.isColoured(neighbour) || mergedColouring.getColour(neighbour) == mergedColouring.getColour(vertex);
+                });
+        if (vertexCanBeHappy)
+        {
+            // If the vertex is happy in either colouring, then make it happy if it was happy in any of the given entries
+            if (primaryEntry.second.happyVertexAssignment.getHappiness(vertex) == HappinessValue::happy ||
+                secondaryEntry.second.happyVertexAssignment.getHappiness(vertex) == HappinessValue::happy)
+            {
+                mergedHappiness.setHappiness(vertex, HappinessValue::happy);
+            }
+            else
+            {
+                mergedHappiness.setHappiness(vertex, HappinessValue::potentiallyUnhappy);
+            }
+        }
+        else
+        {
+            mergedHappiness.setHappiness(vertex, HappinessValue::unhappy);
+        }
+
+        colourNeighboursWithSameColour(graph, primaryEntry, secondaryEntry, vertex, mergedColouring, mergedHappiness, potentialHappyNeighbours, colouredVerticesWithoutHappiness);
+    }
+
+    // Process the queue, that is the vertices which are coloured but have not happiness yet
+    processQueue(graph, primaryEntry, secondaryEntry, mergedColouring, mergedHappiness, potentialHappyNeighbours, colouredVerticesWithoutHappiness);
+
+    // Make sure every vertex is coloured
+    while (std::any_of(
+            verticesDifferentColour.begin(),
+            verticesDifferentColour.end(),
+            [mergedHappiness](DataStructures::VertexType vertex){ return mergedHappiness.getHappiness(vertex) == HappinessValue::unknown; } ))
+    {
+        // If some vertex is not coloured yet, then pick the first vertex and colour it in a random colour from the given entries
+        DataStructures::VertexType vertexToColour = *std::find_if(
+                verticesDifferentColour.begin(),
+                verticesDifferentColour.end(),
+                [mergedColouring](DataStructures::VertexType vertex) mutable { return !mergedColouring.isColoured(vertex); });
+
+        std::uniform_real_distribution<> dist(0, 1);
+        if (dist(RNG::rng) < 0.5)
+        {
+            mergedColouring.setColour(vertexToColour, primaryEntry.second.colourAssignment.getColour(vertexToColour));
+        }
+        else
+        {
+            mergedColouring.setColour(vertexToColour, secondaryEntry.second.colourAssignment.getColour(vertexToColour));
+        }
+
+        colouredVerticesWithoutHappiness.push(vertexToColour);
+
+        processQueue(graph, primaryEntry, secondaryEntry, mergedColouring, mergedHappiness, potentialHappyNeighbours, colouredVerticesWithoutHappiness);
+    }
+
+    // All vertices that can be potentially happy should be set potentially happy
+    for (const auto& [potentiallyHappyVertex, colourPotentiallyHappyNeighbour] : potentialHappyNeighbours)
+    {
+        mergedHappiness.setHappiness(potentiallyHappyVertex, HappinessValue::potentiallyHappy);
+    }
+
+    ranking.push(mergedColouring, mergedHappiness, getEvaluation(mergedHappiness));
 }
 
 
-void SolverV2::HeuristicMHVSolverV2::colourNeighboursWithSameColour( // TODO
+void SolverV2::HeuristicMHVSolverV2::colourNeighboursWithSameColour(
         const std::shared_ptr<DataStructures::Graph>& graph,
-        const SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,
-        const SolverV2::HeuristicSolverRankingV2::Entry& secondaryEntry,
+        SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,
+        SolverV2::HeuristicSolverRankingV2::Entry& secondaryEntry,
         DataStructures::VertexType vertex,
         SolverV2::ColourAssignmentV2& mergedColouring,
         SolverV2::HappyVertexAssignmentV2& mergedHappiness,
         std::map<DataStructures::VertexType, DataStructures::ColourType>& potentialHappyNeighbours,
         std::queue<DataStructures::VertexType>& colouredVerticesWithoutHappiness)
 {
-//    for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
-//    {
-//        if (mergedColouring.isColoured(neighbour))
-//        {
-//            if (mergedHappiness.getHappiness(neighbour) == HappinessValue::happy &&
-//                (!primaryEntry.colourAssignment.isColoured(neighbour) || !secondaryEntry.colourAssignment.isColoured(neighbour)))
-//            {
-//                mergedHappiness.setHappiness(neighbour, HappinessValue::unhappy);
-//            }
-//        }
-//        else
-//        {
-//            if (primaryEntry.colourAssignment.isColoured(neighbour) && secondaryEntry.colourAssignment.isColoured(neighbour))
-//            {
-//                mergedColouring.setColour(neighbour, mergedColouring.getColour(vertex));
-//                colouredVerticesWithoutHappiness.push(neighbour);
-//            }
-//            else if (!primaryEntry.colourAssignment.isColoured(neighbour) && !secondaryEntry.colourAssignment.isColoured(neighbour))
-//            {
-//                // Skip vertices that are already known to be unhappy
-//                if (mergedHappiness.getHappiness(neighbour) == HappinessValue::unhappy) continue;
-//
-//                if (graph->isPrecoloured(neighbour))
-//                {
-//                    // If the neighbour is precoloured, then it can only become happy if the vertex is coloured in that colour
-//                    if (mergedColouring.getColour(vertex) != graph->getColour(neighbour))
-//                    {
-//                        mergedHappiness.setHappiness(neighbour, HappinessValue::unhappy);
-//                    }
-//                    else
-//                    {
-//                        potentialHappyNeighbours.insert(std::make_pair(neighbour, mergedColouring.getColour(vertex)));
-//                    }
-//                }
-//                else
-//                {
-//                    // Otherwise, the vertex could be potentially happy if it receives the same colour as the vertex
-//                    auto insertResult = potentialHappyNeighbours.insert(std::make_pair(neighbour, mergedColouring.getColour(vertex)));
-//                    if (insertResult.first->second != mergedColouring.getColour(vertex))
-//                    {
-//                        // If the vertex already exists with another colour, then it will be unhappy
-//                        potentialHappyNeighbours.erase(insertResult.first);
-//                        mergedHappiness.setHappiness(neighbour, HappinessValue::unhappy);
-//                    }
-//                }
-//            }
-//        }
-//    }
+    for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
+    {
+        if (primaryEntry.second.colourAssignment.isColoured(neighbour) && secondaryEntry.second.colourAssignment.isColoured(neighbour))
+        {
+            if (!mergedColouring.isColoured(neighbour) && mergedHappiness.getHappiness(vertex) != HappinessValue::unhappy)
+            {
+                mergedColouring.setColour(neighbour, mergedColouring.getColour(vertex));
+                colouredVerticesWithoutHappiness.push(neighbour);
+            }
+        }
+        else if (!primaryEntry.second.colourAssignment.isColoured(neighbour) &&
+                 !secondaryEntry.second.colourAssignment.isColoured(neighbour) &&
+                 mergedHappiness.getHappiness(neighbour) != HappinessValue::unhappy)
+        {
+            // Check the vertices neighbours outside the bag, that is the border
+            if (graph->isPrecoloured(neighbour))
+            {
+                // If the neighbour is precoloured, then it can only become happy if the vertex is coloured in that colour
+                if (mergedColouring.getColour(vertex) != graph->getColour(neighbour))
+                {
+                    mergedHappiness.setHappiness(neighbour, HappinessValue::unhappy);
+                    potentialHappyNeighbours.erase(neighbour);
+                }
+                else
+                {
+                    potentialHappyNeighbours.insert(std::make_pair(neighbour, mergedColouring.getColour(vertex)));
+                }
+            }
+            else
+            {
+                // Otherwise, the vertex could be potentially happy if it receives the same colour as the vertex
+                auto insertResult = potentialHappyNeighbours.insert(std::make_pair(neighbour, mergedColouring.getColour(vertex)));
+                if (insertResult.first->second != mergedColouring.getColour(vertex))
+                {
+                    // If the vertex already exists with another colour, then it will be unhappy
+                    potentialHappyNeighbours.erase(insertResult.first);
+                    mergedHappiness.setHappiness(neighbour, HappinessValue::unhappy);
+                }
+            }
+        }
+    }
+}
+
+void SolverV2::HeuristicMHVSolverV2::processQueue(
+        const std::shared_ptr<DataStructures::Graph> &graph,
+        SolverV2::HeuristicSolverRankingV2::Entry &primaryEntry,
+        SolverV2::HeuristicSolverRankingV2::Entry &secondaryEntry,
+        SolverV2::ColourAssignmentV2 &mergedColouring,
+        SolverV2::HappyVertexAssignmentV2 &mergedHappiness,
+        std::map<DataStructures::VertexType,
+        DataStructures::ColourType> &potentialHappyNeighbours,
+        std::queue<DataStructures::VertexType> &colouredVerticesWithoutHappiness)
+{
+    // Colour the vertices from the bag that have been coloured in the previous steps to assure the happiness of some vertices
+    while (!colouredVerticesWithoutHappiness.empty())
+    {
+        DataStructures::VertexType vertex = colouredVerticesWithoutHappiness.front();
+        colouredVerticesWithoutHappiness.pop();
+
+        if (mergedHappiness.getHappiness(vertex) != HappinessValue::unknown) continue;
+
+        for (DataStructures::VertexType neighbour : graph->getNeighbours(vertex))
+        {
+            if (mergedHappiness.getHappiness(neighbour) == HappinessValue::happy && mergedColouring.getColour(vertex) != mergedColouring.getColour(neighbour))
+            {
+                mergedHappiness.setHappiness(neighbour, HappinessValue::unhappy);
+            }
+            else if (mergedHappiness.getHappiness(neighbour) == HappinessValue::potentiallyUnhappy && mergedColouring.getColour(vertex) != mergedColouring.getColour(neighbour))
+            {
+                mergedHappiness.setHappiness(vertex, HappinessValue::unhappy);
+            }
+            else if (mergedHappiness.getHappiness(neighbour) == HappinessValue::unhappy && mergedColouring.getColour(vertex) == mergedColouring.getColour(neighbour))
+            {
+                if (std::all_of(
+                        graph->getNeighbours(neighbour).begin(),
+                        graph->getNeighbours(neighbour).end(),
+                        [mergedColouring, neighbour] (DataStructures::VertexType n) mutable
+                        {
+                            return mergedColouring.getColour(neighbour) == mergedColouring.getColour(n);
+                        }))
+                {
+                    mergedHappiness.setHappiness(neighbour, HappinessValue::happy);
+                }
+            }
+        }
+
+        if (std::all_of(
+                graph->getNeighbours(vertex).begin(),
+                graph->getNeighbours(vertex).end(),
+                [vertex, mergedColouring](DataStructures::VertexType neighbour) mutable
+                {
+                    return !mergedColouring.isColoured(neighbour) || mergedColouring.getColour(vertex) == mergedColouring.getColour(neighbour);
+                }))
+        {
+            mergedHappiness.setHappiness(vertex, HappinessValue::happy);
+        }
+        else
+        {
+            mergedHappiness.setHappiness(vertex, HappinessValue::unhappy);
+        }
+        colourNeighboursWithSameColour(graph, primaryEntry, secondaryEntry, vertex, mergedColouring, mergedHappiness, potentialHappyNeighbours, colouredVerticesWithoutHappiness);
+    }
 }

@@ -7,6 +7,7 @@
 
 #include <chrono>
 
+#include "../rng.h"
 
 void computeRankingsExactAlgorithm(
         std::map<std::shared_ptr<DataStructures::NiceNode>, Solvers::ExactTreeDecompositionRankingMHV>& rankings,

@@ -1,21 +1,23 @@
-experiment LewisGeneratedRandom_25_3_0.2/graph1.gr LewisGeneratedRandom_25_3_0.2/graph1_7.tw generated
-experiment LewisGeneratedRandom_25_3_0.2/graph2.gr LewisGeneratedRandom_25_3_0.2/graph2_6.tw generated
-experiment LewisGeneratedRandom_25_3_0.2/graph3.gr LewisGeneratedRandom_25_3_0.2/graph3_8.tw generated
+c experiment LewisGeneratedRandom_25_3_0.2/graph1.gr LewisGeneratedRandom_25_3_0.2/graph1_7.tw generated
+c experiment LewisGeneratedRandom_25_3_0.2/graph2.gr LewisGeneratedRandom_25_3_0.2/graph2_6.tw generated
+c experiment LewisGeneratedRandom_25_3_0.2/graph3.gr LewisGeneratedRandom_25_3_0.2/graph3_8.tw generated
 
 c experiment LewisGeneratedRandom_100_3_0.1/graph12353.gr LewisGeneratedRandom_100_3_0.1/graph12353_nice.tw generated
 c experiment LewisGeneratedRandom_1000_10_0.1/graph6.gr LewisGeneratedRandom_1000_10_0.1/graph6_270.tw generated
 
 c experiment PACE_heuristic/he005.gr PACE_heuristic/he005_nice.tw random(3,0.01) exactTD(true,true)
 
-experiment graph6c/graph18.gr graph6c/graph18_nice.tw random(2,0.01) exactTD(false,false)
+c experiment graph6c/graph18.gr graph6c/graph18_nice.tw random(2,0.01) exactTD(false,false)
 
-c experiment LewisGeneratedRandom_200_3_0.25/graph1.gr LewisGeneratedRandom_200_3_0.25/graph1_51.tw generated
-c experiment LewisGeneratedRandom_200_3_0.25/graph2.gr LewisGeneratedRandom_200_3_0.25/graph2_52.tw generated
-c experiment LewisGeneratedRandom_200_3_0.25/graph3.gr LewisGeneratedRandom_200_3_0.25/graph3_54.tw generated
-c experiment LewisGeneratedRandom_200_3_0.25/graph4.gr LewisGeneratedRandom_200_3_0.25/graph4_53.tw generated
-c experiment LewisGeneratedRandom_200_3_0.25/graph5.gr LewisGeneratedRandom_200_3_0.25/graph5_59.tw generated
+experiment LewisGeneratedRandom_200_3_0.25/graph1.gr LewisGeneratedRandom_200_3_0.25/graph1_51.tw generated
+experiment LewisGeneratedRandom_200_3_0.25/graph2.gr LewisGeneratedRandom_200_3_0.25/graph2_52.tw generated
+experiment LewisGeneratedRandom_200_3_0.25/graph3.gr LewisGeneratedRandom_200_3_0.25/graph3_54.tw generated
+experiment LewisGeneratedRandom_200_3_0.25/graph4.gr LewisGeneratedRandom_200_3_0.25/graph4_53.tw generated
+experiment LewisGeneratedRandom_200_3_0.25/graph5.gr LewisGeneratedRandom_200_3_0.25/graph5_59.tw generated
 
 c experiment LewisGeneratedRandom_50_3_0.1/graph3.gr LewisGeneratedRandom_50_3_0.1/graph3_16.tw generated
 c experiment LewisGeneratedRandom_30_3_0.1/graph5.gr LewisGeneratedRandom_30_3_0.1/graph5_10.tw generated
 
 c experiment LewisGeneratedRandom_100_3_0.1/graph1.gr LewisGeneratedRandom_100_3_0.1/graph1_26.tw generated
+
+c experiment LewisGeneratedRandom_30_3_0.75/graph4.gr LewisGeneratedRandom_30_3_0.75/graph4_9.tw generated

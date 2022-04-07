@@ -48,8 +48,8 @@ int main(int argc, char** argv)
     {
         std::string solverFile{"initial_solvers.sol"};
 //        std::string experimentFile{"initial_experiment.exp"};
-//        std::string experimentFile{"initial_v2_experiment.exp"};
-        std::string experimentFile{"small_random_graphs.exp"};
+        std::string experimentFile{"initial_v2_experiment.exp"};
+//        std::string experimentFile{"small_random_graphs.exp"};
 
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
         ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
@@ -58,6 +58,7 @@ int main(int argc, char** argv)
     {
         std::string solverFile{"greedy_vs_growth.sol"};
 //        std::string experimentFile{"initial_experiment.exp"};
+//        std::string experimentFile{"initial_v2_experiment.exp"};
         std::string experimentFile{"small_random_graphs.exp"};
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
 

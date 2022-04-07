@@ -101,16 +101,24 @@ namespace SolverV2
                 SolverV2::HeuristicSolverRankingV2& ranking,
                 const std::shared_ptr<DataStructures::JoinNode>& node,
                 const std::shared_ptr<DataStructures::Graph>& graph,
-                const HeuristicSolverRankingV2::Entry& primaryEntry,
-                const HeuristicSolverRankingV2::Entry& secondaryEntry,
+                HeuristicSolverRankingV2::Entry& primaryEntry,
+                HeuristicSolverRankingV2::Entry& secondaryEntry,
                 const std::set<DataStructures::VertexType>& verticesBorder,
                 const std::set<DataStructures::VertexType>& verticesBorderPrimary,
                 const std::set<DataStructures::VertexType>& verticesBorderSecondary) const;
         static void colourNeighboursWithSameColour(
                 const std::shared_ptr<DataStructures::Graph>& graph,
-                const SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,
-                const SolverV2::HeuristicSolverRankingV2::Entry& secondaryEntry,
+                SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,
+                SolverV2::HeuristicSolverRankingV2::Entry& secondaryEntry,
                 DataStructures::VertexType vertex,
+                SolverV2::ColourAssignmentV2& mergedColouring,
+                SolverV2::HappyVertexAssignmentV2& mergedHappiness,
+                std::map<DataStructures::VertexType, DataStructures::ColourType>& potentialHappyNeighbours,
+                std::queue<DataStructures::VertexType>& colouredVerticesWithoutHappiness);
+        static void processQueue(
+                const std::shared_ptr<DataStructures::Graph>& graph,
+                SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,
+                SolverV2::HeuristicSolverRankingV2::Entry& secondaryEntry,
                 SolverV2::ColourAssignmentV2& mergedColouring,
                 SolverV2::HappyVertexAssignmentV2& mergedHappiness,
                 std::map<DataStructures::VertexType, DataStructures::ColourType>& potentialHappyNeighbours,
