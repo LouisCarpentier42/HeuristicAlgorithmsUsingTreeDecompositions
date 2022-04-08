@@ -16,12 +16,23 @@ problem MaximumHappyVertices
 baseline greedyMHV
 baseline growthMHV
 nbRepetitions 1
-heuristicTD_V2 solverV2_1 1 2 1 0 0 randomRankingOut unitary merge
-heuristicTD_V2 solverV2_8 8 2 1 0 0 randomRankingOut unitary merge
-heuristicTD_V2 solverV2_16 16 2 1 0 0 randomRankingOut unitary merge
-heuristicTD_V2 solverV2_32 32 2 1 0 0 randomRankingOut unitary merge
-heuristicTD_V2 solverV2_64 64 2 1 0 0 randomRankingOut unitary merge
-heuristicTD_V2 solverV2_128 128 2 1 0 0 randomRankingOut unitary merge
-heuristicTD_V2 solverV2_256 256 2 1 0 0 randomRankingOut unitary merge
-c heuristicTD_V2 solverV2_512 512 2 1 0 0 randomRankingOut unitary copyBag
-c heuristicTD_V2 solverV2_1024 1024 2 1 0 0 randomRankingOut unitary copyBag
+heuristicTD_V2 merge_1 1 2 1 0 0 randomRankingOut unitary merge
+heuristicTD_V2 merge_4 4 2 1 0 0 randomRankingOut unitary merge
+heuristicTD_V2 merge_8 8 2 1 0 0 randomRankingOut unitary merge
+heuristicTD_V2 merge_16 16 2 1 0 0 randomRankingOut unitary merge
+heuristicTD_V2 merge_32 32 2 1 0 0 randomRankingOut unitary merge
+heuristicTD_V2 merge_64 64 2 1 0 0 randomRankingOut unitary merge
+heuristicTD_V2 merge_128 128 2 1 0 0 randomRankingOut unitary merge
+heuristicTD_V2 merge_256 256 2 1 0 0 randomRankingOut unitary merge
+c heuristicTD_V2 merge_512 512 2 1 0 0 randomRankingOut unitary merge
+c heuristicTD_V2 merge_1024 1024 2 1 0 0 randomRankingOut unitary merge
+heuristicTD_V2 copyBag_1 1 2 1 0 0 randomRankingOut unitary copyBag
+heuristicTD_V2 copyBag_4 4 2 1 0 0 randomRankingOut unitary copyBag
+heuristicTD_V2 copyBag_8 8 2 1 0 0 randomRankingOut unitary copyBag
+heuristicTD_V2 copyBag_16 16 2 1 0 0 randomRankingOut unitary copyBag
+heuristicTD_V2 copyBag_32 32 2 1 0 0 randomRankingOut unitary copyBag
+heuristicTD_V2 copyBag_64 64 2 1 0 0 randomRankingOut unitary copyBag
+heuristicTD_V2 copyBag_128 128 2 1 0 0 randomRankingOut unitary copyBag
+heuristicTD_V2 copyBag_256 256 2 1 0 0 randomRankingOut unitary copyBag
+c heuristicTD_V2 copyBag_512 512 2 1 0 0 randomRankingOut unitary copyBag
+c heuristicTD_V2 copyBag_1024 1024 2 1 0 0 randomRankingOut unitary copyBag

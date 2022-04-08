@@ -43,6 +43,7 @@ namespace SolverV2
 
     private:
         bool foundExactSolution{false};
+    public:
         const int nbSolutionsToKeep;
         const int weightHappyVertices;
         const int weightPotentialHappyVertices;
@@ -102,10 +103,7 @@ namespace SolverV2
                 const std::shared_ptr<DataStructures::JoinNode>& node,
                 const std::shared_ptr<DataStructures::Graph>& graph,
                 HeuristicSolverRankingV2::Entry& primaryEntry,
-                HeuristicSolverRankingV2::Entry& secondaryEntry,
-                const std::set<DataStructures::VertexType>& verticesBorder,
-                const std::set<DataStructures::VertexType>& verticesBorderPrimary,
-                const std::set<DataStructures::VertexType>& verticesBorderSecondary) const;
+                HeuristicSolverRankingV2::Entry& secondaryEntry) const;
         static void colourNeighboursWithSameColour(
                 const std::shared_ptr<DataStructures::Graph>& graph,
                 SolverV2::HeuristicSolverRankingV2::Entry& primaryEntry,

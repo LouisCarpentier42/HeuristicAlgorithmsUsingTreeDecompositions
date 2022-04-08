@@ -314,7 +314,10 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
 {
     std::ofstream resultFile;
     resultFile.open(experiment->resultFileName + ".csv");
-    resultFile << "Solver name,graph name,tree decomposition name,treewidth,#nodes,height,#vertices,#colours,%precoloured,%happy,evaluation,exact solution,time(micro s)\n";
+    resultFile << "Solver name,H-weight,U-weight,PH-weight,PU-weight,Ranking order,Vertex weight join bag,join heuristic,";
+    resultFile << "graph name,#vertices,#colours,%precoloured,";
+    resultFile << "tree decomposition name,treewidth,#nodes,height,";
+    resultFile << "%happy,evaluation,exact solution,time(micro s)\n";
 
     for (TestInstance& testInstance : experiment->testInstances)
     {
@@ -323,7 +326,9 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
         // Test the baselines
         for (auto const& [name, baseline] : experiment->baselines)
         {
-            resultFile << name << "," << testInstance.graphName << ",/,/,/,/," << testInstance.graph->getNbVertices() << "," << testInstance.graph->getNbColours() << "," << testInstance.graph->getPercentPrecoloured() << ",";
+            resultFile << name << ",,,,,,,,";
+            resultFile << testInstance.graphName << "," << testInstance.graph->getNbVertices() << "," << testInstance.graph->getNbColours() << "," << testInstance.graph->getPercentPrecoloured() << ",";
+            resultFile << ",,,,";
             testInstance.graph->removeColours();
             auto start = std::chrono::high_resolution_clock::now();
             baseline->solve(testInstance.graph);
@@ -341,29 +346,90 @@ void ExperimentalAnalysis::executeExperimentV2(IO::Reader& reader, std::shared_p
 
         for (auto const& [name, solver] : experiment->treeDecompositionSolversV2)
         {
-            resultFile << name << ",";
-            resultFile << testInstance.graphName << ",";
-            resultFile  << testInstance.treeDecompositionName << ",";
-            resultFile  << niceTreeDecomposition->getTreeWidth() << ",";
-            resultFile  << nbNodes << ",";
-            resultFile  << height << ",";
-            resultFile  << testInstance.graph->getNbVertices() << ",";
-            resultFile  << testInstance.graph->getNbColours() << ",";
-            resultFile  << testInstance.graph->getPercentPrecoloured() << ",";
-
-            testInstance.graph->removeColours();
-            auto start = std::chrono::high_resolution_clock::now();
-            solver->solve(testInstance.graph, niceTreeDecomposition);
-            auto stop = std::chrono::high_resolution_clock::now();
-            int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
-            resultFile << (double)evaluation / (double)testInstance.graph->getNbVertices() << ",";
-            resultFile << evaluation << ",";
-            resultFile << std::boolalpha << solver->hasFoundExactSolution() << ",";
-            resultFile << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "\n";
+            executeSolverAndWriteResultsToFile(
+                    resultFile,
+                    solver,
+                    name,
+                    experiment->evaluator,
+                    testInstance.graph,
+                    testInstance.graphName,
+                    niceTreeDecomposition,
+                    testInstance.treeDecompositionName);
         }
-
-
     }
 
     resultFile.close();
+}
+
+void ExperimentalAnalysis::executeSolverAndWriteResultsToFile(
+        std::ofstream& file,
+        const std::shared_ptr<SolverV2::HeuristicMHVSolverV2>& solver,
+        const std::string& solverName,
+        const std::unique_ptr<DataStructures::Evaluator>& evaluator,
+        std::shared_ptr<DataStructures::Graph>& graph,
+        const std::string& graphName,
+        std::shared_ptr<DataStructures::NiceTreeDecomposition>& treeDecomposition,
+        const std::string& treeDecompositionName)
+{
+    int nbNodes = treeDecomposition->getRoot()->getNbNodes();
+    int height = treeDecomposition->getRoot()->getHeight();
+
+    file << solverName << ",";
+    file << solver->weightHappyVertices << ",";
+    file << solver->weightUnhappyVertices << ",";
+    file << solver->weightPotentialHappyVertices << ",";
+    file << solver->weightPotentialUnhappyVertices << ",";
+    switch (solver->joinNodeRankingOrder)
+    {
+        case SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::largestRankingOut:
+            file << "largestRankingOut,"; break;
+        case SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut:
+            file << "smallestRankingOut,"; break;
+        case SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::randomRankingOut:
+            file << "randomRankingOut,"; break;
+    }
+    switch (solver->vertexWeightJoinBag)
+    {
+        case SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::unitary:
+            file << "unitary,"; break;
+        case SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbColouredNeighboursOutsideBag:
+            file << "nbColouredNeighboursOutsideBag,"; break;
+        case SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::hasColouredNeighbourOutsideBag:
+            file << "hasColouredNeighbourOutsideBag,"; break;
+        case SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbNeighboursOutsideBag:
+            file << "nbNeighboursOutsideBag,"; break;
+        case SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::hasNeighboursOutsideBag:
+            file << "hasNeighboursOutsideBag,"; break;
+        case SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbNeighboursInBorder:
+            file << "nbNeighboursInBorder,"; break;
+        case SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::hasNeighbourInBorder:
+            file << "hasNeighbourInBorder,"; break;
+    }
+    switch (solver->joinNodeCombineHeuristic)
+    {
+        case SolverV2::HeuristicMHVSolverV2::JoinNodeCombineHeuristic::copyBag:
+            file << "copyBag,"; break;
+        case SolverV2::HeuristicMHVSolverV2::JoinNodeCombineHeuristic::merge:
+            file << "merge,"; break;
+    }
+
+    file << graphName << ",";
+    file << graph->getNbVertices() << ",";
+    file << graph->getNbColours() << ",";
+    file << graph->getPercentPrecoloured() << ",";
+
+    file << treeDecompositionName << ",";
+    file << treeDecomposition->getTreeWidth() << ",";
+    file << nbNodes << ",";
+    file << height << ",";
+
+    graph->removeColours();
+    auto start = std::chrono::high_resolution_clock::now();
+    solver->solve(graph, treeDecomposition);
+    auto stop = std::chrono::high_resolution_clock::now();
+    int evaluation{evaluator->evaluate(graph)};
+    file << (double)evaluation / (double)graph->getNbVertices() << ",";
+    file << evaluation << ",";
+    file << std::boolalpha << solver->hasFoundExactSolution() << ",";
+    file << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "\n";
 }

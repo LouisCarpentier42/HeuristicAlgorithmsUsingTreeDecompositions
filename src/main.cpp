@@ -48,8 +48,8 @@ int main(int argc, char** argv)
     {
         std::string solverFile{"initial_solvers.sol"};
 //        std::string experimentFile{"initial_experiment.exp"};
-        std::string experimentFile{"initial_v2_experiment.exp"};
-//        std::string experimentFile{"small_random_graphs.exp"};
+//        std::string experimentFile{"initial_v2_experiment.exp"};
+        std::string experimentFile{"small_random_graphs.exp"};
 
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
         ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
@@ -85,7 +85,6 @@ int main(int argc, char** argv)
                 nbSolutionsToKeep = IO::Reader::convertToInt(argv[2]);
             else
                 nbSolutionsToKeep = 8;
-//            MaximumHappyVertices::ExactTreeDecompositionMHV solverV2{};
             SolverV2::HeuristicMHVSolverV2 solverV2{
                 nbSolutionsToKeep,
                 2,
@@ -248,9 +247,9 @@ int main(int argc, char** argv)
     }
     else if (strcmp(argv[1], "heuristic-algorithm-v2") == 0)
     {
-        DataStructures::Evaluator* problemEvaluator;
+        std::unique_ptr<DataStructures::Evaluator> problemEvaluator;
         if (strcmp(argv[2], "MHV") == 0)
-            problemEvaluator = new DataStructures::BasicMHVEvaluator{};
+            problemEvaluator = std::make_unique<DataStructures::BasicMHVEvaluator>();
         else
             throw std::runtime_error("'" + std::string(argv[2]) + "' is not a valid problem!");
 
@@ -346,12 +345,32 @@ int main(int argc, char** argv)
             joinNodeCombineHeuristic
         };
 
-        std::shared_ptr<DataStructures::Graph> graph = reader.readGraph(IO::Reader::getParameter(argc, argv, "--graphFile", true));
+        std::string graphName = IO::Reader::getParameter(argc, argv, "--graphFile", true);
+        std::shared_ptr<DataStructures::Graph> graph = reader.readGraph(graphName);
         std::string colourType = IO::Reader::colourGraph(argc, argv, graph);
-        std::shared_ptr<DataStructures::NiceTreeDecomposition> treeDecomposition = reader.readNiceTreeDecomposition(IO::Reader::getParameter(argc, argv, "--treeDecompositionFile", true));
+        std::string treeDecompositionName = IO::Reader::getParameter(argc, argv, "--treeDecompositionFile", true);
+        std::shared_ptr<DataStructures::NiceTreeDecomposition> treeDecomposition = reader.readNiceTreeDecomposition(treeDecompositionName);
 
-        solverV2.solve(graph, treeDecomposition);
-
+        std::string resultFileName = IO::Reader::getParameter(argc, argv, "--resultFileName", false);
+        if (resultFileName.empty())
+        {
+            solverV2.solve(graph, treeDecomposition);
+        }
+        else
+        {
+            std::ofstream resultFile;
+            resultFile.open(reader.resultFilesDir + resultFileName, std::ios_base::app);
+            ExperimentalAnalysis::executeSolverAndWriteResultsToFile(
+                    resultFile,
+                    std::make_shared<SolverV2::HeuristicMHVSolverV2>(solverV2),
+                    IO::Reader::getParameter(argc, argv, "--solverName", true),
+                    problemEvaluator,
+                    graph,
+                    graphName,
+                    treeDecomposition,
+                    treeDecompositionName);
+            resultFile.close();
+        }
         std::cout << "Evaluation for '" << argv[2] << "': " << (float)problemEvaluator->evaluate(graph)/(float)graph->getNbVertices() << "." << std::endl;
     }
     else

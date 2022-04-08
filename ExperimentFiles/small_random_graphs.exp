@@ -15,9 +15,9 @@ experiment LewisGeneratedRandom_200_3_0.25/graph3.gr LewisGeneratedRandom_200_3_
 experiment LewisGeneratedRandom_200_3_0.25/graph4.gr LewisGeneratedRandom_200_3_0.25/graph4_53.tw generated
 experiment LewisGeneratedRandom_200_3_0.25/graph5.gr LewisGeneratedRandom_200_3_0.25/graph5_59.tw generated
 
-c experiment LewisGeneratedRandom_50_3_0.1/graph3.gr LewisGeneratedRandom_50_3_0.1/graph3_16.tw generated
-c experiment LewisGeneratedRandom_30_3_0.1/graph5.gr LewisGeneratedRandom_30_3_0.1/graph5_10.tw generated
+experiment LewisGeneratedRandom_50_3_0.1/graph3.gr LewisGeneratedRandom_50_3_0.1/graph3_16.tw generated
+experiment LewisGeneratedRandom_30_3_0.1/graph5.gr LewisGeneratedRandom_30_3_0.1/graph5_10.tw generated
 
-c experiment LewisGeneratedRandom_100_3_0.1/graph1.gr LewisGeneratedRandom_100_3_0.1/graph1_26.tw generated
+experiment LewisGeneratedRandom_100_3_0.1/graph1.gr LewisGeneratedRandom_100_3_0.1/graph1_26.tw generated
 
-c experiment LewisGeneratedRandom_30_3_0.75/graph4.gr LewisGeneratedRandom_30_3_0.75/graph4_9.tw generated
+experiment LewisGeneratedRandom_30_3_0.75/graph4.gr LewisGeneratedRandom_30_3_0.75/graph4_9.tw generated
