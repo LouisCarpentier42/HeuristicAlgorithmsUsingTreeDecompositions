@@ -17,6 +17,8 @@
 
 // valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./HeuristicAlgorithmsUsingTreeDecompositions
 // valgrind --tool=callgrind --callgrind-out-file=callgrind.out.non.const ./HeuristicAlgorithmsUsingTreeDecompositions
+
+
 int main(int argc, char** argv)
 {
     RNG::setRNG(1);

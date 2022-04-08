@@ -7,28 +7,6 @@
 #include "../DataStructures/Evaluator/BasicMHVEvaluator.h"
 #include "../rng.h"
 
-std::string happinessToString(SolverV2::HappyVertexAssignmentV2& h, DataStructures::VertexType v)
-{
-    switch (h.getHappiness(v))
-    {
-
-        case SolverV2::unknown:
-            return "unknown";
-        case SolverV2::happy:
-            return "happy";
-        case SolverV2::unhappy:
-            return "unhappy";
-        case SolverV2::potentiallyHappy:
-            return "potentiallyHappy";
-        case SolverV2::potentiallyUnhappy:
-            return "potentiallyUnhappy";
-    }
-}
-
-
-// TODO
-// ./HeuristicAlgorithmsUsingTreeDecompositions heuristic-algorithm-v2 MHV --seed 10728108 --graphFilesDir ../../GraphFiles/ --g6GraphFilesDir ../../GraphFiles/g6GraphFiles/ --treeDecompositionFilesDir ../../TreeDecompositionFiles/ --experimentFilesDir ../../ExperimentFiles/ --resultFilesDir ../../ResultFiles/ --graphFile LewisGeneratedRandom_100_3_0.1/graph12353.gr --treeDecompositionFile LewisGeneratedRandom_100_3_0.1/graph12353_nice.tw --resultFileName SMAC.csv --solverName SMAC_generated_solver --unhappyVertexWeight -9 --joinNodeRankingOrder randomRankingOut --vertexWeightJoinBag unitary --potentialUnhappyVertexWeight -1 --joinNodeCombineHeuristic merge --nbSolutionsToKeep 55 --potentialHappyVertexWeight -4 --happyVertexWeight -5
-// ./HeuristicAlgorithmsUsingTreeDecompositions heuristic-algorithm-v2 MHV --seed 9364247 --graphFilesDir ../../GraphFiles/ --g6GraphFilesDir ../../GraphFiles/g6GraphFiles/ --treeDecompositionFilesDir ../../TreeDecompositionFiles/ --experimentFilesDir ../../ExperimentFiles/ --resultFilesDir ../../ResultFiles/ --graphFile LewisGeneratedRandom_100_3_0.1/graph12358.gr --treeDecompositionFile LewisGeneratedRandom_100_3_0.1/graph12358_nice.tw --resultFileName SMAC.csv --solverName SMAC_generated_solver --unhappyVertexWeight -8 --joinNodeRankingOrder smallestRankingOut --vertexWeightJoinBag unitary --potentialUnhappyVertexWeight -8 --joinNodeCombineHeuristic merge --nbSolutionsToKeep 122 --potentialHappyVertexWeight 3 --happyVertexWeight 0
 SolverV2::HeuristicMHVSolverV2::HeuristicMHVSolverV2(
         int nbSolutionsToKeep,
         int weightHappyVertices,
@@ -160,25 +138,6 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::solveAtNode(
         {
             HeuristicSolverRankingV2 ranking = handleForgetNode(std::dynamic_pointer_cast<DataStructures::ForgetNode>(node), graph);
             if (ranking.hasReachedCapacity()) foundExactSolution = false;
-
-//            DataStructures::VertexType forgottenVertex = std::dynamic_pointer_cast<DataStructures::ForgetNode>(node)->getForgottenVertex();
-//            if (forgottenVertex == 12)
-//            {
-//                std::cout << "----------------------------------------------------------------------- Forgotten vertex " << forgottenVertex << "\n";
-//                for (auto& e : ranking)
-//                {
-//                    if (e.second.happyVertexAssignment.getHappiness(forgottenVertex) == HappinessValue::potentiallyUnhappy)
-//                    {
-//                        std::cout << "Forgotten vertex is potentially unhappy with colour " << e.second.colourAssignment.getColour(forgottenVertex) << "\n";
-//                        for (DataStructures::VertexType neighbour : graph->getNeighbours(forgottenVertex))
-//                        {
-//                            std::cout << "Neighbour " << neighbour << " has colour " << e.second.colourAssignment.getColour(forgottenVertex) << " and happiness " << happinessToString(e.second.happyVertexAssignment, forgottenVertex) << "\n";
-//                        }
-//                        std::cout << "\n";
-//                    }
-//                }
-//            }
-
             return ranking;
         }
         case DataStructures::NodeType::JoinNode:
@@ -668,7 +627,6 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
                 entryAlreadyFound = true;
             }
         }
-
 
         if (entryAlreadyFound)
         {
@@ -1284,7 +1242,6 @@ void SolverV2::HeuristicMHVSolverV2::merge(
 
     ranking.push(mergedColouring, mergedHappiness, getEvaluation(mergedHappiness));
 }
-
 
 void SolverV2::HeuristicMHVSolverV2::colourNeighboursWithSameColour(
         const std::shared_ptr<DataStructures::Graph>& graph,
