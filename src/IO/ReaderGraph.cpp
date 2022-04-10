@@ -9,7 +9,7 @@ std::shared_ptr<DataStructures::Graph> IO::Reader::readGraph(const std::string &
     std::ifstream file{graphFilesDir + filename};
     if (!file)
     {
-        throw std::runtime_error("Can't read graph in '" + filename + "' because the file can't be opened!");
+        throw std::runtime_error("Can't read graph in '" + graphFilesDir + filename + "' because the file can't be opened!");
     }
 
     std::string line{"c"};
