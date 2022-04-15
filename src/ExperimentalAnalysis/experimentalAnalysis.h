@@ -26,6 +26,14 @@ namespace ExperimentalAnalysis
             const std::string& graphName,
             std::shared_ptr<DataStructures::NiceTreeDecomposition>& treeDecomposition,
             const std::string& treeDecompositionName);
+    void executeSolverAndWriteResultsToStandardOutput(
+            const std::shared_ptr<SolverV2::HeuristicMHVSolverV2>& solver,
+            const std::string& solverName,
+            const std::unique_ptr<DataStructures::Evaluator>& evaluator,
+            std::shared_ptr<DataStructures::Graph>& graph,
+            const std::string& graphName,
+            std::shared_ptr<DataStructures::NiceTreeDecomposition>& treeDecomposition,
+            const std::string& treeDecompositionName);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXPERIMENTALANALYSIS_H

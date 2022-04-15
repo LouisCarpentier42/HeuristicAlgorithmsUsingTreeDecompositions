@@ -68,19 +68,19 @@ int main(int argc, char** argv)
         {
             std::cout << " --- Graph: " << testInstance.graphName << " ---\n";
             // Test the baselines
-//            for (auto const& [name, baseline] : experiment->baselines)
-//            {
-//                std::cout << "Baseline: " << name << "\n";
-//
-//                testInstance.graph->removeColours();
-//                auto start = std::chrono::high_resolution_clock::now();
-//                baseline->solve(testInstance.graph);
-//                auto stop = std::chrono::high_resolution_clock::now();
-//                int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
-//
-//                std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
-//                std::cout  << "\n";
-//            }
+            for (auto const& [name, baseline] : experiment->baselines)
+            {
+                std::cout << "Baseline: " << name << "\n";
+
+                testInstance.graph->removeColours();
+                auto start = std::chrono::high_resolution_clock::now();
+                baseline->solve(testInstance.graph);
+                auto stop = std::chrono::high_resolution_clock::now();
+                int evaluation{experiment->evaluator->evaluate(testInstance.graph)};
+
+                std::cout  << "[evaluation,time] = [" << evaluation << "," << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "]\n";
+                std::cout  << "\n";
+            }
 
             int nbSolutionsToKeep;
             if (argc == 3)
@@ -356,7 +356,14 @@ int main(int argc, char** argv)
         std::string resultFileName = IO::Reader::getParameter(argc, argv, "--resultFileName", false);
         if (resultFileName.empty())
         {
-            solverV2.solve(graph, treeDecomposition);
+            ExperimentalAnalysis::executeSolverAndWriteResultsToStandardOutput(
+                    std::make_shared<SolverV2::HeuristicMHVSolverV2>(solverV2),
+                    IO::Reader::getParameter(argc, argv, "--solverName", true),
+                    problemEvaluator,
+                    graph,
+                    graphName,
+                    treeDecomposition,
+                    treeDecompositionName);
         }
         else
         {
@@ -373,7 +380,7 @@ int main(int argc, char** argv)
                     treeDecompositionName);
             resultFile.close();
         }
-        std::cout << "Evaluation for '" << argv[2] << "': " << (float)problemEvaluator->evaluate(graph)/(float)graph->getNbVertices() << "." << std::endl;
+//        std::cout << "Evaluation for '" << argv[2] << "': " << (float)problemEvaluator->evaluate(graph)/(float)graph->getNbVertices() << "." << std::endl;
     }
     else
     {
