@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 //    RNG::setRNG(std::random_device{}());
     std::string defaultRootDir = IO::Reader::getParameter(argc, argv, "--rootDir", false);
     if (defaultRootDir.empty())
-        defaultRootDir = "../../";
+        defaultRootDir = "../../../clusterBigTest/";
     std::string defaultGraphFilesDir = defaultRootDir + "GraphFiles/";
     std::string defaultG6GraphFilesDir = defaultGraphFilesDir + "g6GraphFiles/";
     std::string defaultTreeDecompositionFilesDir = defaultRootDir + "TreeDecompositionFiles/";
@@ -48,10 +48,12 @@ int main(int argc, char** argv)
 
     if (argc == 1)
     {
-        std::string solverFile{"initial_solvers.sol"};
+        std::string solverFile{"greedy_vs_growth.txt"};
+        std::string experimentFile{"big_experiment.txt"};
+//        std::string solverFile{"initial_solvers.sol"};
 //        std::string experimentFile{"initial_experiment.exp"};
 //        std::string experimentFile{"initial_v2_experiment.exp"};
-        std::string experimentFile{"small_random_graphs.exp"};
+//        std::string experimentFile{"small_random_graphs.exp"};
 
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
         ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
