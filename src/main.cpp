@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 //    RNG::setRNG(std::random_device{}());
     std::string defaultRootDir = IO::Reader::getParameter(argc, argv, "--rootDir", false);
     if (defaultRootDir.empty())
-        defaultRootDir = "../../../clusterBigTest/";
+        defaultRootDir = "../../";
     std::string defaultGraphFilesDir = defaultRootDir + "GraphFiles/";
     std::string defaultG6GraphFilesDir = defaultGraphFilesDir + "g6GraphFiles/";
     std::string defaultTreeDecompositionFilesDir = defaultRootDir + "TreeDecompositionFiles/";
@@ -49,18 +49,30 @@ int main(int argc, char** argv)
     if (argc == 1)
     {
         std::string solverFile{"greedy_vs_growth.txt"};
-        std::string experimentFile{"big_experiment.txt"};
+//        std::string experimentFile{"big_experiment.txt"};
 //        std::string solverFile{"initial_solvers.sol"};
 //        std::string experimentFile{"initial_experiment.exp"};
 //        std::string experimentFile{"initial_v2_experiment.exp"};
-//        std::string experimentFile{"small_random_graphs.exp"};
+        std::string experimentFile{"claw_free_interesting.txt"};
 
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
         ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
     }
+    else if (strcmp(argv[1], "experiment") == 0)
+    {
+        std::string solverFile{IO::Reader::getParameter(argc, argv, "--solvers", true)};
+        std::string experimentFile{IO::Reader::getParameter(argc, argv, "--experiment", true)};
+        std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
+        ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
+    }
+    else if (strcmp(argv[1], "g6") == 0)
+    {
+        std::string g6File = IO::Reader::getParameter(argc, argv, "--file", true);
+        defaultReader.readG6File(g6File);
+    }
     else if (strcmp(argv[1], "v2") == 0)
     {
-        std::string solverFile{"greedy_vs_growth.sol"};
+        std::string solverFile{"greedy_vs_growth.txt"};
 //        std::string experimentFile{"initial_experiment.exp"};
 //        std::string experimentFile{"initial_v2_experiment.exp"};
         std::string experimentFile{"small_random_graphs.exp"};

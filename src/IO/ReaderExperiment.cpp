@@ -14,7 +14,7 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
     std::ifstream solverFile{experimentFilesDir + solversFilename};
     if (!solverFile)
     {
-        throw std::runtime_error("Can't read '" + solversFilename + "' because the file can't be opened!");
+        throw std::runtime_error("Can't read '" + experimentFilesDir + "/" + solversFilename + "' because the file can't be opened!");
     }
 
     std::ifstream experimentFile{experimentFilesDir + experimentsFilename};
@@ -215,7 +215,7 @@ std::shared_ptr<ExperimentalAnalysis::Experiment> IO::Reader::readExperiment(con
 
     if (!evaluator)
         throw std::runtime_error("An experiment must have a problem!");
-    if (baselines.empty() && treeDecompositionSolvers.empty())
+    if (baselines.empty() && treeDecompositionSolvers.empty() && treeDecompositionSolversV2.empty())
         throw std::runtime_error("An experiment must have at least one solver!");
     if (testInstances.empty())
         throw std::runtime_error("An experiment must have test instances!");
