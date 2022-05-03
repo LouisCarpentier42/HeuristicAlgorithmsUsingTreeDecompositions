@@ -49,11 +49,12 @@ int main(int argc, char** argv)
     if (argc == 1)
     {
         std::string solverFile{"greedy_vs_growth.txt"};
+        std::string experimentFile{"trees_all.txt"};
 //        std::string experimentFile{"big_experiment.txt"};
 //        std::string solverFile{"initial_solvers.sol"};
 //        std::string experimentFile{"initial_experiment.exp"};
 //        std::string experimentFile{"initial_v2_experiment.exp"};
-        std::string experimentFile{"claw_free_interesting.txt"};
+//        std::string experimentFile{"claw_free_interesting.txt"};
 
         std::shared_ptr<ExperimentalAnalysis::Experiment> experiment = defaultReader.readExperiment(solverFile, experimentFile);
         ExperimentalAnalysis::executeExperimentV2(defaultReader, experiment);
@@ -394,7 +395,7 @@ int main(int argc, char** argv)
                     treeDecompositionName);
             resultFile.close();
         }
-//        std::cout << "Evaluation for '" << argv[2] << "': " << (float)problemEvaluator->evaluate(graph)/(float)graph->getNbVertices() << "." << std::endl;
+        std::cout << "Evaluation for '" << argv[2] << "': " << (float)problemEvaluator->evaluate(graph)/(float)graph->getNbVertices() << "." << std::endl;
     }
     else
     {

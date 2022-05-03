@@ -50,6 +50,11 @@ void SolverV2::HeuristicMHVSolverV2::solve(
         if (!graph->isPrecoloured(vertex))
             graph->setColour(vertex, bestValue.colourAssignment.getColour(vertex));
     }
+
+//    DataStructures::BasicMHVEvaluator e{};
+//    int evaluation = e.evaluate(graph);
+//    std::cout << evaluation << " " << (foundExactSolution ? "true" : "false") << " " << nbSolutionsToKeep << "---------------------------------------------------------------------------------------------------------------\n";
+//    std::cout << ranking << "\n";
 }
 
 SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::solveAtNode(
@@ -62,24 +67,28 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::solveAtNode(
         {
             HeuristicSolverRankingV2 ranking = handleLeafNode(std::dynamic_pointer_cast<DataStructures::LeafNode>(node), graph);
             if (ranking.hasReachedCapacity()) foundExactSolution = false;
+//            std::cout << ranking << "\n";
             return ranking;
         }
         case DataStructures::NodeType::IntroduceNode:
         {
             HeuristicSolverRankingV2 ranking = handleIntroduceNode(std::dynamic_pointer_cast<DataStructures::IntroduceNode>(node), graph);
             if (ranking.hasReachedCapacity()) foundExactSolution = false;
+//            std::cout << ranking << "\n";
             return ranking;
         }
         case DataStructures::NodeType::ForgetNode:
         {
             HeuristicSolverRankingV2 ranking = handleForgetNode(std::dynamic_pointer_cast<DataStructures::ForgetNode>(node), graph);
             if (ranking.hasReachedCapacity()) foundExactSolution = false;
+//            std::cout << ranking << "\n";
             return ranking;
         }
         case DataStructures::NodeType::JoinNode:
         {
             HeuristicSolverRankingV2 ranking = handleJoinNode(std::dynamic_pointer_cast<DataStructures::JoinNode>(node), graph);
             if (ranking.hasReachedCapacity()) foundExactSolution = false;
+//            std::cout << ranking << "\n";
             return ranking;
         }
     }
@@ -508,6 +517,9 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
     // Iterate over the entries of the child and check if it should be added to the new ranking
     for (HeuristicSolverRankingV2::Entry& entry : rankingChild)
     {
+        if (entry.second.happyVertexAssignment.getHappiness(node->getForgottenVertex()) == HappinessValue::potentiallyUnhappy)
+            entry.second.happyVertexAssignment.setHappiness(node->getForgottenVertex(), HappinessValue::happy);
+
         // Find if the entry is already present in the set
         auto left = entriesToAdd.begin();
         auto right = entriesToAdd.end();
@@ -830,14 +842,12 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                 if (entryOuterLoop.second.colourAssignment.getColour(vertexWeight.first) != entryInnerLoop.second.colourAssignment.getColour(vertexWeight.first))
                 {
                     hasDifferenceInBag = true;
-                    if (ranking.size() > 0) break;
                     nbMistakes += vertexWeight.second;
                 }
                 // Check if there is a mistake in the happiness
                 if (entryOuterLoop.second.happyVertexAssignment.getHappiness(vertexWeight.first) != entryInnerLoop.second.happyVertexAssignment.getHappiness(vertexWeight.first))
                 {
                     hasDifferenceInBag = true;
-                    if (ranking.size() > 0) break;
                     nbMistakes += vertexWeight.second;
                 }
             }
@@ -1289,5 +1299,7 @@ void SolverV2::HeuristicMHVSolverV2::processQueue(
             mergedHappiness.setHappiness(vertex, HappinessValue::unhappy);
         }
         colourNeighboursWithSameColour(graph, primaryEntry, secondaryEntry, vertex, mergedColouring, mergedHappiness, potentialHappyNeighbours, colouredVerticesWithoutHappiness);
+
+
     }
 }

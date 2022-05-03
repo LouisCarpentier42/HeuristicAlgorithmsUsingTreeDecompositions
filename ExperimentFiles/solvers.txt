@@ -1,0 +1,10 @@
+problem MaximumHappyVertices
+nbRepetitions 1
+heuristicTD_V2 solver_8 8 19 12 -8 -6 largestRankingOut nbNeighboursInBorder copyBag
+heuristicTD_V2 solver_16 16 19 12 -8 -6 largestRankingOut nbNeighboursInBorder copyBag
+heuristicTD_V2 solver_32 32 19 12 -8 -6 largestRankingOut nbNeighboursInBorder copyBag
+heuristicTD_V2 solver_64 64 19 12 -8 -6 largestRankingOut nbNeighboursInBorder copyBag
+heuristicTD_V2 solver_128 128 19 12 -8 -6 largestRankingOut nbNeighboursInBorder copyBag
+heuristicTD_V2 solver_256 256 19 12 -8 -6 largestRankingOut nbNeighboursInBorder copyBag
+heuristicTD_V2 solver_512 512 19 12 -8 -6 largestRankingOut nbNeighboursInBorder copyBag
+heuristicTD_V2 solver_1024 1024 19 12 -8 -6 largestRankingOut nbNeighboursInBorder copyBag
