@@ -66,7 +66,7 @@ namespace SolverV2
 
         [[nodiscard]] bool hasFoundExactSolution() const;
 
-        void solve(
+        int solve(
                 std::shared_ptr<DataStructures::Graph>& graph,
                 std::shared_ptr<DataStructures::NiceTreeDecomposition>& treeDecomposition);
 

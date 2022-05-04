@@ -1,2 +1,0 @@
-experiment trees_interesting/graph122.gr trees_interesting/graph122_nice.tw random(3,0.1)
-c experiment LewisGeneratedRandom_50_3_0.6_default/graph5.gr LewisGeneratedRandom_50_3_0.6_default/graph5_12.tw  generated

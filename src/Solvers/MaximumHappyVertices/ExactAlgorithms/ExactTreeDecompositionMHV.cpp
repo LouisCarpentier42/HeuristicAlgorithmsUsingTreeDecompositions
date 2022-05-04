@@ -236,6 +236,12 @@ Solvers::ExactTreeDecompositionRankingMHV MaximumHappyVertices::ExactTreeDecompo
     // Iterate over all the solutions
     Solvers::ExactTreeDecompositionRankingMHV ranking{};
     ExactTreeDecompositionMHVSolutionIterator iterator{verticesToConsider, graph};
+
+    for (DataStructures::VertexType vertex : node->getBagContent())
+        verticesToConsider.insert(vertex);
+    for (DataStructures::VertexType vertex : S)
+        verticesToConsider.insert(vertex);
+
     while (iterator.next())
     {
         DataStructures::ColourAssignment colourAssignments{iterator.getColourAssignments()};

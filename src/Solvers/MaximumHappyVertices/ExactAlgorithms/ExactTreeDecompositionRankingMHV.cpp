@@ -79,3 +79,23 @@ Solvers::ExactTreeDecompositionRankingMHV::ExactTreeDecompositionRankingIterator
 {
     return solutions.end();
 }
+
+std::ostream& Solvers::operator<<(std::ostream& out, Solvers::ExactTreeDecompositionRankingMHV& ranking)
+{
+    int count{1};
+    for (const auto& entry : ranking)
+    {
+        out << "E(" << count++ << ") \t" << entry << "\n";
+    }
+    return out;
+}
+
+std::ostream& Solvers::operator<<(std::ostream& out, const Solvers::ExactTreeDecompositionRankingMHV::ExactTreeDecompositionRankingEntry& entry)
+{
+    DataStructures::ColourAssignment c{entry.first.first};
+    for (DataStructures::VertexType v{0}; v < entry.second.second->getSize(); v++)
+    {
+        c.assignColour(v, entry.second.second->getColour(v));
+    }
+    return out << entry.second.first<< "\t" << c << "\t" << entry.first.second;
+}

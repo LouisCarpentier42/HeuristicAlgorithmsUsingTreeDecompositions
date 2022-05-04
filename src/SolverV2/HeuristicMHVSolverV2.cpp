@@ -31,7 +31,7 @@ bool SolverV2::HeuristicMHVSolverV2::hasFoundExactSolution() const
     return foundExactSolution;
 }
 
-void SolverV2::HeuristicMHVSolverV2::solve(
+int SolverV2::HeuristicMHVSolverV2::solve(
         std::shared_ptr<DataStructures::Graph>& graph,
         std::shared_ptr<DataStructures::NiceTreeDecomposition>& treeDecomposition)
 {
@@ -51,10 +51,7 @@ void SolverV2::HeuristicMHVSolverV2::solve(
             graph->setColour(vertex, bestValue.colourAssignment.getColour(vertex));
     }
 
-//    DataStructures::BasicMHVEvaluator e{};
-//    int evaluation = e.evaluate(graph);
-//    std::cout << evaluation << " " << (foundExactSolution ? "true" : "false") << " " << nbSolutionsToKeep << "---------------------------------------------------------------------------------------------------------------\n";
-//    std::cout << ranking << "\n";
+    return bestValue.happyVertexAssignment.getCountOf(HappinessValue::happy);
 }
 
 SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::solveAtNode(
@@ -67,28 +64,24 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::solveAtNode(
         {
             HeuristicSolverRankingV2 ranking = handleLeafNode(std::dynamic_pointer_cast<DataStructures::LeafNode>(node), graph);
             if (ranking.hasReachedCapacity()) foundExactSolution = false;
-//            std::cout << ranking << "\n";
             return ranking;
         }
         case DataStructures::NodeType::IntroduceNode:
         {
             HeuristicSolverRankingV2 ranking = handleIntroduceNode(std::dynamic_pointer_cast<DataStructures::IntroduceNode>(node), graph);
             if (ranking.hasReachedCapacity()) foundExactSolution = false;
-//            std::cout << ranking << "\n";
             return ranking;
         }
         case DataStructures::NodeType::ForgetNode:
         {
             HeuristicSolverRankingV2 ranking = handleForgetNode(std::dynamic_pointer_cast<DataStructures::ForgetNode>(node), graph);
             if (ranking.hasReachedCapacity()) foundExactSolution = false;
-//            std::cout << ranking << "\n";
             return ranking;
         }
         case DataStructures::NodeType::JoinNode:
         {
             HeuristicSolverRankingV2 ranking = handleJoinNode(std::dynamic_pointer_cast<DataStructures::JoinNode>(node), graph);
             if (ranking.hasReachedCapacity()) foundExactSolution = false;
-//            std::cout << ranking << "\n";
             return ranking;
         }
     }

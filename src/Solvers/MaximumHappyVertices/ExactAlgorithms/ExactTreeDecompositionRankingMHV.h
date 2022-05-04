@@ -49,6 +49,9 @@ namespace Solvers
         [[nodiscard]] ExactTreeDecompositionRankingIterator begin() const;
         [[nodiscard]] ExactTreeDecompositionRankingIterator end() const;
     };
+
+    std::ostream& operator<<(std::ostream& out, ExactTreeDecompositionRankingMHV& ranking);
+    std::ostream& operator<<(std::ostream& out, const ExactTreeDecompositionRankingMHV::ExactTreeDecompositionRankingEntry& entry);
 }
 
 #endif //HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONRANKINGMHV_H

@@ -138,6 +138,101 @@ int main(int argc, char** argv)
         else
             std::string file = defaultConstructor.constructNice(flowCutter, graphFile, time);
     }
+    else if (strcmp(argv[1], "sanity-checks") == 0)
+    {
+
+
+        std::unique_ptr<DataStructures::Evaluator> problemEvaluator;
+        std::unique_ptr<Solvers::SolverBase> exactBruteForceSolver;
+        std::unique_ptr<Solvers::ExactTreeDecompositionSolverBase> exactTreeDecompositionSolver;
+        if (strcmp(argv[2], "MHV") == 0)
+        {
+            problemEvaluator = std::make_unique<DataStructures::BasicMHVEvaluator>();
+            exactBruteForceSolver = std::make_unique<MaximumHappyVertices::ExactBruteForceMHV>();
+            exactTreeDecompositionSolver = std::make_unique<MaximumHappyVertices::ExactTreeDecompositionMHV>();
+        }
+        else
+            throw std::runtime_error("'" + std::string(argv[2]) + "' is not a valid problem!");
+
+        IO::Reader reader{
+            IO::Reader::getParameter(argc, argv, "--graphFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--g6GraphFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--treeDecompositionFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--experimentFilesDir", false),
+            IO::Reader::getParameter(argc, argv, "--resultFilesDir", false)
+        };
+
+        std::string seed = IO::Reader::getParameter(argc, argv, "--seed", false);
+        if (!seed.empty())
+            RNG::setRNG(std::strtoll(seed.c_str(), nullptr, 10));
+
+        SolverV2::HeuristicMHVSolverV2 solverV2{
+            IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--nbSolutionsToKeep", true)),
+            19,
+            12,
+            -8,
+            -6,
+            SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::largestRankingOut,
+            SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbNeighboursInBorder,
+            SolverV2::HeuristicMHVSolverV2::JoinNodeCombineHeuristic::copyBag
+        };
+
+        std::string graphName = IO::Reader::getParameter(argc, argv, "--graphFile", true);
+        std::shared_ptr<DataStructures::Graph> graph = reader.readGraph(graphName);
+        std::string colourType = IO::Reader::colourGraph(argc, argv, graph);
+        std::string treeDecompositionName = IO::Reader::getParameter(argc, argv, "--treeDecompositionFile", true);
+        std::shared_ptr<DataStructures::NiceTreeDecomposition> treeDecomposition = reader.readNiceTreeDecomposition(treeDecompositionName);
+
+        std::ofstream sanityChecksFile;
+        std::string resultFileName = IO::Reader::getParameter(argc, argv, "--resultFileName", false);
+        if (resultFileName.empty())
+        {
+            sanityChecksFile.open(reader.resultFilesDir + "sanity-checks.csv", std::ios_base::app);
+        }
+        else
+        {
+            sanityChecksFile.open(reader.resultFilesDir + resultFileName, std::ios_base::app);
+        }
+
+        sanityChecksFile << IO::Reader::getParameter(argc, argv, "--nbSolutionsToKeep", true) << ",";
+        sanityChecksFile << graphName << ",";
+        sanityChecksFile << graph->getNbVertices() << ",";
+        sanityChecksFile << graph->getNbColours() << ",";
+        sanityChecksFile << graph->getPercentPrecoloured() << ",";
+        sanityChecksFile << treeDecomposition->getTreeWidth() << ",";
+
+        graph->removeColours();
+
+        auto start = std::chrono::high_resolution_clock::now();
+        int constructedEvaluation = solverV2.solve(graph, treeDecomposition);
+        auto stop = std::chrono::high_resolution_clock::now();
+
+        int evaluationHeuristic{problemEvaluator->evaluate(graph)};
+        bool exactSolutionByHeuristic = solverV2.hasFoundExactSolution();
+
+        sanityChecksFile << (double)evaluationHeuristic / (double)graph->getNbVertices() << ",";
+        sanityChecksFile << evaluationHeuristic << ",";
+        sanityChecksFile << std::boolalpha << (evaluationHeuristic == constructedEvaluation) << ",";
+        sanityChecksFile << std::boolalpha << exactSolutionByHeuristic << ",";
+        sanityChecksFile << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << ",";
+
+        if (exactSolutionByHeuristic)
+        {
+            graph->removeColours();
+            start = std::chrono::high_resolution_clock::now();
+            int tdEvaluation{exactTreeDecompositionSolver->solve(graph, treeDecomposition)};
+            stop = std::chrono::high_resolution_clock::now();
+            sanityChecksFile << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << ",";
+            sanityChecksFile << std::boolalpha << (evaluationHeuristic == tdEvaluation);
+        }
+        else
+        {
+            sanityChecksFile << ",";
+        }
+
+        sanityChecksFile << "\n";
+        sanityChecksFile.close();
+    }
     else if (strcmp(argv[1], "stress-test") == 0)
     {
         DataStructures::Evaluator* problemEvaluator;
