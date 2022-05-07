@@ -138,21 +138,6 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
         }
     }
 
-    std::vector<DataStructures::VertexType> neighboursWithAllNeighboursColoured{};
-    for (DataStructures::VertexType vertex : colouredNeighbours)
-    {
-        if (std::all_of(
-                graph->getNeighbours(vertex).begin(),
-                graph->getNeighbours(vertex).end(),
-                [firstValue, node](DataStructures::VertexType neighbour) mutable
-                {
-                    return firstValue.colourAssignment.isColoured(neighbour) || neighbour == node->getIntroducedVertex();
-                }))
-        {
-            neighboursWithAllNeighboursColoured.push_back(vertex);
-        }
-    }
-
     for (HeuristicSolverRankingV2::Entry& entry : rankingChild)
     {
         // An assignment based on the happiness assignment of the child
@@ -336,38 +321,8 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
                     happyVertexAssignment.setHappiness(potentiallyHappyNeighbour, HappinessValue::unhappy);
             }
 
-            // If a neighbour of which all its neighbours are coloured is potentially happy, then it can be made happy
-            // We don't need to check the colour because if it had a different colour then the introduced vertex could
-            // not be made happy
-            for (DataStructures::VertexType vertex : neighboursWithAllNeighboursColoured)
-            {
-                if (happyVertexAssignment.getHappiness(vertex) == HappinessValue::potentiallyUnhappy)
-                {
-                    happyVertexAssignment.setHappiness(vertex, HappinessValue::happy);
-                }
-            }
-
             // Push the new entry
             ranking.push(colourAssignment, happyVertexAssignment, getEvaluation(happyVertexAssignment));
-        }
-
-        // If there are no uncoloured neighbours and all neighbours have the same colour, then there is no need to make the vertex unhappy
-        if (uncolouredNeighbours.empty() && precolouredNeighbours.empty() && !graph->isPrecoloured(node->getIntroducedVertex()))
-        {
-            if (colouredNeighbours.empty()) continue;
-
-            DataStructures::ColourType colourNeighbours = entry.second.colourAssignment.getColour(colouredNeighbours.front());
-
-            if (std::all_of(
-                    graph->getNeighbours(node->getIntroducedVertex()).begin(),
-                    graph->getNeighbours(node->getIntroducedVertex()).end(),
-                    [entry, colourNeighbours](DataStructures::VertexType neighbour) mutable
-                    {
-                        return entry.second.colourAssignment.getColour(neighbour) == colourNeighbours;
-                    }))
-            {
-                continue;
-            }
         }
 
         // All the colours can be used to make the vertex unhappy
@@ -411,17 +366,6 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
                         happyVertexAssignment.setHappiness(potentiallyHappyNeighbour, HappinessValue::unhappy);
                 }
 
-                // Check the vertices with no uncoloured neighbours, if they can are potentially unhappy they can become happy
-                // We don't need to make them unhappy if they have a different colour because that is covered in a previous loop
-                for (DataStructures::VertexType vertex : neighboursWithAllNeighboursColoured)
-                {
-                    if (happyVertexAssignment.getHappiness(vertex) == HappinessValue::potentiallyUnhappy &&
-                        entry.second.colourAssignment.getColour(vertex) == colourForIntroducedVertex)
-                    {
-                        happyVertexAssignment.setHappiness(vertex, HappinessValue::happy);
-                    }
-                }
-
                 // Add the new entry to the backup ranking
                 backupRanking.push(colourAssignment, happyVertexAssignment, getEvaluation(happyVertexAssignment));
             }
@@ -457,29 +401,13 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleIntrodu
                 }
 
                 // Neighbours that are potentially unhappy could become effectively unhappy
+
                 for (DataStructures::VertexType vertex : colouredNeighbours)
                 {
                     if (happyVertexAssignment.getHappiness(vertex) == HappinessValue::potentiallyUnhappy &&
                         colourForIntroducedVertex != colourAssignment.getColour(vertex))
                     {
                         happyVertexAssignment.setHappiness(vertex, HappinessValue::unhappy);
-                    }
-                }
-
-                // The neighbours without any uncoloured neighbours are not connected to the border and thus must be
-                // either happy or unhappy, and not potentially unhappy
-                for (DataStructures::VertexType vertex : neighboursWithAllNeighboursColoured)
-                {
-                    if (happyVertexAssignment.getHappiness(vertex) == HappinessValue::potentiallyUnhappy)
-                    {
-                        if (colourForIntroducedVertex == colourAssignment.getColour(vertex))
-                        {
-                            happyVertexAssignment.setHappiness(vertex, HappinessValue::happy);
-                        }
-                        else
-                        {
-                            happyVertexAssignment.setHappiness(vertex, HappinessValue::unhappy);
-                        }
                     }
                 }
 
@@ -519,6 +447,8 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
         bool entryAlreadyFound{false};
         while (left < right)
         {
+
+
             auto middle = left;
             std::advance(middle, std::distance(left, right)/2);
 
@@ -540,15 +470,26 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleForgetN
                 }
                 else if (entry.second.happyVertexAssignment.getHappiness(vertex) != (*middle)->second.happyVertexAssignment.getHappiness(vertex))
                 {
-                    if (entry.second.happyVertexAssignment.getHappiness(vertex) < (*middle)->second.happyVertexAssignment.getHappiness(vertex))
+                    if (entry.second.happyVertexAssignment.getHappiness(vertex) == HappinessValue::unhappy && (*middle)->second.happyVertexAssignment.getHappiness(vertex) == HappinessValue::potentiallyUnhappy)
                     {
-                        entrySmallerThanMiddle = true;
+                        (*middle)->second.happyVertexAssignment.setHappiness(vertex, HappinessValue::unhappy);
+                    }
+                    else if (entry.second.happyVertexAssignment.getHappiness(vertex) == HappinessValue::potentiallyUnhappy && (*middle)->second.happyVertexAssignment.getHappiness(vertex) == HappinessValue::unhappy)
+                    {
+                        entry.second.happyVertexAssignment.setHappiness(vertex, HappinessValue::unhappy);
                     }
                     else
                     {
-                        entryGreaterThanMiddle = true;
+                        if (entry.second.happyVertexAssignment.getHappiness(vertex) < (*middle)->second.happyVertexAssignment.getHappiness(vertex))
+                        {
+                            entrySmallerThanMiddle = true;
+                        }
+                        else
+                        {
+                            entryGreaterThanMiddle = true;
+                        }
+                        break;
                     }
-                    break;
                 }
             }
 
@@ -819,7 +760,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
     for (HeuristicSolverRankingV2::Entry& entryOuterLoop : *outerRanking)
     {
         // Keep track of the best entry in the inner ranking in case no match is found
-        int bestNbMistakes = 2 * node->getBagSize();
+        int bestNbMistakes = graph->getNbVertices() * graph->getNbVertices();
         HeuristicSolverRankingV2::Entry* bestEntryInnerLoop = &(*innerRanking->begin());
 
         // Check which entry in the inner ranking matches the entry in the outer ranking
@@ -840,8 +781,19 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                 // Check if there is a mistake in the happiness
                 if (entryOuterLoop.second.happyVertexAssignment.getHappiness(vertexWeight.first) != entryInnerLoop.second.happyVertexAssignment.getHappiness(vertexWeight.first))
                 {
-                    hasDifferenceInBag = true;
-                    nbMistakes += vertexWeight.second;
+                    if (entryOuterLoop.second.happyVertexAssignment.getHappiness(vertexWeight.first) == HappinessValue::unhappy && entryInnerLoop.second.happyVertexAssignment.getHappiness(vertexWeight.first) == HappinessValue::potentiallyUnhappy)
+                    {
+                        nbMistakes += vertexWeight.second;
+                    }
+                    else if (entryOuterLoop.second.happyVertexAssignment.getHappiness(vertexWeight.first) == HappinessValue::potentiallyUnhappy && entryInnerLoop.second.happyVertexAssignment.getHappiness(vertexWeight.first) == HappinessValue::unhappy)
+                    {
+                        nbMistakes += vertexWeight.second;
+                    }
+                    else
+                    {
+                        hasDifferenceInBag = true;
+                        nbMistakes += vertexWeight.second;
+                    }
                 }
             }
 
@@ -851,6 +803,21 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                 // Merge the happiness of the two entries
                 ColourAssignmentV2 mergedColouring{entryOuterLoop.second.colourAssignment, entryInnerLoop.second.colourAssignment};
                 HappyVertexAssignmentV2 mergedHappiness{entryOuterLoop.second.happyVertexAssignment};
+
+                for (DataStructures::VertexType vertex : node->getBagContent())
+                {
+                    if (entryOuterLoop.second.happyVertexAssignment.getHappiness(vertex) == HappinessValue::unhappy && entryInnerLoop.second.happyVertexAssignment.getHappiness(vertex) == HappinessValue::potentiallyUnhappy)
+                    {
+                        mergedHappiness.setHappiness(vertex, HappinessValue::unhappy);
+                    }
+                    else if (entryOuterLoop.second.happyVertexAssignment.getHappiness(vertex) == HappinessValue::potentiallyUnhappy && entryInnerLoop.second.happyVertexAssignment.getHappiness(vertex) == HappinessValue::unhappy)
+                    {
+                        mergedHappiness.setHappiness(vertex, HappinessValue::unhappy);
+                    }
+                }
+
+
+
                 for (DataStructures::VertexType vertex{0}; vertex < graph->getNbVertices(); vertex++)
                 {
                     if (!entryOuterLoop.second.colourAssignment.isColoured(vertex) && entryInnerLoop.second.colourAssignment.isColoured(vertex))
@@ -870,6 +837,7 @@ SolverV2::HeuristicSolverRankingV2 SolverV2::HeuristicMHVSolverV2::handleJoinNod
                         {
                             mergedHappiness.setHappiness(vertex, HappinessValue::happy);
                         }
+
                     }
                 }
 
@@ -1292,7 +1260,5 @@ void SolverV2::HeuristicMHVSolverV2::processQueue(
             mergedHappiness.setHappiness(vertex, HappinessValue::unhappy);
         }
         colourNeighboursWithSameColour(graph, primaryEntry, secondaryEntry, vertex, mergedColouring, mergedHappiness, potentialHappyNeighbours, colouredVerticesWithoutHappiness);
-
-
     }
 }

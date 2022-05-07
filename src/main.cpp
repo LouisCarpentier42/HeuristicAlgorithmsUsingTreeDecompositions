@@ -14,6 +14,7 @@
 
 #include <cstring>
 #include <chrono>
+#include <math.h>
 
 // valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./HeuristicAlgorithmsUsingTreeDecompositions
 // valgrind --tool=callgrind --callgrind-out-file=callgrind.out.non.const ./HeuristicAlgorithmsUsingTreeDecompositions
@@ -140,8 +141,6 @@ int main(int argc, char** argv)
     }
     else if (strcmp(argv[1], "sanity-checks") == 0)
     {
-
-
         std::unique_ptr<DataStructures::Evaluator> problemEvaluator;
         std::unique_ptr<Solvers::SolverBase> exactBruteForceSolver;
         std::unique_ptr<Solvers::ExactTreeDecompositionSolverBase> exactTreeDecompositionSolver;
@@ -222,12 +221,18 @@ int main(int argc, char** argv)
             start = std::chrono::high_resolution_clock::now();
             int tdEvaluation{exactTreeDecompositionSolver->solve(graph, treeDecomposition)};
             stop = std::chrono::high_resolution_clock::now();
+
+            sanityChecksFile << tdEvaluation << ",";
             sanityChecksFile << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << ",";
-            sanityChecksFile << std::boolalpha << (evaluationHeuristic == tdEvaluation);
+            sanityChecksFile << std::boolalpha << (evaluationHeuristic == tdEvaluation) << ",";
+            sanityChecksFile << ""; // Sanity check 3 is not really relevant if an exact solution has been found
         }
         else
         {
-            sanityChecksFile << ",";
+            sanityChecksFile << ",,,";
+            int nbSolutionsToKeep = IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--nbSolutionsToKeep", true));
+
+            sanityChecksFile << (pow((2 * graph->getNbVertices()),(treeDecomposition->getTreeWidth() + 1)) >= nbSolutionsToKeep);
         }
 
         sanityChecksFile << "\n";
