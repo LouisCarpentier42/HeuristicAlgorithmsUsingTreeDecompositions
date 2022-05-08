@@ -167,12 +167,12 @@ int main(int argc, char** argv)
 
         SolverV2::HeuristicMHVSolverV2 solverV2{
             IO::Reader::convertToInt(IO::Reader::getParameter(argc, argv, "--nbSolutionsToKeep", true)),
-            19,
-            12,
+            15,
+            4,
+            -9,
             -8,
-            -6,
-            SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::largestRankingOut,
-            SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbNeighboursInBorder,
+            SolverV2::HeuristicMHVSolverV2::JoinNodeRankingOrder::smallestRankingOut,
+            SolverV2::HeuristicMHVSolverV2::VertexWeightJoinBag::nbNeighboursOutsideBag,
             SolverV2::HeuristicMHVSolverV2::JoinNodeCombineHeuristic::copyBag
         };
 
