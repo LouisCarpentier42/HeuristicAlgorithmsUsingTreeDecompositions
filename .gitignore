@@ -34,7 +34,9 @@
 # My additions
 .idea
 GraphFiles
+GraphFiles.zip
 TreeDecompositionFiles
+TreeDecompositionFiles.zip
 ResultFiles
 ExperimentFiles
 build
