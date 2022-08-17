@@ -1,6 +1,8 @@
 //
 // Created by louis on 14/02/2022.
 //
+// Copyright (c) KU Leuven 2021-2022
+//
 
 #include <sys/stat.h>
 #include "Constructor.h"
