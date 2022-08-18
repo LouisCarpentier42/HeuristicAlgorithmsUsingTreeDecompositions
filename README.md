@@ -14,4 +14,4 @@ In collaboration with: Jan Goedgebeur and Jorik Jooken
 
 ## Data availablity
 
-The instance used for experimentation is available in the [instances](instances/) directory. The results of all experiments are available in the [results](results/) directory. 
+The instances used for experimentation are available in the [instances](instances/) directory. The results of all experiments are available in the [results](results/) directory. 
