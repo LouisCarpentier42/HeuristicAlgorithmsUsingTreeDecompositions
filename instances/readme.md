@@ -4,6 +4,8 @@ This directory contains all the instances used for experimentation. Details on h
 
 The tree decompositions were generated using [FlowCutter](https://github.com/kit-algo/flow-cutter-pace17), which was given at most 2.5 seconds to construct a tree decomposition. This time was even further reduced for smaller graphs after some minor experimentations. All the tree decompositions in this directory are nice tree decompositions. We used [Jdrasil](https://github.com/maxbannach/Jdrasil) to convert the tree decompositions constructed by FlowCutter into nice tree decompositions.
 
+The format of the graphs and tree decompositions is as described by the [PACE 2017 Challenge](https://pacechallenge.org/2017/treewidth/).
+
 ## SMAC
 
 The instances used for tuning the algorithm with [SMAC](https://github.com/automl/SMAC3) were generated using the generator of Rhyd Lewis, which can be downloaded through the following link: http://www.rhydlewis.eu/resources/happygen.zip.
