@@ -1,7 +1,9 @@
 //
-// Created by louis on 08/02/2022.
+// Copyright (c) KU Leuven 2021-2022
 //
-
+// Author: Louis Carpentier
+// In collaboration with: Jan Goedgebeur and Jorik Jooken
+//
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONSOLVERBASE_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_EXACTTREEDECOMPOSITIONSOLVERBASE_H
 

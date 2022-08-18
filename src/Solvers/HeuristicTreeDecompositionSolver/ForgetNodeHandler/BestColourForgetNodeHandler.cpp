@@ -1,5 +1,8 @@
 //
-// Created by louis on 18/02/2022.
+// Copyright (c) KU Leuven 2021-2022
+//
+// Author: Louis Carpentier
+// In collaboration with: Jan Goedgebeur and Jorik Jooken
 //
 
 #include "ConcreteForgetNodeHandlers.h"

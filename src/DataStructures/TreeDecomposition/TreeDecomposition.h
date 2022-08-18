@@ -1,5 +1,8 @@
 //
-// Created by louis on 10/09/2021.
+// Copyright (c) KU Leuven 2021-2022
+//
+// Author: Louis Carpentier
+// In collaboration with: Jan Goedgebeur and Jorik Jooken
 //
 
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_TREEDECOMPOSITION_H

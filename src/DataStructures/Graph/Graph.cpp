@@ -1,7 +1,9 @@
 //
-// Created by louis on 23/10/2021.
+// Copyright (c) KU Leuven 2021-2022
 //
-
+// Author: Louis Carpentier
+// In collaboration with: Jan Goedgebeur and Jorik Jooken
+//
 #include "Graph.h"
 
 #include <algorithm>

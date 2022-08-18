@@ -1,5 +1,8 @@
 //
-// Created by louis on 22/11/2021.
+// Copyright (c) KU Leuven 2021-2022
+//
+// Author: Louis Carpentier
+// In collaboration with: Jan Goedgebeur and Jorik Jooken
 //
 
 #include "ConcreteJoinNodeHandlers.h"

@@ -1,3 +1,9 @@
+//
+// Copyright (c) KU Leuven 2021-2022
+//
+// Author: Louis Carpentier
+// In collaboration with: Jan Goedgebeur and Jorik Jooken
+//
 
 #include "SolverV2/HeuristicMHVSolverV2.h"
 
@@ -15,10 +21,6 @@
 #include <cstring>
 #include <chrono>
 #include <math.h>
-
-// valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./HeuristicAlgorithmsUsingTreeDecompositions
-// valgrind --tool=callgrind --callgrind-out-file=callgrind.out.non.const ./HeuristicAlgorithmsUsingTreeDecompositions
-
 
 int main(int argc, char** argv)
 {
