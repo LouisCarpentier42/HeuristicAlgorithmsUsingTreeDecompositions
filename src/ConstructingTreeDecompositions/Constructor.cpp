@@ -4,6 +4,8 @@
 // Author: Louis Carpentier
 // In collaboration with: Jan Goedgebeur and Jorik Jooken
 //
+// Copyright (c) KU Leuven 2021-2022
+//
 
 #include <sys/stat.h>
 #include "Constructor.h"

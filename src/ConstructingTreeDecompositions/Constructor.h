@@ -4,6 +4,8 @@
 // Author: Louis Carpentier
 // In collaboration with: Jan Goedgebeur and Jorik Jooken
 //
+// Copyright (c) KU Leuven 2021-2022
+//
 
 #ifndef HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_CONSTRUCTOR_H
 #define HEURISTICALGORITHMSUSINGTREEDECOMPOSITIONS_CONSTRUCTOR_H
