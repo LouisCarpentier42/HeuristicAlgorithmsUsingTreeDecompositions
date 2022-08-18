@@ -14,4 +14,4 @@ In collaboration with: Jan Goedgebeur and Jorik Jooken
 
 ## Data availablity
 
-The results of all experiments are available in the [results](results/) directory. The datasets generated and analysed are not publicly available due to their large size, but are available upon reasonable [request](mailto:louis.carpentier@kuleuven.be).
+The instance used for experimentation is available in the [instances](instances/) directory. The results of all experiments are available in the [results](results/) directory. 
